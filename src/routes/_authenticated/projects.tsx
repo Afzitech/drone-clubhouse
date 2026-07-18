@@ -11,7 +11,7 @@ type Project = {
   id: string;
   title: string;
   description: string | null;
-  status: "planning" | "active" | "complete" | "archived";
+  status: "planning" | "in_progress" | "testing" | "completed" | "archived";
   lead_user_id: string | null;
   created_at: string;
 };
@@ -85,7 +85,7 @@ function ProjectsPage() {
               )}
               {isAdmin && (
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {(["planning", "active", "complete", "archived"] as const).map(
+                  {(["planning", "in_progress", "testing", "completed", "archived"] as const).map(
                     (s) => (
                       <button
                         key={s}
