@@ -191,8 +191,9 @@ export function StatusPill({ status }: { status: string }) {
     approved: "border-primary/40 bg-primary/10 text-primary",
     rejected: "border-destructive/40 bg-destructive/10 text-destructive",
     planning: "border-muted-foreground/30 bg-muted/20 text-muted-foreground",
-    active: "border-primary/40 bg-primary/10 text-primary",
-    complete: "border-emerald-500/40 bg-emerald-500/10 text-emerald-400",
+    in_progress: "border-primary/40 bg-primary/10 text-primary",
+    testing: "border-cyan-500/40 bg-cyan-500/10 text-cyan-400",
+    completed: "border-emerald-500/40 bg-emerald-500/10 text-emerald-400",
     archived: "border-muted-foreground/30 bg-muted/20 text-muted-foreground",
   };
   const cls = map[status] ?? "border-border bg-muted/20 text-muted-foreground";
