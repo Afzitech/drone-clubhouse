@@ -28,10 +28,10 @@ function Landing() {
       <header className="relative z-10 flex items-center justify-between px-6 py-5">
         <div className="flex items-center gap-2">
           <div className="hud-panel corner-brackets flex h-8 w-8 items-center justify-center">
-            <span className="mono text-xs font-bold text-primary">DC</span>
+            <span className="mono text-xs font-bold text-primary">AF</span>
           </div>
           <span className="mono text-sm font-semibold uppercase tracking-widest text-foreground">
-            Drone Club
+            Aeroforge
           </span>
         </div>
         <Link
@@ -47,9 +47,9 @@ function Landing() {
           / Restricted airspace · Members only /
         </p>
         <h1 className="mt-6 max-w-3xl text-5xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-6xl md:text-7xl">
-          Flight ops portal
+          Aeroforge
           <br />
-          <span className="text-primary">for the drone club.</span>
+          <span className="text-primary">forge the sky.</span>
         </h1>
         <p className="mt-6 max-w-xl text-base text-muted-foreground">
           Track live project status, submit new builds for approval, and coordinate with
@@ -68,23 +68,8 @@ function Landing() {
             Access provided by club admins
           </p>
         </div>
-
-        <div className="mt-20 grid w-full grid-cols-1 gap-4 sm:grid-cols-3">
-          {[
-            { k: "01", t: "Project Status", d: "Live board of active builds & missions." },
-            { k: "02", t: "Submissions", d: "Pitch new projects; admin approves." },
-            { k: "03", t: "Forum", d: "Discussion channels for the squadron." },
-          ].map((f) => (
-            <div key={f.k} className="hud-panel corner-brackets p-5 text-left">
-              <p className="mono text-[10px] uppercase tracking-widest text-primary">
-                Module {f.k}
-              </p>
-              <h3 className="mt-2 text-lg font-semibold text-foreground">{f.t}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{f.d}</p>
-            </div>
-          ))}
-        </div>
       </main>
+
     </div>
   );
 }
