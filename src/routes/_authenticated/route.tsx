@@ -44,10 +44,10 @@ function AuthedShell() {
           <div className="flex items-center gap-6">
             <Link to="/dashboard" className="flex items-center gap-2">
               <div className="hud-panel corner-brackets flex h-7 w-7 items-center justify-center">
-                <span className="mono text-[10px] font-bold text-primary">DC</span>
+                <span className="mono text-[10px] font-bold text-primary">AF</span>
               </div>
               <span className="mono text-xs font-semibold uppercase tracking-widest text-foreground">
-                Flight Deck
+                Aeroforge
               </span>
             </Link>
             <nav className="hidden items-center gap-4 md:flex">

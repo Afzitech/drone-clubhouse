@@ -2,7 +2,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
-import { adminCreateMember } from "@/lib/admin.functions";
+import { adminCreateMember, adminListMembers, adminDeleteMember } from "@/lib/admin.functions";
 import { StatusPill } from "./submit";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -34,7 +34,7 @@ type Profile = { id: string; display_name: string | null };
 
 function AdminPage() {
   const { user } = Route.useRouteContext();
-  const [tab, setTab] = useState<"queue" | "members">("queue");
+  const [tab, setTab] = useState<"queue" | "members" | "create">("queue");
 
   return (
     <div className="space-y-6">
@@ -45,11 +45,12 @@ function AdminPage() {
         <h1 className="mt-2 text-3xl font-bold text-foreground">Command Center</h1>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         {(
           [
             ["queue", "Submissions queue"],
-            ["members", "Create member"],
+            ["members", "Members"],
+            ["create", "Create member"],
           ] as const
         ).map(([id, label]) => (
           <button
@@ -66,7 +67,13 @@ function AdminPage() {
         ))}
       </div>
 
-      {tab === "queue" ? <SubmissionsQueue adminId={user.id} /> : <CreateMember />}
+      {tab === "queue" ? (
+        <SubmissionsQueue adminId={user.id} />
+      ) : tab === "members" ? (
+        <MembersList currentUserId={user.id} />
+      ) : (
+        <CreateMember />
+      )}
     </div>
   );
 }
@@ -366,5 +373,124 @@ function CreateMember() {
         Deliver credentials to the pilot securely. They can sign in immediately.
       </p>
     </form>
+  );
+}
+
+type Member = {
+  id: string;
+  email: string;
+  displayName: string | null;
+  roles: string[];
+  createdAt: string;
+};
+
+function MembersList({ currentUserId }: { currentUserId: string }) {
+  const listMembers = useServerFn(adminListMembers);
+  const deleteMember = useServerFn(adminDeleteMember);
+  const [members, setMembers] = useState<Member[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  async function load() {
+    setError(null);
+    try {
+      const data = (await listMembers()) as Member[];
+      data.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+      setMembers(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load members.");
+    }
+  }
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function remove(m: Member) {
+    if (m.id === currentUserId) return;
+    if (
+      !confirm(
+        `Delete ${m.displayName ?? m.email}? This removes their account and access permanently.`,
+      )
+    )
+      return;
+    setBusy(m.id);
+    try {
+      await deleteMember({ data: { userId: m.id } });
+      setMembers((prev) => (prev ?? []).filter((x) => x.id !== m.id));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to delete member.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  if (error) {
+    return (
+      <div className="hud-panel p-6">
+        <p className="mono text-xs text-destructive">{error}</p>
+      </div>
+    );
+  }
+
+  if (members === null) {
+    return (
+      <p className="mono text-xs text-muted-foreground">Loading roster…</p>
+    );
+  }
+
+  if (members.length === 0) {
+    return (
+      <div className="hud-panel p-6 text-center">
+        <p className="mono text-xs text-muted-foreground">No members on file.</p>
+      </div>
+    );
+  }
+
+  return (
+    <ul className="space-y-2">
+      {members.map((m) => {
+        const isSelf = m.id === currentUserId;
+        const isAdmin = m.roles.includes("admin");
+        return (
+          <li
+            key={m.id}
+            className="hud-panel corner-brackets flex flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between"
+          >
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="truncate text-sm font-semibold text-foreground">
+                  {m.displayName ?? "(no name)"}
+                </p>
+                {isAdmin && (
+                  <span className="mono rounded border border-command/40 bg-command/10 px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-command">
+                    Admin
+                  </span>
+                )}
+                {isSelf && (
+                  <span className="mono rounded border border-border px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-muted-foreground">
+                    You
+                  </span>
+                )}
+              </div>
+              <p className="mono mt-1 truncate text-[11px] text-muted-foreground">
+                {m.email}
+              </p>
+              <p className="mono mt-0.5 text-[10px] uppercase tracking-widest text-muted-foreground">
+                Joined {new Date(m.createdAt).toLocaleDateString()}
+              </p>
+            </div>
+            <button
+              disabled={isSelf || busy === m.id}
+              onClick={() => remove(m)}
+              className="mono self-start rounded border border-destructive/40 bg-destructive/10 px-3 py-1.5 text-[10px] uppercase tracking-widest text-destructive transition hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-30 md:self-center"
+            >
+              {busy === m.id ? "Deleting…" : "Delete"}
+            </button>
+          </li>
+        );
+      })}
+    </ul>
   );
 }

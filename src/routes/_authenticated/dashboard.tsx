@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
@@ -6,14 +8,37 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 function Dashboard() {
   const { user } = Route.useRouteContext();
+  const [displayName, setDisplayName] = useState<string | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (alive) setDisplayName(data?.display_name ?? null);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [user.id]);
+
+  const name =
+    displayName ??
+    (user.user_metadata as { display_name?: string } | undefined)?.display_name ??
+    user.email?.split("@")[0] ??
+    "member";
+
   return (
     <div className="space-y-6">
       <div>
         <p className="mono text-[10px] uppercase tracking-widest text-primary">
-          / Flight deck · Overview /
+          / Aeroforge · Overview /
         </p>
         <h1 className="mt-2 text-3xl font-bold text-foreground">
-          Welcome back, pilot.
+          Welcome back, {name}.
         </h1>
         <p className="mono mt-1 text-xs text-muted-foreground">{user.email}</p>
       </div>
