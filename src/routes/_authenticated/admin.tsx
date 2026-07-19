@@ -34,7 +34,7 @@ type Profile = { id: string; display_name: string | null };
 
 function AdminPage() {
   const { user } = Route.useRouteContext();
-  const [tab, setTab] = useState<"queue" | "members">("queue");
+  const [tab, setTab] = useState<"queue" | "members" | "create">("queue");
 
   return (
     <div className="space-y-6">
@@ -45,11 +45,12 @@ function AdminPage() {
         <h1 className="mt-2 text-3xl font-bold text-foreground">Command Center</h1>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         {(
           [
             ["queue", "Submissions queue"],
-            ["members", "Create member"],
+            ["members", "Members"],
+            ["create", "Create member"],
           ] as const
         ).map(([id, label]) => (
           <button
@@ -66,7 +67,13 @@ function AdminPage() {
         ))}
       </div>
 
-      {tab === "queue" ? <SubmissionsQueue adminId={user.id} /> : <CreateMember />}
+      {tab === "queue" ? (
+        <SubmissionsQueue adminId={user.id} />
+      ) : tab === "members" ? (
+        <MembersList currentUserId={user.id} />
+      ) : (
+        <CreateMember />
+      )}
     </div>
   );
 }
