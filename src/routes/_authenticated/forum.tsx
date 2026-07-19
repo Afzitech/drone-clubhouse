@@ -31,6 +31,32 @@ function ForumPage() {
   const [profiles, setProfiles] = useState<ProfileMap>({});
   const [selected, setSelected] = useState<string | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .then(({ data }) => {
+        setIsAdmin((data ?? []).some((r) => r.role === "admin"));
+      });
+  }, [user.id]);
+
+  async function deleteThread(id: string) {
+    if (!confirm("Delete this thread and all its replies?")) return;
+    const { error } = await supabase.from("forum_threads").delete().eq("id", id);
+    if (error) return alert(error.message);
+    if (selected === id) setSelected(null);
+    loadThreads();
+  }
+
+  async function deletePost(id: string) {
+    if (!confirm("Delete this reply?")) return;
+    const { error } = await supabase.from("forum_posts").delete().eq("id", id);
+    if (error) return alert(error.message);
+    if (selected) loadPosts(selected);
+  }
   const [newTitle, setNewTitle] = useState("");
   const [newBody, setNewBody] = useState("");
   const [reply, setReply] = useState("");
