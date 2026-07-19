@@ -2,7 +2,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
-import { adminCreateMember } from "@/lib/admin.functions";
+import { adminCreateMember, adminListMembers, adminDeleteMember } from "@/lib/admin.functions";
 import { StatusPill } from "./submit";
 
 export const Route = createFileRoute("/_authenticated/admin")({
