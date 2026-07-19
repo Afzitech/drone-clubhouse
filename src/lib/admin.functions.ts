@@ -9,7 +9,7 @@ const createMemberSchema = z.object({
 });
 
 async function assertAdmin(context: {
-  supabase: { rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: { message: string } | null }> };
+  supabase: { rpc: (...args: any[]) => any };
   userId: string;
 }) {
   const { data: isAdmin, error } = await context.supabase.rpc("has_role", {
