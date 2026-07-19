@@ -190,17 +190,28 @@ function ForumPage() {
           ) : (
             <ul className="space-y-2">
               {threads.map((t) => (
-                <li key={t.id}>
+                <li
+                  key={t.id}
+                  className="hud-panel corner-brackets flex items-start justify-between gap-3 p-4 transition hover:border-primary/50"
+                >
                   <button
                     onClick={() => setSelected(t.id)}
-                    className="hud-panel corner-brackets w-full p-4 text-left transition hover:border-primary/50"
+                    className="flex-1 text-left"
                   >
                     <p className="font-semibold text-foreground">{t.title}</p>
                     <p className="mono mt-1 text-[11px] uppercase tracking-widest text-muted-foreground">
-                      {profiles[t.author_id]?.display_name ?? "pilot"} ·{" "}
+                      {profiles[t.author_id]?.display_name ?? "member"} ·{" "}
                       {new Date(t.created_at).toLocaleString()}
                     </p>
                   </button>
+                  {(isAdmin || t.author_id === user.id) && (
+                    <button
+                      onClick={() => deleteThread(t.id)}
+                      className="mono rounded-md border border-destructive/40 px-2 py-1 text-[10px] uppercase tracking-widest text-destructive transition hover:bg-destructive/10"
+                    >
+                      Delete
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>
