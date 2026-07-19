@@ -31,6 +31,32 @@ function ForumPage() {
   const [profiles, setProfiles] = useState<ProfileMap>({});
   const [selected, setSelected] = useState<string | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .then(({ data }) => {
+        setIsAdmin((data ?? []).some((r) => r.role === "admin"));
+      });
+  }, [user.id]);
+
+  async function deleteThread(id: string) {
+    if (!confirm("Delete this thread and all its replies?")) return;
+    const { error } = await supabase.from("forum_threads").delete().eq("id", id);
+    if (error) return alert(error.message);
+    if (selected === id) setSelected(null);
+    loadThreads();
+  }
+
+  async function deletePost(id: string) {
+    if (!confirm("Delete this reply?")) return;
+    const { error } = await supabase.from("forum_posts").delete().eq("id", id);
+    if (error) return alert(error.message);
+    if (selected) loadPosts(selected);
+  }
   const [newTitle, setNewTitle] = useState("");
   const [newBody, setNewBody] = useState("");
   const [reply, setReply] = useState("");
@@ -164,17 +190,28 @@ function ForumPage() {
           ) : (
             <ul className="space-y-2">
               {threads.map((t) => (
-                <li key={t.id}>
+                <li
+                  key={t.id}
+                  className="hud-panel corner-brackets flex items-start justify-between gap-3 p-4 transition hover:border-primary/50"
+                >
                   <button
                     onClick={() => setSelected(t.id)}
-                    className="hud-panel corner-brackets w-full p-4 text-left transition hover:border-primary/50"
+                    className="flex-1 text-left"
                   >
                     <p className="font-semibold text-foreground">{t.title}</p>
                     <p className="mono mt-1 text-[11px] uppercase tracking-widest text-muted-foreground">
-                      {profiles[t.author_id]?.display_name ?? "pilot"} ·{" "}
+                      {profiles[t.author_id]?.display_name ?? "member"} ·{" "}
                       {new Date(t.created_at).toLocaleString()}
                     </p>
                   </button>
+                  {(isAdmin || t.author_id === user.id) && (
+                    <button
+                      onClick={() => deleteThread(t.id)}
+                      className="mono rounded-md border border-destructive/40 px-2 py-1 text-[10px] uppercase tracking-widest text-destructive transition hover:bg-destructive/10"
+                    >
+                      Delete
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>
@@ -190,13 +227,25 @@ function ForumPage() {
           </button>
           {activeThread && (
             <div className="hud-panel corner-brackets p-5">
-              <h2 className="text-xl font-bold text-foreground">
-                {activeThread.title}
-              </h2>
-              <p className="mono mt-1 text-[11px] uppercase tracking-widest text-muted-foreground">
-                {profiles[activeThread.author_id]?.display_name ?? "pilot"} ·{" "}
-                {new Date(activeThread.created_at).toLocaleString()}
-              </p>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-bold text-foreground">
+                    {activeThread.title}
+                  </h2>
+                  <p className="mono mt-1 text-[11px] uppercase tracking-widest text-muted-foreground">
+                    {profiles[activeThread.author_id]?.display_name ?? "member"} ·{" "}
+                    {new Date(activeThread.created_at).toLocaleString()}
+                  </p>
+                </div>
+                {(isAdmin || activeThread.author_id === user.id) && (
+                  <button
+                    onClick={() => deleteThread(activeThread.id)}
+                    className="mono rounded-md border border-destructive/40 px-2 py-1 text-[10px] uppercase tracking-widest text-destructive transition hover:bg-destructive/10"
+                  >
+                    Delete thread
+                  </button>
+                )}
+              </div>
               {activeThread.body && (
                 <p className="mt-3 whitespace-pre-wrap text-sm text-foreground">
                   {activeThread.body}
@@ -207,10 +256,20 @@ function ForumPage() {
           <ul className="space-y-2">
             {posts.map((p) => (
               <li key={p.id} className="hud-panel p-4">
-                <p className="mono text-[11px] uppercase tracking-widest text-primary">
-                  {profiles[p.author_id]?.display_name ?? "pilot"} ·{" "}
-                  {new Date(p.created_at).toLocaleString()}
-                </p>
+                <div className="flex items-start justify-between gap-3">
+                  <p className="mono text-[11px] uppercase tracking-widest text-primary">
+                    {profiles[p.author_id]?.display_name ?? "member"} ·{" "}
+                    {new Date(p.created_at).toLocaleString()}
+                  </p>
+                  {(isAdmin || p.author_id === user.id) && (
+                    <button
+                      onClick={() => deletePost(p.id)}
+                      className="mono text-[10px] uppercase tracking-widest text-destructive hover:underline"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
                 <p className="mt-2 whitespace-pre-wrap text-sm text-foreground">
                   {p.body}
                 </p>
