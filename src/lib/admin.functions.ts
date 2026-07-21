@@ -105,3 +105,33 @@ export const adminDeleteMember = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+const setLeadSchema = z.object({
+  userId: z.string().uuid(),
+  isLead: z.boolean(),
+});
+
+export const adminSetLead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => setLeadSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    if (data.isLead) {
+      const { error } = await supabaseAdmin
+        .from("user_roles")
+        .upsert(
+          { user_id: data.userId, role: "lead" },
+          { onConflict: "user_id,role" },
+        );
+      if (error) throw new Error(error.message);
+    } else {
+      const { error } = await supabaseAdmin
+        .from("user_roles")
+        .delete()
+        .eq("user_id", data.userId)
+        .eq("role", "lead");
+      if (error) throw new Error(error.message);
+    }
+    return { ok: true };
+  });
