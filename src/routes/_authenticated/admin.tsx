@@ -2,7 +2,17 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
-import { adminCreateMember, adminListMembers, adminDeleteMember } from "@/lib/admin.functions";
+import {
+  adminCreateMember,
+  adminListMembers,
+  adminDeleteMember,
+  adminSetLead,
+} from "@/lib/admin.functions";
+import {
+  getLandingContent,
+  updateLandingContent,
+  type LandingContent,
+} from "@/lib/site-content.functions";
 import { StatusPill } from "./submit";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -34,7 +44,9 @@ type Profile = { id: string; display_name: string | null };
 
 function AdminPage() {
   const { user } = Route.useRouteContext();
-  const [tab, setTab] = useState<"queue" | "members" | "create">("queue");
+  const [tab, setTab] = useState<"queue" | "members" | "create" | "landing">(
+    "queue",
+  );
 
   return (
     <div className="space-y-6">
@@ -51,6 +63,7 @@ function AdminPage() {
             ["queue", "Submissions queue"],
             ["members", "Members"],
             ["create", "Create member"],
+            ["landing", "Landing page"],
           ] as const
         ).map(([id, label]) => (
           <button
@@ -71,8 +84,10 @@ function AdminPage() {
         <SubmissionsQueue adminId={user.id} />
       ) : tab === "members" ? (
         <MembersList currentUserId={user.id} />
-      ) : (
+      ) : tab === "create" ? (
         <CreateMember />
+      ) : (
+        <LandingEditor />
       )}
     </div>
   );
