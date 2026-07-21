@@ -40,7 +40,6 @@ function Dashboard() {
         <h1 className="mt-2 text-3xl font-bold text-foreground">
           Welcome back, {name}.
         </h1>
-        <p className="mono mt-1 text-xs text-muted-foreground">{user.email}</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -69,8 +68,8 @@ function Dashboard() {
           Status
         </p>
         <p className="mt-2 text-sm text-foreground">
-          Foundations online. Modules for projects, submissions, forum, and admin command
-          are being brought up next.
+          Foundations online. Announcements, calendar, showcase, and notifications
+          coming online next.
         </p>
       </div>
     </div>

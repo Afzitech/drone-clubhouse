@@ -18,6 +18,7 @@ type Project = {
 
 function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [leadNames, setLeadNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -30,7 +31,22 @@ function ProjectsPage() {
           .order("created_at", { ascending: false }),
         supabase.auth.getUser(),
       ]);
-      setProjects((data ?? []) as Project[]);
+      const list = (data ?? []) as Project[];
+      setProjects(list);
+      const leadIds = Array.from(
+        new Set(list.map((p) => p.lead_user_id).filter((x): x is string => !!x)),
+      );
+      if (leadIds.length) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id,display_name")
+          .in("id", leadIds);
+        const map: Record<string, string> = {};
+        (profiles ?? []).forEach((p) => {
+          if (p.display_name) map[p.id] = p.display_name;
+        });
+        setLeadNames(map);
+      }
       if (userData.user) {
         const { data: roles } = await supabase
           .from("user_roles")
@@ -81,6 +97,11 @@ function ProjectsPage() {
               {p.description && (
                 <p className="mt-2 text-sm text-muted-foreground">
                   {p.description}
+                </p>
+              )}
+              {p.lead_user_id && leadNames[p.lead_user_id] && (
+                <p className="mono mt-3 text-[10px] uppercase tracking-widest text-warning">
+                  ★ Lead · {leadNames[p.lead_user_id]}
                 </p>
               )}
               {isAdmin && (

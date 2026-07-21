@@ -56,6 +56,7 @@ function AuthedShell() {
                 { to: "/projects", label: "Projects" },
                 { to: "/submit", label: "Submit" },
                 { to: "/forum", label: "Forum" },
+                { to: "/settings", label: "Settings" },
               ].map((l) => (
                 <Link
                   key={l.to}

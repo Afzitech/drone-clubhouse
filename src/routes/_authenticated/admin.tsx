@@ -2,7 +2,17 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
-import { adminCreateMember, adminListMembers, adminDeleteMember } from "@/lib/admin.functions";
+import {
+  adminCreateMember,
+  adminListMembers,
+  adminDeleteMember,
+  adminSetLead,
+} from "@/lib/admin.functions";
+import {
+  getLandingContent,
+  updateLandingContent,
+  type LandingContent,
+} from "@/lib/site-content.functions";
 import { StatusPill } from "./submit";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -34,7 +44,9 @@ type Profile = { id: string; display_name: string | null };
 
 function AdminPage() {
   const { user } = Route.useRouteContext();
-  const [tab, setTab] = useState<"queue" | "members" | "create">("queue");
+  const [tab, setTab] = useState<"queue" | "members" | "create" | "landing">(
+    "queue",
+  );
 
   return (
     <div className="space-y-6">
@@ -51,6 +63,7 @@ function AdminPage() {
             ["queue", "Submissions queue"],
             ["members", "Members"],
             ["create", "Create member"],
+            ["landing", "Landing page"],
           ] as const
         ).map(([id, label]) => (
           <button
@@ -71,8 +84,10 @@ function AdminPage() {
         <SubmissionsQueue adminId={user.id} />
       ) : tab === "members" ? (
         <MembersList currentUserId={user.id} />
-      ) : (
+      ) : tab === "create" ? (
         <CreateMember />
+      ) : (
+        <LandingEditor />
       )}
     </div>
   );
@@ -387,6 +402,7 @@ type Member = {
 function MembersList({ currentUserId }: { currentUserId: string }) {
   const listMembers = useServerFn(adminListMembers);
   const deleteMember = useServerFn(adminDeleteMember);
+  const setLead = useServerFn(adminSetLead);
   const [members, setMembers] = useState<Member[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
@@ -426,6 +442,30 @@ function MembersList({ currentUserId }: { currentUserId: string }) {
     }
   }
 
+  async function toggleLead(m: Member) {
+    const nextIsLead = !m.roles.includes("lead");
+    setBusy(m.id);
+    try {
+      await setLead({ data: { userId: m.id, isLead: nextIsLead } });
+      setMembers((prev) =>
+        (prev ?? []).map((x) =>
+          x.id === m.id
+            ? {
+                ...x,
+                roles: nextIsLead
+                  ? Array.from(new Set([...x.roles, "lead"]))
+                  : x.roles.filter((r) => r !== "lead"),
+              }
+            : x,
+        ),
+      );
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to update role.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
   if (error) {
     return (
       <div className="hud-panel p-6">
@@ -453,10 +493,13 @@ function MembersList({ currentUserId }: { currentUserId: string }) {
       {members.map((m) => {
         const isSelf = m.id === currentUserId;
         const isAdmin = m.roles.includes("admin");
+        const isLead = m.roles.includes("lead");
         return (
           <li
             key={m.id}
-            className="hud-panel corner-brackets flex flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between"
+            className={`hud-panel corner-brackets flex flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between ${
+              isLead ? "border-command/50" : ""
+            }`}
           >
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
@@ -466,6 +509,11 @@ function MembersList({ currentUserId }: { currentUserId: string }) {
                 {isAdmin && (
                   <span className="mono rounded border border-command/40 bg-command/10 px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-command">
                     Admin
+                  </span>
+                )}
+                {isLead && (
+                  <span className="mono rounded border border-warning/50 bg-warning/10 px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-warning">
+                    ★ Project Lead
                   </span>
                 )}
                 {isSelf && (
@@ -481,16 +529,128 @@ function MembersList({ currentUserId }: { currentUserId: string }) {
                 Joined {new Date(m.createdAt).toLocaleDateString()}
               </p>
             </div>
-            <button
-              disabled={isSelf || busy === m.id}
-              onClick={() => remove(m)}
-              className="mono self-start rounded border border-destructive/40 bg-destructive/10 px-3 py-1.5 text-[10px] uppercase tracking-widest text-destructive transition hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-30 md:self-center"
-            >
-              {busy === m.id ? "Deleting…" : "Delete"}
-            </button>
+            <div className="flex flex-wrap gap-2 md:self-center">
+              <button
+                disabled={busy === m.id || isAdmin}
+                onClick={() => toggleLead(m)}
+                title={isAdmin ? "Admins are already leads by role" : undefined}
+                className="mono rounded border border-warning/40 bg-warning/10 px-3 py-1.5 text-[10px] uppercase tracking-widest text-warning transition hover:bg-warning/20 disabled:cursor-not-allowed disabled:opacity-30"
+              >
+                {isLead ? "Remove lead" : "Make lead"}
+              </button>
+              <button
+                disabled={isSelf || busy === m.id}
+                onClick={() => remove(m)}
+                className="mono rounded border border-destructive/40 bg-destructive/10 px-3 py-1.5 text-[10px] uppercase tracking-widest text-destructive transition hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-30"
+              >
+                {busy === m.id ? "…" : "Delete"}
+              </button>
+            </div>
           </li>
         );
       })}
     </ul>
+  );
+}
+
+function LandingEditor() {
+  const load = useServerFn(getLandingContent);
+  const save = useServerFn(updateLandingContent);
+  const [content, setContent] = useState<LandingContent | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  useEffect(() => {
+    load().then((c) => setContent(c as LandingContent));
+  }, [load]);
+
+  if (!content) {
+    return (
+      <p className="mono text-xs text-muted-foreground">Loading content…</p>
+    );
+  }
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!content) return;
+    setBusy(true);
+    setMsg(null);
+    try {
+      await save({ data: content });
+      setMsg({ ok: true, text: "Landing page updated." });
+    } catch (err) {
+      setMsg({
+        ok: false,
+        text: err instanceof Error ? err.message : "Failed to save.",
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const field = (
+    key: keyof LandingContent,
+    label: string,
+    multiline = false,
+  ) => (
+    <label key={key} className="block">
+      <span className="mono text-[10px] uppercase tracking-widest text-muted-foreground">
+        {label}
+      </span>
+      {multiline ? (
+        <textarea
+          className="hud-input mt-1 min-h-[100px]"
+          value={content[key]}
+          onChange={(e) =>
+            setContent((c) => (c ? { ...c, [key]: e.target.value } : c))
+          }
+        />
+      ) : (
+        <input
+          className="hud-input mt-1"
+          value={content[key]}
+          onChange={(e) =>
+            setContent((c) => (c ? { ...c, [key]: e.target.value } : c))
+          }
+        />
+      )}
+    </label>
+  );
+
+  return (
+    <form
+      onSubmit={submit}
+      className="hud-panel corner-brackets max-w-2xl space-y-4 p-6"
+    >
+      <p className="mono text-[10px] uppercase tracking-widest text-command">
+        / Edit public landing page /
+      </p>
+      {field("hero_eyebrow", "Hero eyebrow")}
+      {field("hero_title", "Hero title")}
+      {field("hero_accent", "Hero accent (colored text)")}
+      {field("hero_subtitle", "Hero subtitle", true)}
+      <div className="border-t border-border/50 pt-4">
+        {field("about_title", "About title")}
+        {field("about_body", "About body", true)}
+      </div>
+      <div className="border-t border-border/50 pt-4">
+        {field("mission_title", "Mission title")}
+        {field("mission_body", "Mission body", true)}
+      </div>
+      {msg && (
+        <p
+          className={`mono text-xs ${msg.ok ? "text-primary" : "text-destructive"}`}
+        >
+          {msg.text}
+        </p>
+      )}
+      <button
+        type="submit"
+        disabled={busy}
+        className="mono rounded-md border border-command/40 bg-command/10 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-command transition hover:bg-command/20 disabled:opacity-50"
+      >
+        {busy ? "Saving…" : "Save landing page"}
+      </button>
+    </form>
   );
 }
