@@ -47,19 +47,22 @@ function SettingsPage() {
 function ProfileForm({ userId }: { userId: string }) {
   const [displayName, setDisplayName] = useState("");
   const [initial, setInitial] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   useEffect(() => {
     supabase
       .from("profiles")
-      .select("display_name")
+      .select("display_name,avatar_url")
       .eq("id", userId)
       .maybeSingle()
       .then(({ data }) => {
         const v = data?.display_name ?? "";
         setDisplayName(v);
         setInitial(v);
+        setAvatarUrl(data?.avatar_url ?? null);
       });
   }, [userId]);
 
@@ -78,11 +81,82 @@ function ProfileForm({ userId }: { userId: string }) {
     setMsg({ ok: true, text: "Profile updated." });
   }
 
+  async function onAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setMsg(null);
+    setUploading(true);
+    const ext = file.name.split(".").pop() || "jpg";
+    const path = `${userId}/avatar-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from("avatars")
+      .upload(path, file, { contentType: file.type, upsert: true });
+    if (upErr) {
+      setUploading(false);
+      return setMsg({ ok: false, text: upErr.message });
+    }
+    const { data: pub } = supabase.storage.from("avatars").getPublicUrl(path);
+    const url = pub.publicUrl;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ avatar_url: url })
+      .eq("id", userId);
+    setUploading(false);
+    if (error) return setMsg({ ok: false, text: error.message });
+    setAvatarUrl(url);
+    setMsg({ ok: true, text: "Avatar updated." });
+  }
+
+  async function removeAvatar() {
+    setMsg(null);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ avatar_url: null })
+      .eq("id", userId);
+    if (error) return setMsg({ ok: false, text: error.message });
+    setAvatarUrl(null);
+    setMsg({ ok: true, text: "Avatar removed." });
+  }
+
   return (
     <form
       onSubmit={save}
       className="hud-panel corner-brackets max-w-lg space-y-4 p-6"
     >
+      <div className="flex items-center gap-4">
+        {avatarUrl ? (
+          <img
+            src={avatarUrl}
+            alt=""
+            className="h-16 w-16 rounded-full object-cover ring-2 ring-primary/30"
+          />
+        ) : (
+          <div className="mono flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-lg font-bold text-primary">
+            {(displayName || "?").slice(0, 2).toUpperCase()}
+          </div>
+        )}
+        <div className="space-y-2">
+          <label className="mono inline-block cursor-pointer rounded border border-primary/40 bg-primary/10 px-3 py-1.5 text-[10px] uppercase tracking-widest text-primary hover:bg-primary/20">
+            {uploading ? "Uploading…" : "Change avatar"}
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={onAvatarChange}
+              disabled={uploading}
+            />
+          </label>
+          {avatarUrl && (
+            <button
+              type="button"
+              onClick={removeAvatar}
+              className="mono ml-2 rounded border border-border px-2 py-1.5 text-[10px] uppercase tracking-widest text-muted-foreground hover:text-foreground"
+            >
+              Remove
+            </button>
+          )}
+        </div>
+      </div>
       <label className="block">
         <span className="mono text-[10px] uppercase tracking-widest text-muted-foreground">
           Display name

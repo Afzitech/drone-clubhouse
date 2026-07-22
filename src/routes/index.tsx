@@ -3,10 +3,15 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { getLandingContent } from "@/lib/site-content.functions";
+import { getPublicGallery } from "@/lib/public-gallery.functions";
 
 const landingQuery = queryOptions({
   queryKey: ["landing-content"],
   queryFn: () => getLandingContent(),
+});
+const galleryQuery = queryOptions({
+  queryKey: ["public-gallery"],
+  queryFn: () => getPublicGallery(),
 });
 
 export const Route = createFileRoute("/")({
@@ -26,12 +31,18 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  loader: ({ context }) => context.queryClient.ensureQueryData(landingQuery),
+  loader: async ({ context }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(landingQuery),
+      context.queryClient.ensureQueryData(galleryQuery),
+    ]);
+  },
   component: Landing,
 });
 
 function Landing() {
   const { data: content } = useSuspenseQuery(landingQuery);
+  const { data: gallery } = useSuspenseQuery(galleryQuery);
   const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
@@ -194,20 +205,45 @@ function Landing() {
           Featured builds
         </h2>
         <p className="mt-3 max-w-xl text-sm text-muted-foreground">
-          Members' work goes here — the public showcase gallery activates once
-          approved projects have media featured.
+          Members' work — the public showcase gallery.
         </p>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div
-              key={i}
-              className="hud-panel corner-brackets aspect-video flex items-center justify-center"
-            >
-              <span className="mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                slot 0{i} · empty
-              </span>
-            </div>
-          ))}
+          {gallery.length === 0
+            ? [1, 2, 3, 4, 5, 6].map((i) => (
+                <div
+                  key={i}
+                  className="hud-panel corner-brackets aspect-video flex items-center justify-center"
+                >
+                  <span className="mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                    slot 0{i} · empty
+                  </span>
+                </div>
+              ))
+            : gallery.map((g) => (
+                <div
+                  key={g.id}
+                  className="hud-panel corner-brackets overflow-hidden"
+                >
+                  <div className="aspect-video overflow-hidden bg-surface">
+                    <img
+                      src={g.image_url}
+                      alt={g.title}
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="p-3">
+                    <p className="text-sm font-semibold text-foreground">
+                      {g.title}
+                    </p>
+                    {g.caption && (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {g.caption}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
         </div>
       </section>
 
