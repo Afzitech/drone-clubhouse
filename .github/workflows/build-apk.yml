@@ -23,12 +23,10 @@ jobs:
       - name: Build Web App
         run: npm run build
 
-      - name: Prepare Static Assets for Capacitor
+      - name: Normalize Index for Capacitor
         run: |
-          mkdir -p capacitor-build
-          cp -a dist/client/. capacitor-build/ 2>/dev/null || cp -a dist/. capacitor-build/ 2>/dev/null || cp -a .output/public/. capacitor-build/ 2>/dev/null
-          if [ -f "capacitor-build/_shell.html" ]; then
-            mv capacitor-build/_shell.html capacitor-build/index.html
+          if [ -f ".output/public/_shell.html" ] && [ ! -f ".output/public/index.html" ]; then
+            mv .output/public/_shell.html .output/public/index.html
           fi
 
       - name: Sync Capacitor Android
