@@ -178,11 +178,15 @@ function ProjectsPage() {
 function ProjectUpdatesPanel({
   project,
   userId,
+  isAdmin,
   isReviewer,
+  canPost,
 }: {
   project: Project;
   userId: string;
+  isAdmin: boolean;
   isReviewer: boolean;
+  canPost: boolean;
 }) {
   const [updates, setUpdates] = useState<Update[]>([]);
   const [names, setNames] = useState<Record<string, string>>({});
@@ -253,6 +257,29 @@ function ProjectUpdatesPanel({
     setBody("");
     setFile(null);
     load();
+    // Notify admins that a new update needs approval
+    try {
+      const { data: admins } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "admin");
+      const adminIds = (admins ?? [])
+        .map((a) => a.user_id)
+        .filter((id) => id !== userId);
+      if (adminIds.length) {
+        await notify({
+          data: {
+            userIds: adminIds,
+            type: "update-review-request",
+            title: `Update pending review · ${project.title}`,
+            body: body.trim().slice(0, 200),
+            link: "/admin",
+          },
+        });
+      }
+    } catch (err) {
+      console.error("notify admins failed", err);
+    }
   }
 
   async function review(u: Update, status: "approved" | "rejected") {
@@ -267,7 +294,7 @@ function ProjectUpdatesPanel({
       .eq("id", u.id);
     if (error) return alert(error.message);
     try {
-      await notify({
+      const res = await notify({
         data: {
           userIds: [u.author_id],
           type: "update-review",
@@ -276,8 +303,9 @@ function ProjectUpdatesPanel({
           link: "/projects",
         },
       });
-    } catch {
-      /* ignore */
+      console.log("[notify]", res);
+    } catch (err) {
+      console.error("notify author failed", err);
     }
     load();
   }
