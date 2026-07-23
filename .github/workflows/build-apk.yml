@@ -12,10 +12,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install Dependencies & Build Web App
+      - name: Install Dependencies & Generate Static Site
         run: |
           npm install
-          npm run build
+          npx nuxt generate
 
       - name: Sync Capacitor Android
         run: |
