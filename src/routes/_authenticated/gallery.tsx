@@ -12,6 +12,7 @@ type Item = {
   caption: string | null;
   image_url: string;
   uploaded_by: string;
+  featured_on_landing: boolean;
   created_at: string;
 };
 
@@ -28,9 +29,21 @@ function GalleryPage() {
   async function load() {
     const { data } = await supabase
       .from("gallery_items")
-      .select("id,title,caption,image_url,uploaded_by,created_at")
+      .select("id,title,caption,image_url,uploaded_by,featured_on_landing,created_at")
       .order("created_at", { ascending: false });
     setItems((data ?? []) as Item[]);
+  }
+
+  async function toggleFeatured(item: Item) {
+    const next = !item.featured_on_landing;
+    const { error } = await supabase
+      .from("gallery_items")
+      .update({ featured_on_landing: next })
+      .eq("id", item.id);
+    if (error) return alert(error.message);
+    setItems((x) =>
+      x.map((i) => (i.id === item.id ? { ...i, featured_on_landing: next } : i)),
+    );
   }
 
   useEffect(() => {
@@ -103,7 +116,7 @@ function GalleryPage() {
         </p>
         <h1 className="mt-2 text-3xl font-bold text-foreground">Gallery</h1>
         <p className="mono mt-1 text-[11px] text-muted-foreground">
-          Images here are publicly visible on the landing page.
+          Admins choose which images appear on the public landing page.
         </p>
       </div>
 
@@ -173,13 +186,30 @@ function GalleryPage() {
                     {it.caption}
                   </p>
                 )}
+                {it.featured_on_landing && (
+                  <p className="mono mt-2 inline-block rounded border border-primary/40 bg-primary/10 px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-primary">
+                    ★ On landing page
+                  </p>
+                )}
                 {isAdmin && (
-                  <button
-                    onClick={() => remove(it)}
-                    className="mono mt-2 rounded border border-destructive/40 px-2 py-1 text-[10px] uppercase tracking-widest text-destructive hover:bg-destructive/10"
-                  >
-                    Delete
-                  </button>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <button
+                      onClick={() => toggleFeatured(it)}
+                      className={`mono rounded border px-2 py-1 text-[10px] uppercase tracking-widest transition ${
+                        it.featured_on_landing
+                          ? "border-primary/40 bg-primary/10 text-primary hover:bg-primary/20"
+                          : "border-border text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {it.featured_on_landing ? "Unfeature" : "Feature on landing"}
+                    </button>
+                    <button
+                      onClick={() => remove(it)}
+                      className="mono rounded border border-destructive/40 px-2 py-1 text-[10px] uppercase tracking-widest text-destructive hover:bg-destructive/10"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
