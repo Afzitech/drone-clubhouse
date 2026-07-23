@@ -80,6 +80,19 @@ function ProjectsPage() {
     setProjects((p) => p.map((x) => (x.id === id ? { ...x, status } : x)));
   }
 
+  async function deleteProject(id: string) {
+    if (
+      !confirm(
+        "Delete this project? All its updates will be permanently removed.",
+      )
+    )
+      return;
+    const { error } = await supabase.from("projects").delete().eq("id", id);
+    if (error) return alert(error.message);
+    setProjects((p) => p.filter((x) => x.id !== id));
+    if (openId === id) setOpenId(null);
+  }
+
   return (
     <div className="space-y-6">
       <div>
