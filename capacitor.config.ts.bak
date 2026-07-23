@@ -3,10 +3,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.aeroforge.app',
   appName: 'AeroForge',
-  server: {
-    url: 'https://drone-clubhouse.lovable.app',
-    cleartext: false
-  }
+  webDir: '.output/public'
 };
 
 export default config;
