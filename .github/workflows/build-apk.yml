@@ -25,7 +25,7 @@ jobs:
 
       - name: Generate Capacitor Entry HTML
         run: |
-          CLIENT_JS=$(find .output/public/assets -name "client-*.js" -printf "%f\n" | head -n 1)
+          CLIENT_JS=$(find .output/public/assets -name "index-*.js" -printf "%f\n" | head -n 1)
           CSS_FILE=$(find .output/public/assets -name "*.css" -printf "%f\n" | head -n 1)
           
           cat <<EOF > .output/public/index.html
