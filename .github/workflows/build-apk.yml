@@ -47,11 +47,11 @@ jobs:
       - name: Sync Capacitor Android
         run: npx cap sync android
 
-      - name: Set up JDK 17 with Gradle Caching
+      - name: Set up JDK 21 with Gradle Caching
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
           cache: 'gradle'
 
       - name: Build Debug APK with Gradle
