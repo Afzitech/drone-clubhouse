@@ -27,7 +27,6 @@ jobs:
         run: |
           echo "Booting temporary Nitro server..."
           PORT=3000 node .output/server/index.mjs &
-          SERVER_PID=\$!
           
           echo "Waiting for server to initialize..."
           sleep 4
@@ -36,7 +35,7 @@ jobs:
           curl -s http://localhost:3000 > .output/public/index.html
           
           echo "Shutting down temporary server..."
-          kill \$SERVER_PID
+          pkill node
 
       - name: Sync Capacitor Android
         run: npx cap sync android
