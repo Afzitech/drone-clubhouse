@@ -226,7 +226,7 @@ function SubmissionsQueue({ adminId }: { adminId: string }) {
                   rel="noreferrer"
                   className="mono mt-2 inline-block text-[11px] text-primary hover:underline"
                 >
-                  Media link ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â€
+                  Media link ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â
                 </a>
               )}
               {s.status === "pending" && (
@@ -246,7 +246,7 @@ function SubmissionsQueue({ adminId }: { adminId: string }) {
                       onClick={() => approve(s)}
                       className="mono rounded border border-primary/40 bg-primary/10 px-3 py-1.5 text-[10px] uppercase tracking-widest text-primary transition hover:bg-primary/20 disabled:opacity-50"
                     >
-                      Approve ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ project
+                      Approve ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ project
                     </button>
                     <button
                       disabled={busy === s.id}
@@ -380,7 +380,7 @@ function CreateMember() {
         disabled={busy}
         className="mono rounded-md border border-command/40 bg-command/10 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-command transition hover:bg-command/20 disabled:opacity-50"
       >
-        {busy ? "ProvisioningÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦" : "Create member"}
+        {busy ? "ProvisioningÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦" : "Create member"}
       </button>
       <p className="mono text-[10px] text-muted-foreground">
         Deliver credentials to the pilot securely. They can sign in immediately.
@@ -474,7 +474,7 @@ function MembersList({ currentUserId }: { currentUserId: string }) {
 
   if (members === null) {
     return (
-      <p className="mono text-xs text-muted-foreground">Loading rosterÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦</p>
+      <p className="mono text-xs text-muted-foreground">Loading rosterÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦</p>
     );
   }
 
@@ -511,7 +511,7 @@ function MembersList({ currentUserId }: { currentUserId: string }) {
                 )}
                 {isLead && (
                   <span className="mono rounded border border-warning/50 bg-warning/10 px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-warning">
-                    ÃƒÂ¢Ã‹Å“Ã¢â‚¬Â¦ Project Lead
+                    ÃƒÆ’Ã‚Â¢Ãƒâ€¹Ã…â€œÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Project Lead
                   </span>
                 )}
                 {isSelf && (
@@ -541,7 +541,7 @@ function MembersList({ currentUserId }: { currentUserId: string }) {
                 onClick={() => remove(m)}
                 className="mono rounded border border-destructive/40 bg-destructive/10 px-3 py-1.5 text-[10px] uppercase tracking-widest text-destructive transition hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-30"
               >
-                {busy === m.id ? "ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦" : "Delete"}
+                {busy === m.id ? "ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦" : "Delete"}
               </button>
             </div>
           </li>
@@ -564,7 +564,7 @@ function LandingEditor() {
 
   if (!content) {
     return (
-      <p className="mono text-xs text-muted-foreground">Loading contentÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦</p>
+      <p className="mono text-xs text-muted-foreground">Loading contentÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦</p>
     );
   }
 
@@ -647,7 +647,7 @@ function LandingEditor() {
         disabled={busy}
         className="mono rounded-md border border-command/40 bg-command/10 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-command transition hover:bg-command/20 disabled:opacity-50"
       >
-        {busy ? "SavingÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦" : "Save landing page"}
+        {busy ? "SavingÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦" : "Save landing page"}
       </button>
     </form>
   );
@@ -657,7 +657,7 @@ function BookingsQueue() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<Record<string, any>>({});
   
-  // NEW: State to track which item is being actioned and the note text
+  // State to track which item is being actioned and the note text
   const [actionState, setActionState] = useState<{ id: string; status: "approved" | "rejected" } | null>(null);
   const [adminNote, setAdminNote] = useState("");
 
@@ -686,7 +686,6 @@ function BookingsQueue() {
     loadBookings();
   }, []);
 
-  // NEW: Executes the update using our inline state instead of a prompt
   async function confirmAction() {
     if (!actionState) return;
     const { id, status } = actionState;
@@ -695,7 +694,6 @@ function BookingsQueue() {
       .update({ status, admin_note: adminNote })
       .eq("id", id);
       
-    // Reset the UI state
     setActionState(null);
     setAdminNote("");
     
@@ -717,9 +715,15 @@ function BookingsQueue() {
   
   const pending = bookings.filter((b) => b.status === "pending");
   const upcoming = bookings.filter((b) => b.status === "approved" && new Date(b.end_at) > now);
+  
+  // Base history
   const history = bookings.filter((b) => 
     b.status === "rejected" || b.status === "cancelled" || (b.status === "approved" && new Date(b.end_at) <= now)
   );
+
+  // Split history
+  const roomHistory = history.filter((b) => b.kind === "club_room");
+  const printerHistory = history.filter((b) => b.kind === "printer_3d");
 
   return (
     <div className="space-y-8">
@@ -751,7 +755,6 @@ function BookingsQueue() {
                     </p>
                   </div>
                   
-                  {/* Default Buttons (Hidden when writing a note) */}
                   {actionState?.id !== b.id && (
                     <div className="flex items-center gap-2">
                       <button onClick={() => setActionState({ id: b.id, status: "approved" })} className="mono rounded border border-primary/40 bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/20">Approve</button>
@@ -760,7 +763,6 @@ function BookingsQueue() {
                   )}
                 </div>
 
-                {/* Inline Action Input UI */}
                 {actionState?.id === b.id && (
                   <div className="mt-2 flex w-full flex-col sm:flex-row items-center gap-2 border-t border-border/50 pt-3">
                     <input
@@ -818,20 +820,55 @@ function BookingsQueue() {
         )}
       </div>
 
-      {/* 3. BOOKING HISTORY */}
+      {/* 3. CLUB ROOM HISTORY */}
       <div className="space-y-4 rounded-md border border-border bg-muted/10 p-5">
         <div className="flex items-center justify-between">
           <h2 className="mono text-xs uppercase tracking-widest text-muted-foreground font-bold">
-            Booking History ({history.length})
+            Club Room History ({roomHistory.length})
           </h2>
         </div>
-        {history.length === 0 ? (
+        {roomHistory.length === 0 ? (
           <div className="hud-panel p-6 text-center text-sm text-muted-foreground">
-            No past bookings found.
+            No past club room bookings found.
           </div>
         ) : (
           <ul className="space-y-2">
-            {history.map((b) => (
+            {roomHistory.map((b) => (
+              <li key={b.id} className="hud-panel corner-brackets p-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 bg-card/40 opacity-70 hover:opacity-100 transition-opacity">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="mono rounded bg-muted/20 px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-muted-foreground font-bold">
+                      {b.status}
+                    </span>
+                    <p className="text-sm font-semibold text-foreground line-through">{b.purpose}</p>
+                  </div>
+                  <p className="mono mt-1 text-[10px] uppercase tracking-widest text-muted-foreground">
+                    By: {profiles[b.user_id] || "Member"} | {new Date(b.start_at).toLocaleString()}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => handleDelete(b.id)} className="mono rounded border border-destructive/40 text-destructive/70 px-3 py-1 text-[10px] font-bold uppercase tracking-widest hover:bg-destructive/10 hover:text-destructive transition">Delete</button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* 4. 3D PRINTER HISTORY */}
+      <div className="space-y-4 rounded-md border border-border bg-muted/10 p-5">
+        <div className="flex items-center justify-between">
+          <h2 className="mono text-xs uppercase tracking-widest text-muted-foreground font-bold">
+            3D Printer History ({printerHistory.length})
+          </h2>
+        </div>
+        {printerHistory.length === 0 ? (
+          <div className="hud-panel p-6 text-center text-sm text-muted-foreground">
+            No past 3D printer bookings found.
+          </div>
+        ) : (
+          <ul className="space-y-2">
+            {printerHistory.map((b) => (
               <li key={b.id} className="hud-panel corner-brackets p-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 bg-card/40 opacity-70 hover:opacity-100 transition-opacity">
                 <div>
                   <div className="flex items-center gap-2">
