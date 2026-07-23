@@ -168,14 +168,14 @@ function Dashboard() {
       t: "Unread forum threads",
       v: forumUnread,
       to: "/forum",
-      label: forumUnread > 0 ? "Catch up ?" : "Open forum",
+      label: forumUnread > 0 ? "Catch up ->" : "Open forum",
       accent: forumUnread > 0,
     },
     {
       t: "Unread messages",
       v: dmUnread,
       to: "/messages",
-      label: dmUnread > 0 ? "Read now ?" : "Open inbox",
+      label: dmUnread > 0 ? "Read now ->" : "Open inbox",
       accent: dmUnread > 0,
     },
   ];
@@ -184,7 +184,7 @@ function Dashboard() {
     <div className="space-y-6">
       <div>
         <p className="mono text-[10px] uppercase tracking-widest text-primary">
-          / Aeroforge · Overview /
+          / Aeroforge - Overview /
         </p>
         <h1 className="mt-2 text-3xl font-bold text-foreground">
           Welcome back, {name}.
@@ -219,7 +219,7 @@ function Dashboard() {
         <section className="space-y-3 rounded-md border border-command/45 bg-command/5 p-5">
           <div className="flex items-center justify-between">
             <h2 className="mono text-xs uppercase tracking-widest text-command font-bold">
-              ? Admin Pending Bookings Queue ({pendingBookings.length})
+              [Admin Pending Bookings Queue] ({pendingBookings.length})
             </h2>
           </div>
           <ul className="space-y-2">
@@ -238,7 +238,7 @@ function Dashboard() {
                     </p>
                   </div>
                   <p className="mono mt-1 text-[10px] uppercase tracking-widest text-muted-foreground">
-                    Requested by: {profiles[b.user_id] ?? "Member"} · {new Date(b.start_at).toLocaleString()} ? {new Date(b.end_at).toLocaleString()}
+                    Requested by: {profiles[b.user_id] ?? "Member"} | {new Date(b.start_at).toLocaleString()} to {new Date(b.end_at).toLocaleString()}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
