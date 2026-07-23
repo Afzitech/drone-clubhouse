@@ -178,7 +178,6 @@ function ProjectsPage() {
 function ProjectUpdatesPanel({
   project,
   userId,
-  isAdmin,
   isReviewer,
   canPost,
 }: {
@@ -312,29 +311,35 @@ function ProjectUpdatesPanel({
 
   return (
     <div className="mt-4 space-y-3 border-t border-border/50 pt-4">
-      <form onSubmit={submit} className="space-y-2">
-        <textarea
-          className="hud-input min-h-[70px]"
-          placeholder="Post an update…"
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-          required
-          maxLength={1500}
-        />
-        <div className="flex flex-wrap items-center gap-2">
-          <input
-            type="file"
-            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-            className="mono text-[10px] text-muted-foreground"
+      {canPost ? (
+        <form onSubmit={submit} className="space-y-2">
+          <textarea
+            className="hud-input min-h-[70px]"
+            placeholder="Post an update…"
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            required
+            maxLength={1500}
           />
-          <button
-            disabled={busy}
-            className="mono rounded border border-primary/40 bg-primary/10 px-3 py-1 text-[10px] uppercase tracking-widest text-primary hover:bg-primary/20 disabled:opacity-50"
-          >
-            {busy ? "Submitting…" : "Submit for review"}
-          </button>
-        </div>
-      </form>
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              type="file"
+              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              className="mono text-[10px] text-muted-foreground"
+            />
+            <button
+              disabled={busy}
+              className="mono rounded border border-primary/40 bg-primary/10 px-3 py-1 text-[10px] uppercase tracking-widest text-primary hover:bg-primary/20 disabled:opacity-50"
+            >
+              {busy ? "Submitting…" : "Submit for review"}
+            </button>
+          </div>
+        </form>
+      ) : (
+        <p className="mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          Only the project lead and admins can post updates.
+        </p>
+      )}
 
       {updates.length === 0 ? (
         <p className="mono text-[11px] text-muted-foreground">No updates yet.</p>
