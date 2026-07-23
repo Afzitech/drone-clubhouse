@@ -23,11 +23,26 @@ jobs:
       - name: Build Web App
         run: npm run build
 
-      - name: Normalize Index for Capacitor
+      - name: Generate Capacitor Entry HTML
         run: |
-          if [ -f ".output/public/_shell.html" ] && [ ! -f ".output/public/index.html" ]; then
-            mv .output/public/_shell.html .output/public/index.html
-          fi
+          CLIENT_JS=$(find .output/public/assets -name "client-*.js" -printf "%f\n" | head -n 1)
+          CSS_FILE=$(find .output/public/assets -name "*.css" -printf "%f\n" | head -n 1)
+          
+          cat <<EOF > .output/public/index.html
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+              <title>AeroForge</title>
+              <link rel="stylesheet" href="assets/$CSS_FILE">
+          </head>
+          <body>
+              <div id="root"></div>
+              <script type="module" src="assets/$CLIENT_JS"></script>
+          </body>
+          </html>
+          EOF
 
       - name: Sync Capacitor Android
         run: npx cap sync android
