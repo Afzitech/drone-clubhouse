@@ -44,6 +44,33 @@ export type Database = {
         }
         Relationships: []
       }
+      direct_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          read_at: string | null
+          recipient_id: string
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          recipient_id: string
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          recipient_id?: string
+          sender_id?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           created_at: string
@@ -112,6 +139,35 @@ export type Database = {
           },
         ]
       }
+      forum_reads: {
+        Row: {
+          id: string
+          last_read_at: string
+          thread_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          last_read_at?: string
+          thread_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          last_read_at?: string
+          thread_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_reads_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "forum_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       forum_threads: {
         Row: {
           author_id: string
@@ -146,6 +202,7 @@ export type Database = {
         Row: {
           caption: string | null
           created_at: string
+          featured_on_landing: boolean
           id: string
           image_url: string
           title: string
@@ -155,6 +212,7 @@ export type Database = {
         Insert: {
           caption?: string | null
           created_at?: string
+          featured_on_landing?: boolean
           id?: string
           image_url: string
           title: string
@@ -164,6 +222,7 @@ export type Database = {
         Update: {
           caption?: string | null
           created_at?: string
+          featured_on_landing?: boolean
           id?: string
           image_url?: string
           title?: string
@@ -366,6 +425,51 @@ export type Database = {
         }
         Relationships: []
       }
+      resource_bookings: {
+        Row: {
+          admin_note: string | null
+          created_at: string
+          end_at: string
+          id: string
+          kind: Database["public"]["Enums"]["resource_kind"]
+          purpose: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          start_at: string
+          status: Database["public"]["Enums"]["booking_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_note?: string | null
+          created_at?: string
+          end_at: string
+          id?: string
+          kind: Database["public"]["Enums"]["resource_kind"]
+          purpose: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          start_at: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_note?: string | null
+          created_at?: string
+          end_at?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["resource_kind"]
+          purpose?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          start_at?: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       resources: {
         Row: {
           category: string | null
@@ -456,12 +560,14 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "member" | "lead"
+      booking_status: "pending" | "approved" | "rejected" | "cancelled"
       project_status:
         | "planning"
         | "in_progress"
         | "testing"
         | "completed"
         | "archived"
+      resource_kind: "club_room" | "printer_3d"
       submission_status: "pending" | "approved" | "rejected"
       update_status: "pending" | "approved" | "rejected"
     }
@@ -592,6 +698,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "member", "lead"],
+      booking_status: ["pending", "approved", "rejected", "cancelled"],
       project_status: [
         "planning",
         "in_progress",
@@ -599,6 +706,7 @@ export const Constants = {
         "completed",
         "archived",
       ],
+      resource_kind: ["club_room", "printer_3d"],
       submission_status: ["pending", "approved", "rejected"],
       update_status: ["pending", "approved", "rejected"],
     },
