@@ -124,7 +124,7 @@ function AuthedShell() {
               <div className="hud-panel corner-brackets flex h-7 w-7 items-center justify-center">
                 <span className="mono text-[10px] font-bold text-primary">AF</span>
               </div>
-              <span className="mono text-xs font-semibold uppercase tracking-widest text-foreground hidden sm:inline">
+              <span className={`mono text-xs font-semibold uppercase tracking-widest text-foreground ${isAdmin ? "hidden sm:inline" : ""}`}>
                 Aeroforge
               </span>
             </Link>
