@@ -20,10 +20,13 @@ jobs:
       - name: Install Dependencies
         run: npm ci || npm install --legacy-peer-deps
 
+      - name: Inject Supabase Keys Hardcoded
+        run: |
+          # Create or overwrite a local config file with your exact keys
+          echo "export const SUPABASE_URL = 'https://nezxzcczncinlykpapfh.supabase.co';" > src/integrations/supabase/credentials.ts
+          echo "export const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_35wAAHVPFUUVbyQ3NUPWcA_YIjasSn0';" >> src/integrations/supabase/credentials.ts
+
       - name: Build Web App (Node Server Preset)
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
         run: NITRO_PRESET=node-server npm run build
 
       - name: Capture Authentic App Shell for Capacitor
