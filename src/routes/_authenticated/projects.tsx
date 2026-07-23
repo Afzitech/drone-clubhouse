@@ -144,6 +144,12 @@ function ProjectsPage() {
                       </button>
                     ),
                   )}
+                  <button
+                    onClick={() => deleteProject(p.id)}
+                    className="mono rounded border border-destructive/40 bg-destructive/10 px-2 py-1 text-[10px] uppercase tracking-widest text-destructive transition hover:bg-destructive/20"
+                  >
+                    Delete project
+                  </button>
                 </div>
               )}
               <button
@@ -156,7 +162,9 @@ function ProjectsPage() {
                 <ProjectUpdatesPanel
                   project={p}
                   userId={user.id}
+                  isAdmin={isAdmin}
                   isReviewer={isAdmin || isLead}
+                  canPost={isAdmin || p.lead_user_id === user.id}
                 />
               )}
             </li>
