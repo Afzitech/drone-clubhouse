@@ -10,7 +10,7 @@
                     "preview":  "vite preview",
                     "lint":  "eslint .",
                     "format":  "prettier --write .",
-                    "generate":  "nuxt generate"
+                    "generate":  "nuxi generate"
                 },
     "dependencies":  {
                          "@capacitor/android":  "^8.4.2",
