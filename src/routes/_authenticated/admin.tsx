@@ -226,7 +226,7 @@ function SubmissionsQueue({ adminId }: { adminId: string }) {
                   rel="noreferrer"
                   className="mono mt-2 inline-block text-[11px] text-primary hover:underline"
                 >
-                  Media link â†—
+                  Media link ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â€
                 </a>
               )}
               {s.status === "pending" && (
@@ -246,7 +246,7 @@ function SubmissionsQueue({ adminId }: { adminId: string }) {
                       onClick={() => approve(s)}
                       className="mono rounded border border-primary/40 bg-primary/10 px-3 py-1.5 text-[10px] uppercase tracking-widest text-primary transition hover:bg-primary/20 disabled:opacity-50"
                     >
-                      Approve â†’ project
+                      Approve ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ project
                     </button>
                     <button
                       disabled={busy === s.id}
@@ -380,7 +380,7 @@ function CreateMember() {
         disabled={busy}
         className="mono rounded-md border border-command/40 bg-command/10 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-command transition hover:bg-command/20 disabled:opacity-50"
       >
-        {busy ? "Provisioningâ€¦" : "Create member"}
+        {busy ? "ProvisioningÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦" : "Create member"}
       </button>
       <p className="mono text-[10px] text-muted-foreground">
         Deliver credentials to the pilot securely. They can sign in immediately.
@@ -474,7 +474,7 @@ function MembersList({ currentUserId }: { currentUserId: string }) {
 
   if (members === null) {
     return (
-      <p className="mono text-xs text-muted-foreground">Loading rosterâ€¦</p>
+      <p className="mono text-xs text-muted-foreground">Loading rosterÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦</p>
     );
   }
 
@@ -511,7 +511,7 @@ function MembersList({ currentUserId }: { currentUserId: string }) {
                 )}
                 {isLead && (
                   <span className="mono rounded border border-warning/50 bg-warning/10 px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-warning">
-                    â˜… Project Lead
+                    ÃƒÂ¢Ã‹Å“Ã¢â‚¬Â¦ Project Lead
                   </span>
                 )}
                 {isSelf && (
@@ -541,7 +541,7 @@ function MembersList({ currentUserId }: { currentUserId: string }) {
                 onClick={() => remove(m)}
                 className="mono rounded border border-destructive/40 bg-destructive/10 px-3 py-1.5 text-[10px] uppercase tracking-widest text-destructive transition hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-30"
               >
-                {busy === m.id ? "â€¦" : "Delete"}
+                {busy === m.id ? "ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦" : "Delete"}
               </button>
             </div>
           </li>
@@ -564,7 +564,7 @@ function LandingEditor() {
 
   if (!content) {
     return (
-      <p className="mono text-xs text-muted-foreground">Loading contentâ€¦</p>
+      <p className="mono text-xs text-muted-foreground">Loading contentÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦</p>
     );
   }
 
@@ -647,7 +647,7 @@ function LandingEditor() {
         disabled={busy}
         className="mono rounded-md border border-command/40 bg-command/10 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-command transition hover:bg-command/20 disabled:opacity-50"
       >
-        {busy ? "Savingâ€¦" : "Save landing page"}
+        {busy ? "SavingÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦" : "Save landing page"}
       </button>
     </form>
   );
@@ -656,13 +656,16 @@ function LandingEditor() {
 function BookingsQueue() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<Record<string, any>>({});
+  
+  // NEW: State to track which item is being actioned and the note text
+  const [actionState, setActionState] = useState<{ id: string; status: "approved" | "rejected" } | null>(null);
+  const [adminNote, setAdminNote] = useState("");
 
   async function loadBookings() {
     const { data: bData } = await supabase
       .from("resource_bookings")
       .select("*")
-      .eq("status", "pending")
-      .order("start_at", { ascending: true });
+      .order("start_at", { ascending: false }); 
     
     const list = bData || [];
     setBookings(list);
@@ -683,65 +686,172 @@ function BookingsQueue() {
     loadBookings();
   }, []);
 
-  async function handleAction(id: string, status: "approved" | "rejected") {
-    const note = prompt(`Optional admin note for this ${status}:`, "") ?? "";
+  // NEW: Executes the update using our inline state instead of a prompt
+  async function confirmAction() {
+    if (!actionState) return;
+    const { id, status } = actionState;
     const { error } = await supabase
       .from("resource_bookings")
-      .update({ status, admin_note: note })
+      .update({ status, admin_note: adminNote })
+      .eq("id", id);
+      
+    // Reset the UI state
+    setActionState(null);
+    setAdminNote("");
+    
+    if (error) return alert(error.message);
+    loadBookings();
+  }
+
+  async function handleDelete(id: string) {
+    if (!confirm("Are you sure you want to permanently delete this booking?")) return;
+    const { error } = await supabase
+      .from("resource_bookings")
+      .delete()
       .eq("id", id);
     if (error) return alert(error.message);
     loadBookings();
   }
 
+  const now = new Date();
+  
+  const pending = bookings.filter((b) => b.status === "pending");
+  const upcoming = bookings.filter((b) => b.status === "approved" && new Date(b.end_at) > now);
+  const history = bookings.filter((b) => 
+    b.status === "rejected" || b.status === "cancelled" || (b.status === "approved" && new Date(b.end_at) <= now)
+  );
+
   return (
-    <div className="space-y-4 rounded-md border border-command/30 bg-command/5 p-5">
-      <div className="flex items-center justify-between">
-        <h2 className="mono text-xs uppercase tracking-widest text-command font-bold">
-          Pending Bookings Queue ({bookings.length})
-        </h2>
-      </div>
-      {bookings.length === 0 ? (
-        <div className="hud-panel p-6 text-center text-sm text-muted-foreground">
-          Queue clear. No pending bookings.
+    <div className="space-y-8">
+      {/* 1. PENDING QUEUE */}
+      <div className="space-y-4 rounded-md border border-command/30 bg-command/5 p-5">
+        <div className="flex items-center justify-between">
+          <h2 className="mono text-xs uppercase tracking-widest text-command font-bold">
+            Pending Bookings ({pending.length})
+          </h2>
         </div>
-      ) : (
-        <ul className="space-y-2">
-          {bookings.map((b) => (
-            <li
-              key={b.id}
-              className="hud-panel corner-brackets p-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 bg-card/40"
-            >
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="mono rounded bg-command/10 px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-command font-bold">
-                    {b.kind === "club_room" ? "Club Room" : "3D Printer"}
-                  </span>
-                  <p className="text-sm font-semibold text-foreground">
-                    {b.purpose}
+        {pending.length === 0 ? (
+          <div className="hud-panel p-6 text-center text-sm text-muted-foreground">
+            Queue clear. No pending bookings.
+          </div>
+        ) : (
+          <ul className="space-y-2">
+            {pending.map((b) => (
+              <li key={b.id} className="hud-panel corner-brackets p-3 flex flex-col items-start gap-3 bg-card/40 transition-all">
+                <div className="flex w-full items-start justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="mono rounded bg-command/10 px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-command font-bold">
+                        {b.kind === "club_room" ? "Club Room" : "3D Printer"}
+                      </span>
+                      <p className="text-sm font-semibold text-foreground">{b.purpose}</p>
+                    </div>
+                    <p className="mono mt-1 text-[10px] uppercase tracking-widest text-muted-foreground">
+                      By: {profiles[b.user_id] || "Member"} | {new Date(b.start_at).toLocaleString()} - {new Date(b.end_at).toLocaleString()}
+                    </p>
+                  </div>
+                  
+                  {/* Default Buttons (Hidden when writing a note) */}
+                  {actionState?.id !== b.id && (
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setActionState({ id: b.id, status: "approved" })} className="mono rounded border border-primary/40 bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/20">Approve</button>
+                      <button onClick={() => setActionState({ id: b.id, status: "rejected" })} className="mono rounded border border-destructive/40 bg-destructive/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-destructive hover:bg-destructive/20">Reject</button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Inline Action Input UI */}
+                {actionState?.id === b.id && (
+                  <div className="mt-2 flex w-full flex-col sm:flex-row items-center gap-2 border-t border-border/50 pt-3">
+                    <input
+                      type="text"
+                      placeholder={`Add an optional note for this ${actionState.status}...`}
+                      value={adminNote}
+                      onChange={(e) => setAdminNote(e.target.value)}
+                      className="h-8 w-full flex-1 rounded border border-command/30 bg-background px-3 text-xs text-foreground placeholder:text-muted-foreground focus:border-command focus:outline-none"
+                      autoFocus
+                    />
+                    <div className="flex w-full sm:w-auto items-center gap-2">
+                      <button onClick={confirmAction} className="mono flex-1 rounded bg-command/20 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-command hover:bg-command/30">Confirm</button>
+                      <button onClick={() => { setActionState(null); setAdminNote(""); }} className="mono flex-1 rounded border border-border px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:bg-muted/50">Cancel</button>
+                    </div>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* 2. UPCOMING APPROVED */}
+      <div className="space-y-4 rounded-md border border-primary/30 bg-primary/5 p-5">
+        <div className="flex items-center justify-between">
+          <h2 className="mono text-xs uppercase tracking-widest text-primary font-bold">
+            Upcoming Approved ({upcoming.length})
+          </h2>
+        </div>
+        {upcoming.length === 0 ? (
+          <div className="hud-panel p-6 text-center text-sm text-muted-foreground">
+            No upcoming approved bookings.
+          </div>
+        ) : (
+          <ul className="space-y-2">
+            {upcoming.map((b) => (
+              <li key={b.id} className="hud-panel corner-brackets p-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 bg-card/40 border-primary/20">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="mono rounded bg-primary/10 px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-primary font-bold">
+                      {b.kind === "club_room" ? "Club Room" : "3D Printer"}
+                    </span>
+                    <p className="text-sm font-semibold text-foreground">{b.purpose}</p>
+                  </div>
+                  <p className="mono mt-1 text-[10px] uppercase tracking-widest text-muted-foreground">
+                    By: {profiles[b.user_id] || "Member"} | {new Date(b.start_at).toLocaleString()} - {new Date(b.end_at).toLocaleString()}
                   </p>
                 </div>
-                <p className="mono mt-1 text-[10px] uppercase tracking-widest text-muted-foreground">
-                  Requested by: {profiles[b.user_id] || "Member"} | {new Date(b.start_at).toLocaleString()} - {new Date(b.end_at).toLocaleString()}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleAction(b.id, "approved")}
-                  className="mono rounded border border-primary/40 bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/20"
-                >
-                  Approve
-                </button>
-                <button
-                  onClick={() => handleAction(b.id, "rejected")}
-                  className="mono rounded border border-destructive/40 bg-destructive/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-destructive hover:bg-destructive/20"
-                >
-                  Reject
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+                <div className="flex items-center gap-2">
+                  <button onClick={() => handleDelete(b.id)} className="mono rounded border border-destructive/40 bg-destructive/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-destructive hover:bg-destructive/20">Delete</button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* 3. BOOKING HISTORY */}
+      <div className="space-y-4 rounded-md border border-border bg-muted/10 p-5">
+        <div className="flex items-center justify-between">
+          <h2 className="mono text-xs uppercase tracking-widest text-muted-foreground font-bold">
+            Booking History ({history.length})
+          </h2>
+        </div>
+        {history.length === 0 ? (
+          <div className="hud-panel p-6 text-center text-sm text-muted-foreground">
+            No past bookings found.
+          </div>
+        ) : (
+          <ul className="space-y-2">
+            {history.map((b) => (
+              <li key={b.id} className="hud-panel corner-brackets p-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 bg-card/40 opacity-70 hover:opacity-100 transition-opacity">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="mono rounded bg-muted/20 px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-muted-foreground font-bold">
+                      {b.status}
+                    </span>
+                    <p className="text-sm font-semibold text-foreground line-through">{b.purpose}</p>
+                  </div>
+                  <p className="mono mt-1 text-[10px] uppercase tracking-widest text-muted-foreground">
+                    By: {profiles[b.user_id] || "Member"} | {new Date(b.start_at).toLocaleString()}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => handleDelete(b.id)} className="mono rounded border border-destructive/40 text-destructive/70 px-3 py-1 text-[10px] font-bold uppercase tracking-widest hover:bg-destructive/10 hover:text-destructive transition">Delete</button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
