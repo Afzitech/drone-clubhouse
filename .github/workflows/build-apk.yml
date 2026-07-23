@@ -20,29 +20,23 @@ jobs:
       - name: Install Dependencies
         run: npm ci || npm install --legacy-peer-deps
 
-      - name: Build Web App
-        run: npm run build
+      - name: Build Web App (Node Server Preset)
+        run: NITRO_PRESET=node-server npm run build
 
-      - name: Generate Capacitor Entry HTML
+      - name: Capture Authentic App Shell for Capacitor
         run: |
-          CLIENT_JS=$(find .output/public/assets -name "index-*.js" -printf "%f\n" | head -n 1)
-          CSS_FILE=$(find .output/public/assets -name "*.css" -printf "%f\n" | head -n 1)
+          echo "Booting temporary Nitro server..."
+          PORT=3000 node .output/server/index.mjs &
+          SERVER_PID=\$!
           
-          cat <<EOF > .output/public/index.html
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-              <title>AeroForge</title>
-              <link rel="stylesheet" href="assets/$CSS_FILE">
-          </head>
-          <body>
-              <div id="root"></div>
-              <script type="module" src="assets/$CLIENT_JS"></script>
-          </body>
-          </html>
-          EOF
+          echo "Waiting for server to initialize..."
+          sleep 4
+          
+          echo "Capturing hydrated HTML..."
+          curl -s http://localhost:3000 > .output/public/index.html
+          
+          echo "Shutting down temporary server..."
+          kill \$SERVER_PID
 
       - name: Sync Capacitor Android
         run: npx cap sync android
