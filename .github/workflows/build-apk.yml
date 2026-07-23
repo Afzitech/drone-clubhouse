@@ -21,7 +21,7 @@ jobs:
         run: npm ci || npm install --legacy-peer-deps
 
       - name: Build Nuxt SPA Assets
-        run: npm run generate
+        run: npx nuxt generate
 
       - name: Sync Capacitor Android
         run: npx cap sync android
