@@ -32,8 +32,9 @@ export const getPublicGallery = createServerFn({ method: "GET" }).handler(
     const { data } = await supabase
       .from("gallery_items")
       .select("id,title,caption,image_url")
+      .eq("featured_on_landing", true)
       .order("created_at", { ascending: false })
-      .limit(12);
+      .limit(24);
     return (data ?? []) as PublicGalleryItem[];
   },
 );

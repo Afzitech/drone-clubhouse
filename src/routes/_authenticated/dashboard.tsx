@@ -9,17 +9,83 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 function Dashboard() {
   const { user } = Route.useRouteContext();
   const [displayName, setDisplayName] = useState<string | null>(null);
+  const [activeProjects, setActiveProjects] = useState<number>(0);
+  const [mySubs, setMySubs] = useState<number>(0);
+  const [forumUnread, setForumUnread] = useState<number>(0);
+  const [dmUnread, setDmUnread] = useState<number>(0);
 
   useEffect(() => {
     let alive = true;
-    supabase
-      .from("profiles")
-      .select("display_name")
-      .eq("id", user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (alive) setDisplayName(data?.display_name ?? null);
-      });
+    (async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("display_name")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (alive) setDisplayName(data?.display_name ?? null);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [user.id]);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const [{ count: p }, { count: s }, { count: d }] = await Promise.all([
+        supabase
+          .from("projects")
+          .select("id", { count: "exact", head: true })
+          .in("status", ["planning", "in_progress", "testing"]),
+        supabase
+          .from("project_submissions")
+          .select("id", { count: "exact", head: true })
+          .eq("submitter_id", user.id),
+        supabase
+          .from("direct_messages")
+          .select("id", { count: "exact", head: true })
+          .eq("recipient_id", user.id)
+          .is("read_at", null),
+      ]);
+
+      // Forum unread: threads with newest post/created_at > my last_read_at
+      const { data: threads } = await supabase
+        .from("forum_threads")
+        .select("id,created_at");
+      const threadIds = (threads ?? []).map((t) => t.id);
+      const { data: reads } = await supabase
+        .from("forum_reads")
+        .select("thread_id,last_read_at")
+        .eq("user_id", user.id);
+      const readMap = new Map<string, string>(
+        (reads ?? []).map((r) => [r.thread_id, r.last_read_at]),
+      );
+      const { data: lastPosts } =
+        threadIds.length > 0
+          ? await supabase
+              .from("forum_posts")
+              .select("thread_id,created_at")
+              .in("thread_id", threadIds)
+          : { data: [] as { thread_id: string; created_at: string }[] };
+      const lastActivity = new Map<string, string>();
+      for (const t of threads ?? []) lastActivity.set(t.id, t.created_at);
+      for (const p of lastPosts ?? []) {
+        const prev = lastActivity.get(p.thread_id);
+        if (!prev || new Date(p.created_at) > new Date(prev))
+          lastActivity.set(p.thread_id, p.created_at);
+      }
+      let unread = 0;
+      for (const [tid, ts] of lastActivity) {
+        const seen = readMap.get(tid);
+        if (!seen || new Date(ts) > new Date(seen)) unread++;
+      }
+
+      if (!alive) return;
+      setActiveProjects(p ?? 0);
+      setMySubs(s ?? 0);
+      setForumUnread(unread);
+      setDmUnread(d ?? 0);
+    })();
     return () => {
       alive = false;
     };
@@ -30,6 +96,35 @@ function Dashboard() {
     (user.user_metadata as { display_name?: string } | undefined)?.display_name ??
     user.email?.split("@")[0] ??
     "member";
+
+  const cards = [
+    {
+      t: "Active projects",
+      v: activeProjects,
+      to: "/projects",
+      label: "View board",
+    },
+    {
+      t: "My submissions",
+      v: mySubs,
+      to: "/submit",
+      label: "New submission",
+    },
+    {
+      t: "Unread forum threads",
+      v: forumUnread,
+      to: "/forum",
+      label: forumUnread > 0 ? "Catch up →" : "Open forum",
+      accent: forumUnread > 0,
+    },
+    {
+      t: "Unread messages",
+      v: dmUnread,
+      to: "/messages",
+      label: dmUnread > 0 ? "Read now →" : "Open inbox",
+      accent: dmUnread > 0,
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -42,35 +137,28 @@ function Dashboard() {
         </h1>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        {[
-          { t: "Active projects", v: "—", to: "/projects", label: "View board" },
-          { t: "My submissions", v: "—", to: "/submit", label: "New submission" },
-          { t: "Forum activity", v: "—", to: "/forum", label: "Open forum" },
-        ].map((c) => (
-          <div key={c.t} className="hud-panel corner-brackets p-5">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {cards.map((c) => (
+          <div
+            key={c.t}
+            className={`hud-panel corner-brackets p-5 ${c.accent ? "border-primary/60" : ""}`}
+          >
             <p className="mono text-[10px] uppercase tracking-widest text-muted-foreground">
               {c.t}
             </p>
-            <p className="mono mt-2 text-3xl font-bold text-primary">{c.v}</p>
+            <p
+              className={`mono mt-2 text-3xl font-bold ${c.accent ? "text-primary hud-glow" : "text-foreground"}`}
+            >
+              {c.v}
+            </p>
             <Link
               to={c.to}
               className="mono mt-4 inline-block text-[10px] uppercase tracking-widest text-primary hover:underline"
             >
-              {c.label} →
+              {c.label}
             </Link>
           </div>
         ))}
-      </div>
-
-      <div className="hud-panel p-6">
-        <p className="mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          Status
-        </p>
-        <p className="mt-2 text-sm text-foreground">
-          Foundations online. Announcements, calendar, showcase, and notifications
-          coming online next.
-        </p>
       </div>
     </div>
   );

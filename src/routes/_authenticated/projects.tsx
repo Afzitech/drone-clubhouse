@@ -80,6 +80,19 @@ function ProjectsPage() {
     setProjects((p) => p.map((x) => (x.id === id ? { ...x, status } : x)));
   }
 
+  async function deleteProject(id: string) {
+    if (
+      !confirm(
+        "Delete this project? All its updates will be permanently removed.",
+      )
+    )
+      return;
+    const { error } = await supabase.from("projects").delete().eq("id", id);
+    if (error) return alert(error.message);
+    setProjects((p) => p.filter((x) => x.id !== id));
+    if (openId === id) setOpenId(null);
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -131,6 +144,12 @@ function ProjectsPage() {
                       </button>
                     ),
                   )}
+                  <button
+                    onClick={() => deleteProject(p.id)}
+                    className="mono rounded border border-destructive/40 bg-destructive/10 px-2 py-1 text-[10px] uppercase tracking-widest text-destructive transition hover:bg-destructive/20"
+                  >
+                    Delete project
+                  </button>
                 </div>
               )}
               <button
@@ -143,7 +162,9 @@ function ProjectsPage() {
                 <ProjectUpdatesPanel
                   project={p}
                   userId={user.id}
+                  isAdmin={isAdmin}
                   isReviewer={isAdmin || isLead}
+                  canPost={isAdmin || p.lead_user_id === user.id}
                 />
               )}
             </li>
@@ -158,10 +179,13 @@ function ProjectUpdatesPanel({
   project,
   userId,
   isReviewer,
+  canPost,
 }: {
   project: Project;
   userId: string;
+  isAdmin: boolean;
   isReviewer: boolean;
+  canPost: boolean;
 }) {
   const [updates, setUpdates] = useState<Update[]>([]);
   const [names, setNames] = useState<Record<string, string>>({});
@@ -232,6 +256,29 @@ function ProjectUpdatesPanel({
     setBody("");
     setFile(null);
     load();
+    // Notify admins that a new update needs approval
+    try {
+      const { data: admins } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "admin");
+      const adminIds = (admins ?? [])
+        .map((a) => a.user_id)
+        .filter((id) => id !== userId);
+      if (adminIds.length) {
+        await notify({
+          data: {
+            userIds: adminIds,
+            type: "update-review-request",
+            title: `Update pending review · ${project.title}`,
+            body: body.trim().slice(0, 200),
+            link: "/admin",
+          },
+        });
+      }
+    } catch (err) {
+      console.error("notify admins failed", err);
+    }
   }
 
   async function review(u: Update, status: "approved" | "rejected") {
@@ -246,7 +293,7 @@ function ProjectUpdatesPanel({
       .eq("id", u.id);
     if (error) return alert(error.message);
     try {
-      await notify({
+      const res = await notify({
         data: {
           userIds: [u.author_id],
           type: "update-review",
@@ -255,37 +302,44 @@ function ProjectUpdatesPanel({
           link: "/projects",
         },
       });
-    } catch {
-      /* ignore */
+      console.log("[notify]", res);
+    } catch (err) {
+      console.error("notify author failed", err);
     }
     load();
   }
 
   return (
     <div className="mt-4 space-y-3 border-t border-border/50 pt-4">
-      <form onSubmit={submit} className="space-y-2">
-        <textarea
-          className="hud-input min-h-[70px]"
-          placeholder="Post an update…"
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-          required
-          maxLength={1500}
-        />
-        <div className="flex flex-wrap items-center gap-2">
-          <input
-            type="file"
-            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-            className="mono text-[10px] text-muted-foreground"
+      {canPost ? (
+        <form onSubmit={submit} className="space-y-2">
+          <textarea
+            className="hud-input min-h-[70px]"
+            placeholder="Post an update…"
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            required
+            maxLength={1500}
           />
-          <button
-            disabled={busy}
-            className="mono rounded border border-primary/40 bg-primary/10 px-3 py-1 text-[10px] uppercase tracking-widest text-primary hover:bg-primary/20 disabled:opacity-50"
-          >
-            {busy ? "Submitting…" : "Submit for review"}
-          </button>
-        </div>
-      </form>
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              type="file"
+              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              className="mono text-[10px] text-muted-foreground"
+            />
+            <button
+              disabled={busy}
+              className="mono rounded border border-primary/40 bg-primary/10 px-3 py-1 text-[10px] uppercase tracking-widest text-primary hover:bg-primary/20 disabled:opacity-50"
+            >
+              {busy ? "Submitting…" : "Submit for review"}
+            </button>
+          </div>
+        </form>
+      ) : (
+        <p className="mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          Only the project lead and admins can post updates.
+        </p>
+      )}
 
       {updates.length === 0 ? (
         <p className="mono text-[11px] text-muted-foreground">No updates yet.</p>

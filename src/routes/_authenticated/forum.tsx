@@ -108,8 +108,18 @@ function ForumPage() {
     loadThreads();
   }, []);
   useEffect(() => {
-    if (selected) loadPosts(selected);
-  }, [selected]);
+    if (selected) {
+      loadPosts(selected);
+      // Mark as read
+      supabase
+        .from("forum_reads")
+        .upsert(
+          { user_id: user.id, thread_id: selected, last_read_at: new Date().toISOString() },
+          { onConflict: "user_id,thread_id" },
+        )
+        .then(() => {});
+    }
+  }, [selected, user.id]);
 
   async function createThread(e: React.FormEvent) {
     e.preventDefault();
