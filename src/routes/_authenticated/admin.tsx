@@ -44,7 +44,7 @@ type Profile = { id: string; display_name: string | null };
 
 function AdminPage() {
   const { user } = Route.useRouteContext();
-  const [tab, setTab] = useState<"queue" | "members" | "create" | "landing">(
+  const [tab, setTab] = useState<"queue" | "members" | "create" | "landing" | "bookings">(
     "queue",
   );
 
@@ -52,7 +52,7 @@ function AdminPage() {
     <div className="space-y-6">
       <div>
         <p className="mono text-[10px] uppercase tracking-widest text-command">
-          / Command · Admin console /
+          / Command - Admin console /
         </p>
         <h1 className="mt-2 text-3xl font-bold text-foreground">Command Center</h1>
       </div>
@@ -63,7 +63,7 @@ function AdminPage() {
             ["queue", "Submissions queue"],
             ["members", "Members"],
             ["create", "Create member"],
-            ["landing", "Landing page"],
+            ["landing", "Landing page"], ["bookings", "Bookings queue"],
           ] as const
         ).map(([id, label]) => (
           <button
@@ -86,9 +86,7 @@ function AdminPage() {
         <MembersList currentUserId={user.id} />
       ) : tab === "create" ? (
         <CreateMember />
-      ) : (
-        <LandingEditor />
-      )}
+      ) : tab === "landing" ? ( <LandingEditor /> ) : ( <BookingsQueue /> )}
     </div>
   );
 }
@@ -207,7 +205,7 @@ function SubmissionsQueue({ adminId }: { adminId: string }) {
                     {s.title}
                   </h3>
                   <p className="mono mt-1 text-[11px] uppercase tracking-widest text-muted-foreground">
-                    {profiles[s.submitter_id]?.display_name ?? "pilot"} ·{" "}
+                    {profiles[s.submitter_id]?.display_name ?? "pilot"} -{" "}
                     {new Date(s.created_at).toLocaleString()}
                   </p>
                 </div>
@@ -228,7 +226,7 @@ function SubmissionsQueue({ adminId }: { adminId: string }) {
                   rel="noreferrer"
                   className="mono mt-2 inline-block text-[11px] text-primary hover:underline"
                 >
-                  Media link ↗
+                  Media link â†—
                 </a>
               )}
               {s.status === "pending" && (
@@ -248,7 +246,7 @@ function SubmissionsQueue({ adminId }: { adminId: string }) {
                       onClick={() => approve(s)}
                       className="mono rounded border border-primary/40 bg-primary/10 px-3 py-1.5 text-[10px] uppercase tracking-widest text-primary transition hover:bg-primary/20 disabled:opacity-50"
                     >
-                      Approve → project
+                      Approve â†’ project
                     </button>
                     <button
                       disabled={busy === s.id}
@@ -382,7 +380,7 @@ function CreateMember() {
         disabled={busy}
         className="mono rounded-md border border-command/40 bg-command/10 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-command transition hover:bg-command/20 disabled:opacity-50"
       >
-        {busy ? "Provisioning…" : "Create member"}
+        {busy ? "Provisioningâ€¦" : "Create member"}
       </button>
       <p className="mono text-[10px] text-muted-foreground">
         Deliver credentials to the pilot securely. They can sign in immediately.
@@ -476,7 +474,7 @@ function MembersList({ currentUserId }: { currentUserId: string }) {
 
   if (members === null) {
     return (
-      <p className="mono text-xs text-muted-foreground">Loading roster…</p>
+      <p className="mono text-xs text-muted-foreground">Loading rosterâ€¦</p>
     );
   }
 
@@ -513,7 +511,7 @@ function MembersList({ currentUserId }: { currentUserId: string }) {
                 )}
                 {isLead && (
                   <span className="mono rounded border border-warning/50 bg-warning/10 px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-warning">
-                    ★ Project Lead
+                    â˜… Project Lead
                   </span>
                 )}
                 {isSelf && (
@@ -543,7 +541,7 @@ function MembersList({ currentUserId }: { currentUserId: string }) {
                 onClick={() => remove(m)}
                 className="mono rounded border border-destructive/40 bg-destructive/10 px-3 py-1.5 text-[10px] uppercase tracking-widest text-destructive transition hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-30"
               >
-                {busy === m.id ? "…" : "Delete"}
+                {busy === m.id ? "â€¦" : "Delete"}
               </button>
             </div>
           </li>
@@ -566,7 +564,7 @@ function LandingEditor() {
 
   if (!content) {
     return (
-      <p className="mono text-xs text-muted-foreground">Loading content…</p>
+      <p className="mono text-xs text-muted-foreground">Loading contentâ€¦</p>
     );
   }
 
@@ -649,8 +647,101 @@ function LandingEditor() {
         disabled={busy}
         className="mono rounded-md border border-command/40 bg-command/10 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-command transition hover:bg-command/20 disabled:opacity-50"
       >
-        {busy ? "Saving…" : "Save landing page"}
+        {busy ? "Savingâ€¦" : "Save landing page"}
       </button>
     </form>
+  );
+}
+
+function BookingsQueue() {
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [profiles, setProfiles] = useState<Record<string, any>>({});
+
+  async function loadBookings() {
+    const { data: bData } = await supabase
+      .from("resource_bookings")
+      .select("*")
+      .eq("status", "pending")
+      .order("start_at", { ascending: true });
+    
+    const list = bData || [];
+    setBookings(list);
+
+    const ids = Array.from(new Set(list.map((b) => b.user_id)));
+    if (ids.length) {
+      const { data: pData } = await supabase
+        .from("profiles")
+        .select("id,display_name")
+        .in("id", ids);
+      const map: Record<string, string | null> = {};
+      (pData || []).forEach((row) => (map[row.id] = row.display_name));
+      setProfiles(map);
+    }
+  }
+
+  useEffect(() => {
+    loadBookings();
+  }, []);
+
+  async function handleAction(id: string, status: "approved" | "rejected") {
+    const note = prompt(`Optional admin note for this ${status}:`, "") ?? "";
+    const { error } = await supabase
+      .from("resource_bookings")
+      .update({ status, admin_note: note })
+      .eq("id", id);
+    if (error) return alert(error.message);
+    loadBookings();
+  }
+
+  return (
+    <div className="space-y-4 rounded-md border border-command/30 bg-command/5 p-5">
+      <div className="flex items-center justify-between">
+        <h2 className="mono text-xs uppercase tracking-widest text-command font-bold">
+          Pending Bookings Queue ({bookings.length})
+        </h2>
+      </div>
+      {bookings.length === 0 ? (
+        <div className="hud-panel p-6 text-center text-sm text-muted-foreground">
+          Queue clear. No pending bookings.
+        </div>
+      ) : (
+        <ul className="space-y-2">
+          {bookings.map((b) => (
+            <li
+              key={b.id}
+              className="hud-panel corner-brackets p-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 bg-card/40"
+            >
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="mono rounded bg-command/10 px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-command font-bold">
+                    {b.kind === "club_room" ? "Club Room" : "3D Printer"}
+                  </span>
+                  <p className="text-sm font-semibold text-foreground">
+                    {b.purpose}
+                  </p>
+                </div>
+                <p className="mono mt-1 text-[10px] uppercase tracking-widest text-muted-foreground">
+                  Requested by: {profiles[b.user_id] || "Member"} | {new Date(b.start_at).toLocaleString()} - {new Date(b.end_at).toLocaleString()}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleAction(b.id, "approved")}
+                  className="mono rounded border border-primary/40 bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/20"
+                >
+                  Approve
+                </button>
+                <button
+                  onClick={() => handleAction(b.id, "rejected")}
+                  className="mono rounded border border-destructive/40 bg-destructive/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-destructive hover:bg-destructive/20"
+                >
+                  Reject
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
