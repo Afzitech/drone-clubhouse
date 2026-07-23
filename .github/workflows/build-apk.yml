@@ -2,7 +2,7 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ 'main', 'master' ]
 
 jobs:
   build:
@@ -21,6 +21,9 @@ jobs:
         run: npm ci || npm install --legacy-peer-deps
 
       - name: Build Web App (Node Server Preset)
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
         run: NITRO_PRESET=node-server npm run build
 
       - name: Capture Authentic App Shell for Capacitor
