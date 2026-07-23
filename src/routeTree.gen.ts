@@ -17,12 +17,16 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedResourcesRouteImport } from './routes/_authenticated/resources'
 import { Route as AuthenticatedProjectsRouteImport } from './routes/_authenticated/projects'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
+import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
+import { Route as AuthenticatedMembersRouteImport } from './routes/_authenticated/members'
 import { Route as AuthenticatedGalleryRouteImport } from './routes/_authenticated/gallery'
 import { Route as AuthenticatedForumRouteImport } from './routes/_authenticated/forum'
 import { Route as AuthenticatedEventsRouteImport } from './routes/_authenticated/events'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAnnouncementsRouteImport } from './routes/_authenticated/announcements'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedBookingsRoomRouteImport } from './routes/_authenticated/bookings.room'
+import { Route as AuthenticatedBookingsPrinterRouteImport } from './routes/_authenticated/bookings.printer'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -64,6 +68,16 @@ const AuthenticatedNotificationsRoute =
     path: '/notifications',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMembersRoute = AuthenticatedMembersRouteImport.update({
+  id: '/members',
+  path: '/members',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedGalleryRoute = AuthenticatedGalleryRouteImport.update({
   id: '/gallery',
   path: '/gallery',
@@ -95,6 +109,18 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedBookingsRoomRoute =
+  AuthenticatedBookingsRoomRouteImport.update({
+    id: '/bookings/room',
+    path: '/bookings/room',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedBookingsPrinterRoute =
+  AuthenticatedBookingsPrinterRouteImport.update({
+    id: '/bookings/printer',
+    path: '/bookings/printer',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -105,11 +131,15 @@ export interface FileRoutesByFullPath {
   '/events': typeof AuthenticatedEventsRoute
   '/forum': typeof AuthenticatedForumRoute
   '/gallery': typeof AuthenticatedGalleryRoute
+  '/members': typeof AuthenticatedMembersRoute
+  '/messages': typeof AuthenticatedMessagesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/projects': typeof AuthenticatedProjectsRoute
   '/resources': typeof AuthenticatedResourcesRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/submit': typeof AuthenticatedSubmitRoute
+  '/bookings/printer': typeof AuthenticatedBookingsPrinterRoute
+  '/bookings/room': typeof AuthenticatedBookingsRoomRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -120,11 +150,15 @@ export interface FileRoutesByTo {
   '/events': typeof AuthenticatedEventsRoute
   '/forum': typeof AuthenticatedForumRoute
   '/gallery': typeof AuthenticatedGalleryRoute
+  '/members': typeof AuthenticatedMembersRoute
+  '/messages': typeof AuthenticatedMessagesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/projects': typeof AuthenticatedProjectsRoute
   '/resources': typeof AuthenticatedResourcesRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/submit': typeof AuthenticatedSubmitRoute
+  '/bookings/printer': typeof AuthenticatedBookingsPrinterRoute
+  '/bookings/room': typeof AuthenticatedBookingsRoomRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -137,11 +171,15 @@ export interface FileRoutesById {
   '/_authenticated/events': typeof AuthenticatedEventsRoute
   '/_authenticated/forum': typeof AuthenticatedForumRoute
   '/_authenticated/gallery': typeof AuthenticatedGalleryRoute
+  '/_authenticated/members': typeof AuthenticatedMembersRoute
+  '/_authenticated/messages': typeof AuthenticatedMessagesRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/projects': typeof AuthenticatedProjectsRoute
   '/_authenticated/resources': typeof AuthenticatedResourcesRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/submit': typeof AuthenticatedSubmitRoute
+  '/_authenticated/bookings/printer': typeof AuthenticatedBookingsPrinterRoute
+  '/_authenticated/bookings/room': typeof AuthenticatedBookingsRoomRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -154,11 +192,15 @@ export interface FileRouteTypes {
     | '/events'
     | '/forum'
     | '/gallery'
+    | '/members'
+    | '/messages'
     | '/notifications'
     | '/projects'
     | '/resources'
     | '/settings'
     | '/submit'
+    | '/bookings/printer'
+    | '/bookings/room'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -169,11 +211,15 @@ export interface FileRouteTypes {
     | '/events'
     | '/forum'
     | '/gallery'
+    | '/members'
+    | '/messages'
     | '/notifications'
     | '/projects'
     | '/resources'
     | '/settings'
     | '/submit'
+    | '/bookings/printer'
+    | '/bookings/room'
   id:
     | '__root__'
     | '/'
@@ -185,11 +231,15 @@ export interface FileRouteTypes {
     | '/_authenticated/events'
     | '/_authenticated/forum'
     | '/_authenticated/gallery'
+    | '/_authenticated/members'
+    | '/_authenticated/messages'
     | '/_authenticated/notifications'
     | '/_authenticated/projects'
     | '/_authenticated/resources'
     | '/_authenticated/settings'
     | '/_authenticated/submit'
+    | '/_authenticated/bookings/printer'
+    | '/_authenticated/bookings/room'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -256,6 +306,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/messages': {
+      id: '/_authenticated/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof AuthenticatedMessagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/members': {
+      id: '/_authenticated/members'
+      path: '/members'
+      fullPath: '/members'
+      preLoaderRoute: typeof AuthenticatedMembersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/gallery': {
       id: '/_authenticated/gallery'
       path: '/gallery'
@@ -298,6 +362,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/bookings/room': {
+      id: '/_authenticated/bookings/room'
+      path: '/bookings/room'
+      fullPath: '/bookings/room'
+      preLoaderRoute: typeof AuthenticatedBookingsRoomRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/bookings/printer': {
+      id: '/_authenticated/bookings/printer'
+      path: '/bookings/printer'
+      fullPath: '/bookings/printer'
+      preLoaderRoute: typeof AuthenticatedBookingsPrinterRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -308,11 +386,15 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedEventsRoute: typeof AuthenticatedEventsRoute
   AuthenticatedForumRoute: typeof AuthenticatedForumRoute
   AuthenticatedGalleryRoute: typeof AuthenticatedGalleryRoute
+  AuthenticatedMembersRoute: typeof AuthenticatedMembersRoute
+  AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedProjectsRoute: typeof AuthenticatedProjectsRoute
   AuthenticatedResourcesRoute: typeof AuthenticatedResourcesRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedSubmitRoute: typeof AuthenticatedSubmitRoute
+  AuthenticatedBookingsPrinterRoute: typeof AuthenticatedBookingsPrinterRoute
+  AuthenticatedBookingsRoomRoute: typeof AuthenticatedBookingsRoomRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -322,11 +404,15 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedEventsRoute: AuthenticatedEventsRoute,
   AuthenticatedForumRoute: AuthenticatedForumRoute,
   AuthenticatedGalleryRoute: AuthenticatedGalleryRoute,
+  AuthenticatedMembersRoute: AuthenticatedMembersRoute,
+  AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedProjectsRoute: AuthenticatedProjectsRoute,
   AuthenticatedResourcesRoute: AuthenticatedResourcesRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedSubmitRoute: AuthenticatedSubmitRoute,
+  AuthenticatedBookingsPrinterRoute: AuthenticatedBookingsPrinterRoute,
+  AuthenticatedBookingsRoomRoute: AuthenticatedBookingsRoomRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
