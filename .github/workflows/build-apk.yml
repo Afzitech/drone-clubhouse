@@ -27,6 +27,15 @@ jobs:
           VITE_SUPABASE_PROJECT_ID: "nezxzcczncinlykpapfh"
         run: npm run build
 
+      - name: Point Capacitor to Dist Folder
+        run: |
+          node -e '
+            const fs = require("fs");
+            const config = JSON.parse(fs.readFileSync("capacitor.config.json", "utf8"));
+            config.webDir = "dist";
+            fs.writeFileSync("capacitor.config.json", JSON.stringify(config, null, 2));
+          '
+
       - name: Sync Capacitor Android
         run: npx cap sync android
 
