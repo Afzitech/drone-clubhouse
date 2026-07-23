@@ -536,7 +536,7 @@ function MembersList({ currentUserId }: { currentUserId: string }) {
                 title={isAdmin ? "Admins are already leads by role" : undefined}
                 className="mono rounded border border-warning/40 bg-warning/10 px-3 py-1.5 text-[10px] uppercase tracking-widest text-warning transition hover:bg-warning/20 disabled:cursor-not-allowed disabled:opacity-30"
               >
-                {isLead ? "Remove lead" : "Make lead"}
+                {isLead ? "Remove pilot" : "Make pilot"}
               </button>
               <button
                 disabled={isSelf || busy === m.id}
