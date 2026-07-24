@@ -1,5 +1,5 @@
-import { useTheme } from @/hooks/use-theme;
-import { Capacitor } from @capacitor/core;
+import { useTheme } from "@/hooks/use-theme";
+import { Capacitor } from "@capacitor/core";
 
 export function ThemeToggle({
   variant = "pill",
@@ -31,7 +31,7 @@ export function ThemeToggle({
         onClick={handleToggle}
         aria-label={isDark ? "Switch to daylight cockpit" : "Switch to night HUD"}
         title={isDark ? "Daylight" : "Night HUD"}
-        className={spotlight mono flex h-9 w-9 items-center justify-center rounded-md border border-border text-base text-foreground transition hover:text-primary ${className}}
+        className={`spotlight mono flex h-9 w-9 items-center justify-center rounded-md border border-border text-base text-foreground transition hover:text-primary ${className}`}
       >
         <span className="transition-transform duration-500" style={{ transform: isDark ? "rotate(0deg)" : "rotate(180deg)" }}>
           {isDark ? '\u263E' : '\u2600'}
@@ -45,7 +45,7 @@ export function ThemeToggle({
       type="button"
       onClick={handleToggle}
       aria-label="Toggle theme"
-      className={spotlight relative flex items-center gap-2 rounded-full border border-border bg-surface/60 p-1 pl-2 pr-3 transition ${className}}
+      className={`spotlight relative flex items-center gap-2 rounded-full border border-border bg-surface/60 p-1 pl-2 pr-3 transition ${className}`}
     >
       <span
         className="relative flex h-7 w-14 items-center rounded-full bg-background/60 p-1"
