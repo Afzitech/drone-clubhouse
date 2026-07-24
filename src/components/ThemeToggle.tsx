@@ -1,5 +1,7 @@
 import { useTheme } from "@/hooks/use-theme";
 import { Capacitor } from "@capacitor/core";
+import { StatusBar, Style } from "@capacitor/status-bar";
+import { useEffect } from "react";
 
 export function ThemeToggle({
   variant = "pill",
@@ -10,6 +12,27 @@ export function ThemeToggle({
 }) {
   const { theme, toggle } = useTheme();
   const isDark = theme === "dark";
+
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      const updateStatusBar = async () => {
+        try {
+          if (isDark) {
+            // Dark background, white text/icons
+            await StatusBar.setStyle({ style: Style.Dark });
+            await StatusBar.setBackgroundColor({ color: '#000000' });
+          } else {
+            // Light background, dark text/icons
+            await StatusBar.setStyle({ style: Style.Light });
+            await StatusBar.setBackgroundColor({ color: '#ffffff' });
+          }
+        } catch (e) {
+          console.warn("StatusBar plugin error", e);
+        }
+      };
+      updateStatusBar();
+    }
+  }, [isDark]);
 
   const handleToggle = () => {
     const isNative = Capacitor.isNativePlatform();
