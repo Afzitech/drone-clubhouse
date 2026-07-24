@@ -226,7 +226,7 @@ function SubmissionsQueue({ adminId }: { adminId: string }) {
                   rel="noreferrer"
                   className="mono mt-2 inline-block text-[11px] text-primary hover:underline"
                 >
-                  Media link ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â
+                  Media link ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â
                 </a>
               )}
               {s.status === "pending" && (
@@ -246,7 +246,7 @@ function SubmissionsQueue({ adminId }: { adminId: string }) {
                       onClick={() => approve(s)}
                       className="mono rounded border border-primary/40 bg-primary/10 px-3 py-1.5 text-[10px] uppercase tracking-widest text-primary transition hover:bg-primary/20 disabled:opacity-50"
                     >
-                      Approve ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ project
+                      APPROVE PROJECT
                     </button>
                     <button
                       disabled={busy === s.id}
@@ -380,7 +380,7 @@ function CreateMember() {
         disabled={busy}
         className="mono rounded-md border border-command/40 bg-command/10 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-command transition hover:bg-command/20 disabled:opacity-50"
       >
-        {busy ? "ProvisioningÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦" : "Create member"}
+        {busy ? "ProvisioningÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦" : "Create member"}
       </button>
       <p className="mono text-[10px] text-muted-foreground">
         Deliver credentials to the pilot securely. They can sign in immediately.
@@ -474,7 +474,7 @@ function MembersList({ currentUserId }: { currentUserId: string }) {
 
   if (members === null) {
     return (
-      <p className="mono text-xs text-muted-foreground">Loading rosterÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦</p>
+      <p className="mono text-xs text-muted-foreground">Loading rosterÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦</p>
     );
   }
 
@@ -511,7 +511,7 @@ function MembersList({ currentUserId }: { currentUserId: string }) {
                 )}
                 {isLead && (
                   <span className="mono rounded border border-warning/50 bg-warning/10 px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-warning">
-                    ÃƒÆ’Ã‚Â¢Ãƒâ€¹Ã…â€œÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Project Lead
+                    ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¹Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ Project Lead
                   </span>
                 )}
                 {isSelf && (
@@ -541,7 +541,7 @@ function MembersList({ currentUserId }: { currentUserId: string }) {
                 onClick={() => remove(m)}
                 className="mono rounded border border-destructive/40 bg-destructive/10 px-3 py-1.5 text-[10px] uppercase tracking-widest text-destructive transition hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-30"
               >
-                {busy === m.id ? "ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦" : "Delete"}
+                {busy === m.id ? "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦" : "Delete"}
               </button>
             </div>
           </li>
@@ -564,7 +564,7 @@ function LandingEditor() {
 
   if (!content) {
     return (
-      <p className="mono text-xs text-muted-foreground">Loading contentÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦</p>
+      <p className="mono text-xs text-muted-foreground">Loading contentÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦</p>
     );
   }
 
@@ -647,7 +647,7 @@ function LandingEditor() {
         disabled={busy}
         className="mono rounded-md border border-command/40 bg-command/10 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-command transition hover:bg-command/20 disabled:opacity-50"
       >
-        {busy ? "SavingÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦" : "Save landing page"}
+        {busy ? "SavingÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦" : "Save landing page"}
       </button>
     </form>
   );
