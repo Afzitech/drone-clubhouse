@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
+import { SpotlightTracker } from "@/components/SpotlightTracker";
 
 function NotFoundComponent() {
   return (
@@ -96,7 +97,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800&display=swap",
       },
     ],
   }),
@@ -107,27 +108,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  const themeInit = `(function(){try{var t=localStorage.getItem('aeroforge-theme');if(!t){t='light';localStorage.setItem('aeroforge-theme','light');}var r=document.documentElement;if(t==='dark')r.classList.add('dark');else r.classList.remove('dark');r.style.colorScheme=t;}catch(e){document.documentElement.classList.remove('dark');}})();`;
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function() {
-              try {
-                var savedTheme = localStorage.getItem('theme');
-                if (savedTheme === 'dark') {
-                  document.documentElement.classList.add('dark');
-                } else if (savedTheme === 'light') {
-                  document.documentElement.classList.remove('dark');
-                } else {
-                  document.documentElement.classList.remove('dark');
-                  localStorage.setItem('theme', 'light');
-                }
-              } catch (e) {}
-            })();`
-          }}
-        />
+        <script dangerouslySetInnerHTML={{ __html: themeInit }} />
       </head>
       <body>
         {children}
@@ -152,6 +138,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <SpotlightTracker />
       <Outlet />
     </QueryClientProvider>
   );

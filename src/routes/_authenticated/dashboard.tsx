@@ -131,8 +131,8 @@ function Dashboard() {
         <p className="mono text-[10px] uppercase tracking-widest text-primary">
           / Aeroforge - Overview /
         </p>
-        <h1 className="mt-2 text-3xl font-bold text-foreground">
-          Welcome back, {name}.
+        <h1 className="display-font mt-2 text-4xl font-bold tracking-wide text-foreground sm:text-5xl">
+          Welcome back, <span className="neon-text">{name}</span>.
         </h1>
       </div>
 

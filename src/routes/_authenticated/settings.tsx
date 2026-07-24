@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { useTheme } from "@/hooks/use-theme";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,
@@ -8,7 +10,7 @@ export const Route = createFileRoute("/_authenticated/settings")({
 
 function SettingsPage() {
   const { user } = Route.useRouteContext();
-  const [tab, setTab] = useState<"profile" | "security">("profile");
+  const [tab, setTab] = useState<"profile" | "appearance" | "security">("profile");
 
   return (
     <div className="space-y-6">
@@ -23,13 +25,14 @@ function SettingsPage() {
         {(
           [
             ["profile", "Profile"],
+            ["appearance", "Appearance"],
             ["security", "Security"],
           ] as const
         ).map(([id, label]) => (
           <button
             key={id}
             onClick={() => setTab(id)}
-            className={`mono rounded-md border px-3 py-1.5 text-[10px] uppercase tracking-widest transition ${
+            className={`spotlight mono rounded-md border px-3 py-1.5 text-[10px] uppercase tracking-widest transition ${
               tab === id
                 ? "border-primary/60 bg-primary/10 text-primary"
                 : "border-border text-muted-foreground hover:text-foreground"
@@ -39,7 +42,71 @@ function SettingsPage() {
           </button>
         ))}
       </div>
-      {tab === "profile" ? <ProfileForm userId={user.id} /> : <SecurityForm />}
+      {tab === "profile" ? (
+        <ProfileForm userId={user.id} />
+      ) : tab === "appearance" ? (
+        <AppearanceForm />
+      ) : (
+        <SecurityForm />
+      )}
+    </div>
+  );
+}
+
+function AppearanceForm() {
+  const { theme, setTheme } = useTheme();
+  return (
+    <div className="hud-panel corner-brackets max-w-lg space-y-6 p-6">
+      <div>
+        <p className="mono text-[10px] uppercase tracking-widest text-primary">
+          / Cockpit mode /
+        </p>
+        <h2 className="display-font mt-1 text-xl text-foreground">
+          Pick your instrument panel
+        </h2>
+        <p className="mono mt-1 text-[11px] text-muted-foreground">
+          Daylight — brushed titanium with cobalt neon. Night HUD — deep hangar
+          navy with cyan glow.
+        </p>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        {(
+          [
+            { id: "light", label: "Daylight", hint: "Titanium · cobalt" },
+            { id: "dark", label: "Night HUD", hint: "Navy · cyan glow" },
+          ] as const
+        ).map((opt) => (
+          <button
+            key={opt.id}
+            onClick={() => setTheme(opt.id)}
+            className={`spotlight rounded-lg border p-4 text-left transition ${
+              theme === opt.id
+                ? "border-primary/60 bg-primary/10"
+                : "border-border hover:border-primary/40"
+            }`}
+          >
+            <div
+              className={`mb-3 h-16 rounded-md border border-border ${
+                opt.id === "dark"
+                  ? "bg-[radial-gradient(circle_at_30%_20%,#3ad0ff40,transparent_60%),linear-gradient(180deg,#0b1220,#0a0f1a)]"
+                  : "bg-[radial-gradient(circle_at_30%_20%,#3b82f640,transparent_60%),linear-gradient(180deg,#e7ecf3,#c9d1dc)]"
+              }`}
+            />
+            <p className="mono text-[11px] font-bold uppercase tracking-widest text-foreground">
+              {opt.label}
+            </p>
+            <p className="mono mt-1 text-[10px] text-muted-foreground">
+              {opt.hint}
+            </p>
+          </button>
+        ))}
+      </div>
+      <div className="flex items-center justify-between rounded-md border border-border/70 bg-surface/40 px-3 py-2">
+        <span className="mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          Quick toggle
+        </span>
+        <ThemeToggle variant="pill" />
+      </div>
     </div>
   );
 }
