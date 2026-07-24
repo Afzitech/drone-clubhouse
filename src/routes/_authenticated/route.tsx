@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, redirect, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -157,9 +158,10 @@ function AuthedShell() {
               )}
             </Link>
             {isAdmin && <AdminBadgeLink />}
+            <ThemeToggle variant="icon" className="hidden sm:flex" />
             <Link
               to="/settings"
-              className="flex items-center gap-2 rounded-md border border-border px-2 py-1 transition hover:bg-accent"
+              className="spotlight flex items-center gap-2 rounded-md border border-border px-2 py-1 transition hover:bg-accent"
               title="Settings"
             >
               {avatarUrl ? (
@@ -216,13 +218,19 @@ function AuthedShell() {
             <Link
               to="/admin"
               onClick={() => setDrawerOpen(false)}
-              className="mono mt-2 flex items-center gap-3 rounded-md border border-command/40 bg-command/10 px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-command transition hover:bg-command/20"
+              className="spotlight mono mt-2 flex items-center gap-3 rounded-md border border-command/40 bg-command/10 px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-command transition hover:bg-command/20"
               activeProps={{ className: "bg-command/20" }}
             >
               <span className="w-4 text-center">✦</span>
               Command Center
             </Link>
           )}
+          <div className="mt-4 flex items-center justify-between rounded-md border border-border/70 bg-surface/40 px-3 py-2">
+            <span className="mono text-[10px] uppercase tracking-widest text-muted-foreground">
+              Cockpit mode
+            </span>
+            <ThemeToggle variant="pill" />
+          </div>
         </nav>
       </aside>
 
@@ -248,9 +256,9 @@ function DrawerLink({
     <Link
       to={to}
       onClick={onClick}
-      className="mono flex items-center gap-3 rounded-md border border-transparent px-3 py-2 text-[11px] uppercase tracking-widest text-muted-foreground transition hover:border-primary/30 hover:bg-primary/5 hover:text-primary"
+      className="spotlight mono flex items-center gap-3 rounded-md border border-transparent px-3 py-2 text-[11px] uppercase tracking-widest text-muted-foreground transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
       activeProps={{
-        className: "border-primary/40 bg-primary/10 text-primary",
+        className: "border-primary/50 bg-primary/10 text-primary",
       }}
     >
       <span className="w-4 text-center">{icon}</span>

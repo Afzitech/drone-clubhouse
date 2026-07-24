@@ -2,12 +2,12 @@
 @source "../src";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is(.dark, .dark *));
 
 /*
- * Aeroforge — dark, aviation-inspired design system.
- * HUD-style cyan primary for member surfaces; amber accent for admin/command surfaces.
- * All colors use oklch. Never hardcode hex in components — extend tokens here.
+ * Aeroforge — dual-cockpit design system.
+ * .dark  → nighttime HUD (deep navy, cyan/violet glow)
+ * :root  → daylight titanium cockpit (brushed silver, cobalt/neon blue)
  */
 
 @theme inline {
@@ -46,9 +46,11 @@
   --color-surface: var(--surface);
   --color-surface-elevated: var(--surface-elevated);
   --color-grid-line: var(--grid-line);
+  --color-glow: var(--glow);
 
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Orbitron", "JetBrains Mono", ui-monospace, monospace;
 
   --shadow-hud: 0 0 0 1px color-mix(in oklab, var(--primary) 30%, transparent),
     0 0 40px -12px color-mix(in oklab, var(--primary) 40%, transparent);
@@ -56,56 +58,91 @@
     0 0 40px -12px color-mix(in oklab, var(--command) 40%, transparent);
 }
 
+/* ---------- LIGHT (daylight titanium cockpit) ---------- */
 :root {
-  --radius: 0.375rem;
+  --radius: 0.5rem;
 
-  /* Base — near-black cockpit */
-  --background: oklch(0.14 0.015 240);
-  --foreground: oklch(0.94 0.01 220);
-  --surface: oklch(0.18 0.018 240);
-  --surface-elevated: oklch(0.22 0.02 240);
-  --grid-line: oklch(0.28 0.02 220 / 0.4);
+  --background: oklch(0.93 0.006 240);
+  --foreground: oklch(0.18 0.02 245);
+  --surface: oklch(0.97 0.005 240);
+  --surface-elevated: oklch(0.99 0.003 240);
+  --grid-line: oklch(0.72 0.02 240 / 0.25);
 
-  --card: oklch(0.18 0.018 240);
-  --card-foreground: oklch(0.94 0.01 220);
-  --popover: oklch(0.2 0.02 240);
-  --popover-foreground: oklch(0.94 0.01 220);
+  --card: oklch(0.98 0.004 240);
+  --card-foreground: oklch(0.18 0.02 245);
+  --popover: oklch(0.99 0.003 240);
+  --popover-foreground: oklch(0.18 0.02 245);
 
-  /* Primary — HUD cyan */
-  --primary: oklch(0.78 0.16 200);
-  --primary-foreground: oklch(0.12 0.02 240);
-  --hud: oklch(0.85 0.18 195);
+  /* Cobalt / neon blue */
+  --primary: oklch(0.55 0.22 262);
+  --primary-foreground: oklch(0.99 0.005 240);
+  --hud: oklch(0.62 0.24 258);
+  --glow: oklch(0.65 0.25 258);
 
-  /* Secondary — cool graphite */
-  --secondary: oklch(0.26 0.02 240);
-  --secondary-foreground: oklch(0.94 0.01 220);
+  --secondary: oklch(0.88 0.01 240);
+  --secondary-foreground: oklch(0.2 0.02 245);
 
-  --muted: oklch(0.22 0.015 240);
-  --muted-foreground: oklch(0.65 0.02 230);
+  --muted: oklch(0.9 0.007 240);
+  --muted-foreground: oklch(0.42 0.02 245);
 
-  --accent: oklch(0.28 0.04 200);
-  --accent-foreground: oklch(0.92 0.05 200);
+  --accent: oklch(0.88 0.06 258);
+  --accent-foreground: oklch(0.25 0.15 262);
 
-  /* Admin/Command — amber */
-  --command: oklch(0.78 0.15 70);
-  --command-foreground: oklch(0.15 0.03 60);
+  --command: oklch(0.55 0.18 30);
+  --command-foreground: oklch(0.99 0.005 30);
 
-  --destructive: oklch(0.65 0.22 25);
-  --destructive-foreground: oklch(0.98 0.005 0);
-  --success: oklch(0.72 0.16 155);
-  --success-foreground: oklch(0.12 0.02 155);
-  --warning: oklch(0.78 0.15 70);
-  --warning-foreground: oklch(0.15 0.03 60);
+  --destructive: oklch(0.58 0.22 25);
+  --destructive-foreground: oklch(0.99 0.005 0);
+  --success: oklch(0.6 0.16 155);
+  --success-foreground: oklch(0.99 0.02 155);
+  --warning: oklch(0.72 0.16 70);
+  --warning-foreground: oklch(0.2 0.03 60);
 
-  --border: oklch(0.28 0.02 235);
-  --input: oklch(0.24 0.02 235);
-  --ring: oklch(0.78 0.16 200);
+  --border: oklch(0.78 0.015 240);
+  --input: oklch(0.94 0.006 240);
+  --ring: oklch(0.55 0.22 262);
 }
 
+/* ---------- DARK (nighttime HUD cockpit) ---------- */
 .dark {
-  /* Same as :root — the app is dark by default */
-  --background: oklch(0.14 0.015 240);
-  --foreground: oklch(0.94 0.01 220);
+  --background: oklch(0.12 0.02 250);
+  --foreground: oklch(0.95 0.01 220);
+  --surface: oklch(0.17 0.025 250);
+  --surface-elevated: oklch(0.22 0.03 250);
+  --grid-line: oklch(0.35 0.03 220 / 0.35);
+
+  --card: oklch(0.17 0.025 250);
+  --card-foreground: oklch(0.95 0.01 220);
+  --popover: oklch(0.2 0.03 250);
+  --popover-foreground: oklch(0.95 0.01 220);
+
+  --primary: oklch(0.82 0.17 200);
+  --primary-foreground: oklch(0.12 0.02 240);
+  --hud: oklch(0.88 0.18 195);
+  --glow: oklch(0.82 0.2 200);
+
+  --secondary: oklch(0.26 0.03 250);
+  --secondary-foreground: oklch(0.95 0.01 220);
+
+  --muted: oklch(0.22 0.02 250);
+  --muted-foreground: oklch(0.7 0.02 230);
+
+  --accent: oklch(0.32 0.08 270);
+  --accent-foreground: oklch(0.92 0.06 220);
+
+  --command: oklch(0.82 0.16 70);
+  --command-foreground: oklch(0.15 0.03 60);
+
+  --destructive: oklch(0.68 0.22 25);
+  --destructive-foreground: oklch(0.98 0.005 0);
+  --success: oklch(0.75 0.16 155);
+  --success-foreground: oklch(0.12 0.02 155);
+  --warning: oklch(0.82 0.15 70);
+  --warning-foreground: oklch(0.15 0.03 60);
+
+  --border: oklch(0.3 0.03 240);
+  --input: oklch(0.24 0.025 240);
+  --ring: oklch(0.82 0.17 200);
 }
 
 @layer base {
@@ -119,22 +156,65 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    transition: background-color 0.6s ease, color 0.4s ease;
   }
 
+  /* Aviation-inspired gradient background, no grid */
   body {
+    position: relative;
     background-image:
-      linear-gradient(var(--color-grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--color-grid-line) 1px, transparent 1px);
-    background-size: 48px 48px;
-    background-position: -1px -1px;
+      radial-gradient(1200px 700px at 12% -10%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 60%),
+      radial-gradient(900px 600px at 100% 0%, color-mix(in oklab, var(--hud) 18%, transparent), transparent 55%),
+      radial-gradient(1000px 800px at 50% 110%, color-mix(in oklab, var(--accent) 30%, transparent), transparent 60%),
+      linear-gradient(180deg, var(--color-background), color-mix(in oklab, var(--color-background) 85%, var(--color-surface)));
     background-attachment: fixed;
+  }
+
+  /* subtle titanium brushed sheen (light) / scanline shimmer (dark) */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image: repeating-linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--color-foreground) 3%, transparent) 0 1px,
+      transparent 1px 3px
+    );
+    mix-blend-mode: overlay;
+    opacity: 0.35;
+  }
+
+  /* Theme swap flash overlay */
+  html.theme-flash::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    background: radial-gradient(circle at center, color-mix(in oklab, var(--glow) 55%, transparent), transparent 60%);
+    animation: theme-pulse 0.6s ease-out forwards;
+  }
+
+  @keyframes theme-pulse {
+    0% { opacity: 0; transform: scale(0.6); }
+    30% { opacity: 1; }
+    100% { opacity: 0; transform: scale(1.4); }
+  }
+
+  @keyframes hud-sweep {
+    0% { transform: translateX(-120%); opacity: 0; }
+    40% { opacity: 1; }
+    100% { transform: translateX(220%); opacity: 0; }
   }
 }
 
 @utility hud-panel {
-  background-color: color-mix(in oklab, var(--color-surface) 92%, transparent);
+  background-color: color-mix(in oklab, var(--color-surface) 88%, transparent);
   border: 1px solid var(--color-border);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-md);
 }
 
 @utility hud-glow {
@@ -150,6 +230,11 @@
   letter-spacing: 0.02em;
 }
 
+@utility display-font {
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+}
+
 @utility scanline {
   position: relative;
   overflow: hidden;
@@ -157,8 +242,6 @@
 
 @utility corner-brackets {
   position: relative;
-}
-@utility corner-brackets {
   &::before,
   &::after {
     content: "";
@@ -203,4 +286,41 @@
     color: var(--color-muted-foreground);
     opacity: 0.6;
   }
+}
+
+/* Interactive spotlight — reacts to pointer via --mx/--my/--active vars set by JS */
+@utility spotlight {
+  position: relative;
+  isolation: isolate;
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.35s ease;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(
+      180px circle at var(--mx, 50%) var(--my, 50%),
+      color-mix(in oklab, var(--glow) 35%, transparent),
+      transparent 60%
+    );
+    opacity: var(--active, 0);
+    transition: opacity 0.25s ease;
+    z-index: -1;
+  }
+  &:hover,
+  &:focus-visible {
+    border-color: color-mix(in oklab, var(--primary) 75%, transparent);
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--primary) 40%, transparent),
+      0 0 24px -4px color-mix(in oklab, var(--glow) 60%, transparent);
+    transform: translateY(-1px);
+  }
+}
+
+@utility neon-text {
+  color: var(--color-primary);
+  text-shadow:
+    0 0 8px color-mix(in oklab, var(--glow) 55%, transparent),
+    0 0 24px color-mix(in oklab, var(--glow) 25%, transparent);
 }
