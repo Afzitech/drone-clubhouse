@@ -4,7 +4,7 @@ const config: CapacitorConfig = {
   appId: 'com.aeroforge.app',
   appName: 'AeroForge',
   server: {
-    url: 'https://drone-clubhouse.lovable.app',
+    url: 'https://drone-clubhouse.vercel.app',
     cleartext: false
   }
 };
