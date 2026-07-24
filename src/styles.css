@@ -324,3 +324,7 @@
     0 0 8px color-mix(in oklab, var(--glow) 55%, transparent),
     0 0 24px color-mix(in oklab, var(--glow) 25%, transparent);
 }
+
+/* Disable transitions for native app theme switching */
+.disable-transitions * { transition: none !important; }
+
