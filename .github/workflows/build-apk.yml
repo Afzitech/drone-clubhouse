@@ -3,6 +3,8 @@ name: Build Android APK (Production)
 on:
   push:
     branches: [ main, master ]
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 permissions:
