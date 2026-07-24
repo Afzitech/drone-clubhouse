@@ -767,7 +767,7 @@ function BookingsQueue() {
                   <div className="mt-2 flex w-full flex-col sm:flex-row items-center gap-2 border-t border-border/50 pt-3">
                     <input
                       type="text"
-                      placeholder={`Add an optional note for this ${actionState.status}...`}
+                      placeholder={`Add an optional note for this ${actionState?.status ?? ""}...`}
                       value={adminNote}
                       onChange={(e) => setAdminNote(e.target.value)}
                       className="h-8 w-full flex-1 rounded border border-command/30 bg-background px-3 text-xs text-foreground placeholder:text-muted-foreground focus:border-command focus:outline-none"
