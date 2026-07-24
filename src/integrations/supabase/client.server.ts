@@ -30,10 +30,23 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 }
 
 function createSupabaseAdminClient() {
-  const SUPABASE_URL = process.env.SUPABASE_URL;
+  const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-  if (!SUPABASE_URL) { console.warn("Supabase URL missing"); }
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    console.warn("Supabase credentials missing for admin client, falling back safely.");
+  }
+
+  return createClient<Database>(SUPABASE_URL || '', SUPABASE_SERVICE_ROLE_KEY || '', {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+    global: {
+      fetch: createSupabaseFetch(SUPABASE_SERVICE_ROLE_KEY || ''),
+    },
+  });
+}
 
 let _supabaseAdmin: ReturnType<typeof createSupabaseAdminClient> | undefined;
 
@@ -47,6 +60,3 @@ export const supabaseAdmin = new Proxy({} as ReturnType<typeof createSupabaseAdm
     return Reflect.get(_supabaseAdmin, prop, receiver);
   },
 });
-
-}
-
