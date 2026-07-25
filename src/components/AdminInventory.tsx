@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Check, X, AlertCircle, Plus, Save, Trash2, Package, Minus, RotateCcw, Clock } from 'lucide-react';
+import { Check, X, AlertCircle, Plus, Save, Trash2, Package, Minus, RotateCcw } from 'lucide-react';
 
 export default function AdminInventory() {
   const [items, setItems] = useState<any[]>([]);
@@ -9,7 +9,7 @@ export default function AdminInventory() {
   const [viewState, setViewState] = useState<'active' | 'history'>('active');
   const [newItem, setNewItem] = useState({ name: '', category: 'Flight Controllers', description: '', storage_location: '', minimum_stock: 2, total_quantity: 1 });
 
-  const categories = ['Flight Controllers', 'ESCs', 'Motors', 'Frames', 'Propellers', 'Batteries', 'GPS', 'Receivers', 'Cameras', 'Sensors', 'Radio Equipment', 'Tools', 'Electronics', 'Miscellaneous'];
+  const categories = ['Flight Controllers', 'ESCs', 'Motors', 'Frames', 'Propellers', 'Batteries', 'GPS', 'Receivers', 'Cameras', 'Sensors', 'Radio Equipment', 'Tools', 'Electronics', 'Miscellaneous', 'Custom Request'];
 
   useEffect(() => { fetchData(); }, []);
   
@@ -51,6 +51,7 @@ export default function AdminInventory() {
 
   return (
     <div className="flex flex-col gap-8 font-mono w-full animate-in fade-in">
+      {/* Top Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-card border border-border rounded-lg p-4 flex flex-col items-center shadow-sm">
           <span className="text-[10px] text-muted-foreground tracking-widest mb-1">TOTAL ASSETS</span>
@@ -70,6 +71,7 @@ export default function AdminInventory() {
         </button>
       </div>
 
+      {/* Deploy Form */}
       {showForm && (
          <form onSubmit={handleAddAsset} className="bg-card border border-primary/50 rounded-lg p-6 flex flex-col gap-4">
          <h3 className="text-sm font-bold text-primary tracking-widest uppercase flex items-center gap-2"><Package className="w-4 h-4"/> Initialize Component</h3>
@@ -92,12 +94,12 @@ export default function AdminInventory() {
          </div>
          <div className="flex justify-end gap-2 mt-2">
            <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 border border-border text-muted-foreground hover:bg-muted rounded text-xs tracking-widest">CANCEL</button>
-           <button type="submit" className="px-4 py-2 bg-primary text-primary-foreground rounded hover:opacity-90 flex items-center gap-2 text-xs tracking-widest"><Save className="w-4 h-4" /> COMMIT TO DB</button>
+           <button type="submit" className="px-4 py-2 bg-primary text-primary-foreground rounded hover:opacity-90 flex items-center gap-2 text-xs tracking-widest"><Save className="w-4 h-4" /> COMMIT</button>
          </div>
        </form>
       )}
 
-      {/* Logistics Queue with Tabs */}
+      {/* Logistics Queue */}
       <div className="bg-card border border-border rounded-lg p-6 flex flex-col gap-4">
         <div className="flex justify-between items-center border-b border-border pb-2">
            <h3 className="text-sm font-bold text-primary tracking-widest uppercase flex items-center gap-2"><AlertCircle className="w-4 h-4"/> Logistics Queue</h3>
@@ -112,10 +114,10 @@ export default function AdminInventory() {
             <div key={req.id} className="flex flex-col md:flex-row justify-between items-center bg-background border border-border p-3 rounded">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-foreground">{req.inventory_items?.name}</span>
+                  <span className="font-bold text-foreground">{req.inventory_items?.name || "CUSTOM REQUEST"}</span>
                   <span className={`text-[9px] uppercase tracking-widest px-1.5 py-0.5 rounded ${req.status === 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' : 'bg-cyan-500/10 text-cyan-500 border border-cyan-500/20'}`}>{req.status}</span>
                 </div>
-                <span className="text-xs text-muted-foreground mt-1 block">QTY: {req.quantity} | REASON: {req.reason || 'N/A'}</span>
+                <span className="text-xs text-muted-foreground mt-1 block">QTY: {req.quantity} | NOTES: {req.reason || 'N/A'}</span>
               </div>
               <div className="flex gap-2 mt-3 md:mt-0">
                 {req.status === 'Pending' ? (
@@ -124,20 +126,52 @@ export default function AdminInventory() {
                     <button onClick={() => handleRequest(req.id, 'Rejected')} className="bg-destructive/10 text-destructive border border-destructive/20 px-3 py-1 rounded text-xs hover:bg-destructive/20 flex items-center gap-1 uppercase tracking-widest"><X className="w-3 h-3"/> Deny</button>
                   </>
                 ) : (
-                  <button onClick={() => handleRequest(req.id, 'Returned')} className="bg-primary/10 text-primary border border-primary/20 px-3 py-1 rounded text-xs hover:bg-primary/20 flex items-center gap-1 uppercase tracking-widest"><RotateCcw className="w-3 h-3"/> Mark Returned</button>
+                  <button onClick={() => handleRequest(req.id, 'Returned')} className="bg-primary/10 text-primary border border-primary/20 px-3 py-1 rounded text-xs hover:bg-primary/20 flex items-center gap-1 uppercase tracking-widest"><RotateCcw className="w-3 h-3"/> Return</button>
                 )}
               </div>
             </div>
           ))}
+          {viewState === 'active' && pendingRequests.length === 0 && activeDeployments.length === 0 && (
+            <div className="text-muted-foreground text-xs p-4 text-center tracking-widest border border-dashed border-border rounded">QUEUE CLEAR.</div>
+          )}
+        </div>
+      </div>
 
-          {viewState === 'history' && historicalRequests.map(req => (
-            <div key={req.id} className="flex flex-col md:flex-row justify-between items-center bg-background border border-border p-3 rounded opacity-70">
-              <div>
-                 <span className="font-bold text-muted-foreground">{req.inventory_items?.name}</span>
-                 <span className="text-xs text-muted-foreground mt-1 block">QTY: {req.quantity} | STATUS: {req.status}</span>
-              </div>
-            </div>
-          ))}
+      {/* Asset Management Matrix */}
+      <div className="bg-card border border-border rounded-lg p-6 flex flex-col gap-4 overflow-hidden">
+        <h3 className="text-sm font-bold text-primary tracking-widest uppercase flex items-center gap-2"><Package className="w-4 h-4"/> Asset Management Matrix</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm whitespace-nowrap">
+            <thead>
+              <tr className="border-b border-border text-muted-foreground text-xs uppercase tracking-widest">
+                <th className="pb-3 font-medium">Component</th>
+                <th className="pb-3 font-medium">Category</th>
+                <th className="pb-3 font-medium text-center">Stock</th>
+                <th className="pb-3 font-medium text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {items.map(item => (
+                <tr key={item.id} className="group hover:bg-muted/30 transition-colors">
+                  <td className="py-3 pr-4">
+                    <span className="block font-bold text-foreground">{item.name}</span>
+                    <span className="text-[10px] text-muted-foreground uppercase">LOC: {item.storage_location || 'UNASSIGNED'}</span>
+                  </td>
+                  <td className="py-3 text-xs text-muted-foreground pr-4 uppercase">{item.category}</td>
+                  <td className="py-3">
+                    <div className="flex items-center justify-center gap-3">
+                      <button onClick={() => adjustStock(item.id, item.available_quantity, -1)} className="p-1 hover:bg-muted rounded text-muted-foreground border border-transparent hover:border-border transition-all"><Minus className="w-3 h-3"/></button>
+                      <span className={`font-bold w-6 text-center ${item.available_quantity <= item.minimum_stock ? 'text-destructive' : 'text-foreground'}`}>{item.available_quantity}</span>
+                      <button onClick={() => adjustStock(item.id, item.available_quantity, 1)} className="p-1 hover:bg-muted rounded text-muted-foreground border border-transparent hover:border-border transition-all"><Plus className="w-3 h-3"/></button>
+                    </div>
+                  </td>
+                  <td className="py-3 text-right">
+                    <button onClick={() => handleDelete(item.id)} className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors" title="Delete Asset"><Trash2 className="w-4 h-4 inline" /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
