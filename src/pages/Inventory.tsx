@@ -15,19 +15,22 @@ export default function Inventory() {
 
   useEffect(() => { fetchInventoryAndAuth(); }, []);
 
-  const fetchInventoryAndAuth = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const fetchInventoryAndAuth = async () => {
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (user) setUserId(user.id);
 
-    const { data: iData } = await supabase.from('inventory_items').select('*').order('name');
-    if (iData) setItems(iData);
+    const { data: iData, error: iError } = await supabase.from('inventory_items').select('*').order('name');
+    if (iError) alert("MEMBER DB ERROR (Items): " + iError.message);
+    else if (iData) setItems(iData);
 
     if (user) {
-      const { data: rData } = await supabase.from('inventory_requests').select('*, inventory_items(name)').eq('user_id', user.id).order('created_at', { ascending: false });
-      if (rData) setMyRequests(rData);
+      const { data: rData, error: rError } = await supabase.from('inventory_requests').select('*, inventory_items(name)').eq('user_id', user.id).order('created_at', { ascending: false });
+      if (rError) alert("MEMBER DB ERROR (Requests): " + rError.message);
+      else if (rData) setMyRequests(rData);
     }
     setLoading(false);
   };
+
 
   const handleSubmitRequest = async (item: any) => {
     if (!userId) return alert("UNAUTHORIZED: Session expired or invalid. Please sign in again.");

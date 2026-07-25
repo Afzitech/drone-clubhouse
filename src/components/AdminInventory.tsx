@@ -13,12 +13,16 @@ export default function AdminInventory() {
 
   useEffect(() => { fetchData(); }, []);
   
-  const fetchData = async () => {
-    const { data: iData } = await supabase.from('inventory_items').select('*').order('name');
-    if (iData) setItems(iData);
-    const { data: rData } = await supabase.from('inventory_requests').select('*, inventory_items(name)').order('created_at', { ascending: false });
-    if (rData) setRequests(rData);
+    const fetchData = async () => {
+    const { data: iData, error: iError } = await supabase.from('inventory_items').select('*').order('name');
+    if (iError) alert("ADMIN DB ERROR (Items): " + iError.message);
+    else if (iData) setItems(iData);
+
+    const { data: rData, error: rError } = await supabase.from('inventory_requests').select('*, inventory_items(name)').order('created_at', { ascending: false });
+    if (rError) alert("ADMIN DB ERROR (Requests): " + rError.message);
+    else if (rData) setRequests(rData);
   };
+
 
   const handleAddAsset = async (e: React.FormEvent) => {
     e.preventDefault();
