@@ -30,11 +30,25 @@ export default function Inventory() {
   };
 
   const handleSubmitRequest = async (item: any) => {
-    if (!userId) return alert("UNAUTHORIZED: Sign in to request assets.");
-    if (item && reqQty > item.available_quantity) return alert("INSUFFICIENT STOCK");
+    if (!userId) return alert("UNAUTHORIZED: Session expired or invalid. Please sign in again.");
+    if (item && reqQty > item.available_quantity) return alert("INSUFFICIENT STOCK: Quantity requested exceeds available units.");
 
-    await supabase.from('inventory_requests').insert([{ item_id: item ? item.id : null, user_id: userId, quantity: reqQty, reason: reqReason }]);
-    setRequestingId(null); setReqQty(1); setReqReason('');
+    const { error } = await supabase.from('inventory_requests').insert([{ 
+        item_id: item ? item.id : null, 
+        user_id: userId, 
+        quantity: reqQty, 
+        reason: reqReason 
+    }]);
+
+    if (error) {
+      alert("DATABASE REJECTION: " + error.message);
+      return; // Halt execution so the form doesn't close on failure
+    }
+
+    alert("SUCCESS: Requisition has been transmitted to Command.");
+    setRequestingId(null); 
+    setReqQty(1); 
+    setReqReason('');
     fetchInventoryAndAuth(); 
   };
 
