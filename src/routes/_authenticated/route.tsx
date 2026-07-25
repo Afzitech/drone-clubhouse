@@ -2,6 +2,22 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import {
+  LayoutDashboard,
+  FolderKanban,
+  Newspaper,
+  CalendarDays,
+  MessageSquare,
+  Images,
+  BookOpen,
+  Users,
+  Mail,
+  DoorOpen,
+  Printer,
+  Box,
+  Send,
+  Settings
+} from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -87,20 +103,20 @@ function AuthedShell() {
   }
 
   const links = [
-  { to: "/dashboard", label: "Dashboard", icon: "DB" },
-  { to: "/projects", label: "Projects", icon: "PR" },
-  { to: "/announcements", label: "News", icon: "NW" },
-  { to: "/events", label: "Events", icon: "EV" },
-  { to: "/forum", label: "Forum", icon: "FM" },
-  { to: "/gallery", label: "Gallery", icon: "GL" },
-  { to: "/resources", label: "Library", icon: "LB" },
-  { to: "/members", label: "Members", icon: "MB" },
-  { to: "/messages", label: "Messages", icon: "MS" },
-  { to: "/bookings/room", label: "Club Room", icon: "CR" },
-  { to: "/bookings/printer", label: "3D Printer", icon: "3D" },
-  { to: "/inventory", label: "Inventory", icon: "IN" },
-  { to: "/submit", label: "Submit", icon: "SB" },
-  { to: "/settings", label: "Settings", icon: "ST" },
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/projects", label: "Projects", icon: FolderKanban },
+  { to: "/announcements", label: "News", icon: Newspaper },
+  { to: "/events", label: "Events", icon: CalendarDays },
+  { to: "/forum", label: "Forum", icon: MessageSquare },
+  { to: "/gallery", label: "Gallery", icon: Images },
+  { to: "/resources", label: "Library", icon: BookOpen },
+  { to: "/members", label: "Members", icon: Users },
+  { to: "/messages", label: "Messages", icon: Mail },
+  { to: "/bookings/room", label: "Club Room", icon: DoorOpen },
+  { to: "/bookings/printer", label: "3D Printer", icon: Printer },
+  { to: "/inventory", label: "Inventory", icon: Box },
+  { to: "/submit", label: "Submit", icon: Send },
+  { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
   const initials = (displayName ?? user.email ?? "?")
@@ -122,58 +138,53 @@ function AuthedShell() {
             >
               ☰
             </button>
+
             <Link to="/dashboard" className="flex items-center gap-2">
               <div className="hud-panel corner-brackets flex h-7 w-7 items-center justify-center">
-                <span className="mono text-[10px] font-bold text-primary">AF</span>
+                <span className="mono text-[10px] font-bold text-primary">
+                  AF
+                </span>
               </div>
-              <span className={`mono text-xs font-semibold uppercase tracking-widest text-foreground ${isAdmin ? "hidden sm:inline" : ""}`}>
+              <span className="mono text-xs font-semibold uppercase tracking-widest text-foreground">
                 Aeroforge
               </span>
             </Link>
           </div>
+
           <div className="flex items-center gap-2">
             <Link
               to="/messages"
-              className="relative mono rounded-md border border-border px-2 py-1.5 text-[10px] uppercase tracking-widest text-muted-foreground transition hover:text-foreground"
+              className="relative mono rounded-md border border-border px-2 py-1.5 text-[10px]"
               title="Messages"
-              aria-label="Messages"
             >
-              ✉
-              {unreadDm > 0 && (
-                <span className="mono absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-command px-1 text-[9px] font-bold text-command-foreground">
-                  {unreadDm > 9 ? "9+" : unreadDm}
-                </span>
-              )}
+              <Mail className="h-4 w-4" />
             </Link>
+
             <Link
               to="/notifications"
-              className="relative mono rounded-md border border-border px-2 py-1.5 text-[10px] uppercase tracking-widest text-muted-foreground transition hover:text-foreground"
+              className="relative mono rounded-md border border-border px-2 py-1.5 text-[10px]"
               title="Notifications"
-              aria-label="Notifications"
             >
               🔔
-              {unread > 0 && (
-                <span className="mono absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-primary-foreground">
-                  {unread > 9 ? "9+" : unread}
-                </span>
-              )}
             </Link>
-            {isAdmin && <AdminBadgeLink />}
-            <ThemeToggle variant="icon" className="hidden sm:flex" />
+
             <Link
               to="/settings"
-              className="spotlight flex items-center gap-2 rounded-md border border-border px-2 py-1 transition hover:bg-accent"
+              className="flex items-center rounded-md border border-border px-2 py-1"
               title="Settings"
             >
               {avatarUrl ? (
-                <img src={avatarUrl} alt="" className="h-6 w-6 rounded-full object-cover" />
+                <img
+                  src={avatarUrl}
+                  alt=""
+                  className="h-6 w-6 rounded-full object-cover"
+                />
               ) : (
                 <div className="mono flex h-6 w-6 items-center justify-center rounded-full bg-primary/20 text-[9px] font-bold text-primary">
                   {initials}
                 </div>
               )}
-            </Link>
-            <button
+            </Link>            <button
               onClick={signOut}
               className="mono rounded-md border border-border px-3 py-1.5 text-[10px] uppercase tracking-widest text-muted-foreground transition hover:text-foreground"
             >
@@ -245,12 +256,12 @@ function AuthedShell() {
 function DrawerLink({
   to,
   label,
-  icon,
+  icon: Icon,
   onClick,
 }: {
   to: string;
   label: string;
-  icon: string;
+  icon: React.ComponentType<{ className?: string }>;
   onClick: () => void;
 }) {
   return (
@@ -262,7 +273,7 @@ function DrawerLink({
         className: "border-primary/50 bg-primary/10 text-primary",
       }}
     >
-      <span className="w-4 text-center">{icon}</span>
+      <Icon className="h-4 w-4 shrink-0 text-primary" />
       {label}
     </Link>
   );
@@ -301,6 +312,16 @@ function AdminBadgeLink() {
     </Link>
   );
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
