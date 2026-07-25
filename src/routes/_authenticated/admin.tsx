@@ -1,4 +1,4 @@
-﻿import AdminInventory from '@/components/AdminInventory';
+import AdminInventory from '@/components/AdminInventory';
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -64,7 +64,7 @@ function AdminPage() {
             ["queue", "Submissions queue"],
             ["members", "Members"],
             ["create", "Create member"],
-            ["landing", "Landing page"], ["bookings", "Bookings queue"],
+            ["landing", "Landing page"], ["bookings", "Bookings queue"], ["inventory", "Inventory"],
           ] as const
         ).map(([id, label]) => (
           <button
@@ -87,7 +87,7 @@ function AdminPage() {
         <MembersList currentUserId={user.id} />
       ) : tab === "create" ? (
         <CreateMember />
-      ) : tab === "landing" ? ( <LandingEditor /> ) : ( <BookingsQueue /> )}
+      ) : tab === "landing" ? ( <LandingEditor /> ) : tab === "inventory" ? ( <AdminInventory /> ) : ( <BookingsQueue /> )}
     </div>
   );
 }
@@ -897,6 +897,8 @@ function BookingsQueue() {
 </div>
   );
 }
+
+
 
 
 
