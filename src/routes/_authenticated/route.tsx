@@ -87,21 +87,21 @@ function AuthedShell() {
   }
 
   const links = [
-    { to: "/dashboard", label: "Dashboard", icon: "â€“Â¤" },
-    { to: "/projects", label: "Projects", icon: "â€”Ë†" },
-    { to: "/announcements", label: "News", icon: "â€”â€°" },
-    { to: "/events", label: "Events", icon: "â€“Â¦" },
-    { to: "/forum", label: "Forum", icon: "â€”Â«" },
-    { to: "/gallery", label: "Gallery", icon: "â€“Â£" },
-    { to: "/resources", label: "Library", icon: "â€“Â¤" },
-    { to: "/members", label: "Members", icon: "ËœÂ°" },
-    { to: "/messages", label: "Messages", icon: "Å“â€°" },
-    { to: "/bookings/room", label: "Club Room", icon: "â€”Â±" },
-    { to: "/bookings/printer", label: "3D Printer", icon: "â€”â€ " },
-    { to: "/inventory", label: "Inventory", icon: "â–§" },
-    { to: "/submit", label: "Submit", icon: "â€ Â¥" },
-    { to: "/settings", label: "Settings", icon: "â€”Å½" },
-  ] as const;
+  { to: "/dashboard", label: "Dashboard", icon: "DB" },
+  { to: "/projects", label: "Projects", icon: "PR" },
+  { to: "/announcements", label: "News", icon: "NW" },
+  { to: "/events", label: "Events", icon: "EV" },
+  { to: "/forum", label: "Forum", icon: "FM" },
+  { to: "/gallery", label: "Gallery", icon: "GL" },
+  { to: "/resources", label: "Library", icon: "LB" },
+  { to: "/members", label: "Members", icon: "MB" },
+  { to: "/messages", label: "Messages", icon: "MS" },
+  { to: "/bookings/room", label: "Club Room", icon: "CR" },
+  { to: "/bookings/printer", label: "3D Printer", icon: "3D" },
+  { to: "/inventory", label: "Inventory", icon: "IN" },
+  { to: "/submit", label: "Submit", icon: "SB" },
+  { to: "/settings", label: "Settings", icon: "ST" },
+] as const;
 
   const initials = (displayName ?? user.email ?? "?")
     .split(/\s+|@/)
@@ -301,6 +301,7 @@ function AdminBadgeLink() {
     </Link>
   );
 }
+
 
 
 
