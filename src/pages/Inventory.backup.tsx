@@ -21,30 +21,6 @@ export default function Inventory() {
     setLoading(false);
   };
 
-
-  const requestItem = async (item:any) => {
-    const { data:{ user } } = await supabase.auth.getUser();
-
-    if (!user) return;
-
-    const { error } = await supabase
-      .from('inventory_requests')
-      .insert({
-        item_id: item.id,
-        member_id: user.id,
-        quantity: 1,
-        reason: "Member inventory request",
-        requested_date: new Date().toISOString(),
-        status: "Pending"
-      });
-
-    if (error) {
-      console.error("REQUEST ERROR:", error);
-      alert("Request failed");
-    } else {
-      alert("Request submitted");
-    }
-  };
   const filteredItems = items.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
@@ -92,13 +68,6 @@ export default function Inventory() {
                   </span>
                 </div>
               </div>
-
-              <button
-                onClick={() => requestItem(item)}
-                className="mt-3 w-full border border-primary text-primary py-2 rounded-md text-xs tracking-widest hover:bg-primary/10 transition"
-              >
-                REQUEST ITEM
-              </button>
             </div>
           ))}
         </div>
@@ -106,6 +75,3 @@ export default function Inventory() {
     </div>
   );
 }
-
-
-
