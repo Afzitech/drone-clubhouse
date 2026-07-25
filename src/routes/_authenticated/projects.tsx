@@ -97,13 +97,13 @@ function ProjectsPage() {
     <div className="space-y-6">
       <div>
         <p className="mono text-[10px] uppercase tracking-widest text-primary">
-          / Flight deck · Active projects /
+          / Flight deck Â· Active projects /
         </p>
         <h1 className="mt-2 text-3xl font-bold text-foreground">Projects</h1>
       </div>
 
       {loading ? (
-        <p className="mono text-xs text-muted-foreground">Loading…</p>
+        <p className="mono text-xs text-muted-foreground">Loading...</p>
       ) : projects.length === 0 ? (
         <div className="hud-panel corner-brackets p-8 text-center">
           <p className="mono text-xs text-muted-foreground">
@@ -127,7 +127,7 @@ function ProjectsPage() {
               )}
               {p.lead_user_id && leadNames[p.lead_user_id] && (
                 <p className="mono mt-3 text-[10px] uppercase tracking-widest text-warning">
-                  ★ Lead · {leadNames[p.lead_user_id]}
+                  â˜… Lead Â· {leadNames[p.lead_user_id]}
                 </p>
               )}
               {isAdmin && (
@@ -156,7 +156,7 @@ function ProjectsPage() {
                 onClick={() => setOpenId(openId === p.id ? null : p.id)}
                 className="mono mt-4 text-[10px] uppercase tracking-widest text-primary hover:underline"
               >
-                {openId === p.id ? "Hide updates ▲" : "Show updates ▼"}
+                {openId === p.id ? "Hide updates â–²" : "Show updates â–¼"}
               </button>
               {openId === p.id && (
                 <ProjectUpdatesPanel
@@ -270,7 +270,7 @@ function ProjectUpdatesPanel({
           data: {
             userIds: adminIds,
             type: "update-review-request",
-            title: `Update pending review · ${project.title}`,
+            title: `Update pending review Â· ${project.title}`,
             body: body.trim().slice(0, 200),
             link: "/admin",
           },
@@ -297,7 +297,7 @@ function ProjectUpdatesPanel({
         data: {
           userIds: [u.author_id],
           type: "update-review",
-          title: `Update ${status} · ${project.title}`,
+          title: `Update ${status} Â· ${project.title}`,
           body: notes[u.id] ?? undefined,
           link: "/projects",
         },
@@ -315,7 +315,7 @@ function ProjectUpdatesPanel({
         <form onSubmit={submit} className="space-y-2">
           <textarea
             className="hud-input min-h-[70px]"
-            placeholder="Post an update…"
+            placeholder="Post an updateâ€¦"
             value={body}
             onChange={(e) => setBody(e.target.value)}
             required
@@ -331,7 +331,7 @@ function ProjectUpdatesPanel({
               disabled={busy}
               className="mono rounded border border-primary/40 bg-primary/10 px-3 py-1 text-[10px] uppercase tracking-widest text-primary hover:bg-primary/20 disabled:opacity-50"
             >
-              {busy ? "Submitting…" : "Submit for review"}
+              {busy ? "Submittingâ€¦" : "Submit for review"}
             </button>
           </div>
         </form>
@@ -350,7 +350,7 @@ function ProjectUpdatesPanel({
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <p className="mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                    {names[u.author_id] ?? "member"} ·{" "}
+                    {names[u.author_id] ?? "member"} Â·{" "}
                     {new Date(u.created_at).toLocaleString()}
                   </p>
                   <p className="mt-1 whitespace-pre-wrap text-sm text-foreground">
@@ -363,7 +363,7 @@ function ProjectUpdatesPanel({
                       rel="noreferrer"
                       className="mono mt-1 inline-block text-[10px] text-primary hover:underline"
                     >
-                      📎 {u.file_name ?? "file"} ↗
+                      ðŸ“Ž {u.file_name ?? "file"} â†—
                     </a>
                   )}
                   {u.admin_note && (

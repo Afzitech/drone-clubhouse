@@ -65,15 +65,15 @@ function AppearanceForm() {
           Pick your instrument panel
         </h2>
         <p className="mono mt-1 text-[11px] text-muted-foreground">
-          Daylight — brushed titanium with cobalt neon. Night HUD — deep hangar
+          Daylight â€” brushed titanium with cobalt neon. Night HUD â€” deep hangar
           navy with cyan glow.
         </p>
       </div>
       <div className="grid grid-cols-2 gap-3">
         {(
           [
-            { id: "light", label: "Daylight", hint: "Titanium · cobalt" },
-            { id: "dark", label: "Night HUD", hint: "Navy · cyan glow" },
+            { id: "light", label: "Daylight", hint: "Titanium Â· cobalt" },
+            { id: "dark", label: "Night HUD", hint: "Navy Â· cyan glow" },
           ] as const
         ).map((opt) => (
           <button
@@ -204,7 +204,7 @@ function ProfileForm({ userId }: { userId: string }) {
         )}
         <div className="space-y-2">
           <label className="mono inline-block cursor-pointer rounded border border-primary/40 bg-primary/10 px-3 py-1.5 text-[10px] uppercase tracking-widest text-primary hover:bg-primary/20">
-            {uploading ? "Uploading…" : "Change avatar"}
+            {uploading ? "Uploadingâ€¦" : "Change avatar"}
             <input
               type="file"
               accept="image/*"
@@ -246,7 +246,7 @@ function ProfileForm({ userId }: { userId: string }) {
         disabled={busy || displayName.trim() === initial}
         className="mono rounded-md border border-primary/40 bg-primary/10 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-primary transition hover:bg-primary/20 disabled:opacity-40"
       >
-        {busy ? "Saving…" : "Save changes"}
+        {busy ? "Savingâ€¦" : "Save changes"}
       </button>
     </form>
   );
@@ -321,7 +321,7 @@ function SecurityForm() {
         disabled={busy}
         className="mono rounded-md border border-command/40 bg-command/10 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-command transition hover:bg-command/20 disabled:opacity-40"
       >
-        {busy ? "Updating…" : "Update password"}
+        {busy ? "Updatingâ€¦" : "Update password"}
       </button>
     </form>
   );
