@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+﻿import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -112,7 +112,7 @@ function GalleryPage() {
     <div className="space-y-6">
       <div>
         <p className="mono text-[10px] uppercase tracking-widest text-primary">
-          / Hangar Â· Showcase gallery /
+          / Hangar  /  Showcase gallery /
         </p>
         <h1 className="mt-2 text-3xl font-bold text-foreground">Gallery</h1>
         <p className="mono mt-1 text-[11px] text-muted-foreground">
@@ -154,7 +154,7 @@ function GalleryPage() {
             disabled={busy}
             className="mono rounded border border-command/40 bg-command/10 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-command hover:bg-command/20 disabled:opacity-50"
           >
-            {busy ? "Uploadingâ€¦" : "Publish to gallery"}
+            {busy ? "Uploading..." : "Publish to gallery"}
           </button>
         </form>
       )}
@@ -188,7 +188,7 @@ function GalleryPage() {
                 )}
                 {it.featured_on_landing && (
                   <p className="mono mt-2 inline-block rounded border border-primary/40 bg-primary/10 px-1.5 py-0.5 text-[9px] uppercase tracking-widest text-primary">
-                    â˜… On landing page
+                    ... On landing page
                   </p>
                 )}
                 {isAdmin && (
@@ -219,3 +219,5 @@ function GalleryPage() {
     </div>
   );
 }
+
+

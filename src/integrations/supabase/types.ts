@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -231,6 +231,136 @@ export type Database = {
         }
         Relationships: []
       }
+      inventory_items: {
+        Row: {
+          available_quantity: number | null
+          category: Database["public"]["Enums"]["item_category"]
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          issued_quantity: number | null
+          minimum_stock: number | null
+          name: string
+          reserved_quantity: number | null
+          status: string | null
+          storage_location: string | null
+          total_quantity: number | null
+        }
+        Insert: {
+          available_quantity?: number | null
+          category: Database["public"]["Enums"]["item_category"]
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          issued_quantity?: number | null
+          minimum_stock?: number | null
+          name: string
+          reserved_quantity?: number | null
+          status?: string | null
+          storage_location?: string | null
+          total_quantity?: number | null
+        }
+        Update: {
+          available_quantity?: number | null
+          category?: Database["public"]["Enums"]["item_category"]
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          issued_quantity?: number | null
+          minimum_stock?: number | null
+          name?: string
+          reserved_quantity?: number | null
+          status?: string | null
+          storage_location?: string | null
+          total_quantity?: number | null
+        }
+        Relationships: []
+      }
+      inventory_requests: {
+        Row: {
+          id: string
+          item_id: string | null
+          member_id: string | null
+          quantity: number
+          reason: string | null
+          requested_date: string | null
+          status: Database["public"]["Enums"]["request_status"] | null
+        }
+        Insert: {
+          id?: string
+          item_id?: string | null
+          member_id?: string | null
+          quantity: number
+          reason?: string | null
+          requested_date?: string | null
+          status?: Database["public"]["Enums"]["request_status"] | null
+        }
+        Update: {
+          id?: string
+          item_id?: string | null
+          member_id?: string | null
+          quantity?: number
+          reason?: string | null
+          requested_date?: string | null
+          status?: Database["public"]["Enums"]["request_status"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_requests_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_transactions: {
+        Row: {
+          action: Database["public"]["Enums"]["action_type"]
+          admin_id: string | null
+          created_at: string | null
+          id: string
+          is_deleted: boolean | null
+          item_id: string | null
+          member_id: string | null
+          notes: string | null
+          quantity: number | null
+        }
+        Insert: {
+          action: Database["public"]["Enums"]["action_type"]
+          admin_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_deleted?: boolean | null
+          item_id?: string | null
+          member_id?: string | null
+          notes?: string | null
+          quantity?: number | null
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["action_type"]
+          admin_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_deleted?: boolean | null
+          item_id?: string | null
+          member_id?: string | null
+          notes?: string | null
+          quantity?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_transactions_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string | null
@@ -264,6 +394,39 @@ export type Database = {
         }
         Relationships: []
       }
+      procurement_requests: {
+        Row: {
+          category: Database["public"]["Enums"]["item_category"]
+          component_name: string
+          created_at: string | null
+          id: string
+          member_id: string | null
+          quantity: number
+          reason: string | null
+          status: Database["public"]["Enums"]["request_status"] | null
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["item_category"]
+          component_name: string
+          created_at?: string | null
+          id?: string
+          member_id?: string | null
+          quantity: number
+          reason?: string | null
+          status?: Database["public"]["Enums"]["request_status"] | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["item_category"]
+          component_name?: string
+          created_at?: string | null
+          id?: string
+          member_id?: string | null
+          quantity?: number
+          reason?: string | null
+          status?: Database["public"]["Enums"]["request_status"] | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -272,6 +435,7 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          role: string | null
           updated_at: string
         }
         Insert: {
@@ -281,6 +445,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id: string
+          role?: string | null
           updated_at?: string
         }
         Update: {
@@ -290,6 +455,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          role?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -559,14 +725,47 @@ export type Database = {
       }
     }
     Enums: {
+      action_type:
+        | "Created"
+        | "Edited"
+        | "Deleted"
+        | "Requested"
+        | "Approved"
+        | "Rejected"
+        | "Issued"
+        | "Returned"
+        | "Stock Adjustment"
+        | "Procurement Approved"
+        | "Procurement Rejected"
       app_role: "admin" | "member" | "lead"
       booking_status: "pending" | "approved" | "rejected" | "cancelled"
+      item_category:
+        | "Flight Controllers"
+        | "ESCs"
+        | "Motors"
+        | "Frames"
+        | "Propellers"
+        | "Batteries"
+        | "GPS"
+        | "Receivers"
+        | "Cameras"
+        | "Sensors"
+        | "Radio Equipment"
+        | "Tools"
+        | "Electronics"
+        | "Miscellaneous"
       project_status:
         | "planning"
         | "in_progress"
         | "testing"
         | "completed"
         | "archived"
+      request_status:
+        | "Pending"
+        | "Approved"
+        | "Rejected"
+        | "Issued"
+        | "Returned"
       resource_kind: "club_room" | "printer_3d"
       submission_status: "pending" | "approved" | "rejected"
       update_status: "pending" | "approved" | "rejected"
@@ -697,8 +896,37 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      action_type: [
+        "Created",
+        "Edited",
+        "Deleted",
+        "Requested",
+        "Approved",
+        "Rejected",
+        "Issued",
+        "Returned",
+        "Stock Adjustment",
+        "Procurement Approved",
+        "Procurement Rejected",
+      ],
       app_role: ["admin", "member", "lead"],
       booking_status: ["pending", "approved", "rejected", "cancelled"],
+      item_category: [
+        "Flight Controllers",
+        "ESCs",
+        "Motors",
+        "Frames",
+        "Propellers",
+        "Batteries",
+        "GPS",
+        "Receivers",
+        "Cameras",
+        "Sensors",
+        "Radio Equipment",
+        "Tools",
+        "Electronics",
+        "Miscellaneous",
+      ],
       project_status: [
         "planning",
         "in_progress",
@@ -706,9 +934,17 @@ export const Constants = {
         "completed",
         "archived",
       ],
+      request_status: ["Pending", "Approved", "Rejected", "Issued", "Returned"],
       resource_kind: ["club_room", "printer_3d"],
       submission_status: ["pending", "approved", "rejected"],
       update_status: ["pending", "approved", "rejected"],
     },
   },
 } as const
+
+
+
+
+
+
+

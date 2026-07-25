@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 import { Check, X, AlertCircle, Plus, Save } from 'lucide-react';
 
 export default function AdminInventory() {
   const [items, setItems] = useState<any[]>([]);
   const [requests, setRequests] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [newItem, setNewItem] = useState({ name: '', category: 'Flight Controllers', description: '', storage_location: '', minimum_stock: 2, total_quantity: 1 });
+  type InventoryCategory = Database["public"]["Enums"]["item_category"];
+
+const [newItem, setNewItem] = useState({ name: '', category: 'Flight Controllers' as InventoryCategory, description: '', storage_location: '', minimum_stock: 2, total_quantity: 1 });
 
   const categories = ['Flight Controllers', 'ESCs', 'Motors', 'Frames', 'Propellers', 'Batteries', 'GPS', 'Receivers', 'Cameras', 'Sensors', 'Radio Equipment', 'Tools', 'Electronics', 'Miscellaneous'];
 
@@ -43,7 +46,7 @@ export default function AdminInventory() {
           <h3 className="text-sm font-bold text-primary tracking-widest uppercase">Initialize Component</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input type="text" required placeholder="COMPONENT NAME" value={newItem.name} onChange={e => setNewItem({...newItem, name: e.target.value})} className="bg-background border border-border focus:border-primary p-2 text-sm rounded" />
-            <select value={newItem.category} onChange={e => setNewItem({...newItem, category: e.target.value})} className="bg-background border border-border focus:border-primary p-2 text-sm rounded">
+            <select value={newItem.category} onChange={e => setNewItem({...newItem, category: e.target.value as InventoryCategory})} className="bg-background border border-border focus:border-primary p-2 text-sm rounded">
               {categories.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
@@ -55,3 +58,9 @@ export default function AdminInventory() {
     </div>
   );
 }
+
+
+
+
+
+

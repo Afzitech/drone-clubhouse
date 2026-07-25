@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+﻿import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -46,7 +46,7 @@ function MembersPage() {
     <div className="space-y-6">
       <div>
         <p className="mono text-[10px] uppercase tracking-widest text-primary">
-          / Roster Â· Squadron /
+          / Roster  /  Squadron /
         </p>
         <h1 className="mt-2 text-3xl font-bold text-foreground">Members</h1>
       </div>
@@ -109,7 +109,7 @@ function MembersPage() {
                       }
                       className="mono mt-2 rounded border border-primary/40 bg-primary/10 px-2 py-1 text-[10px] uppercase tracking-widest text-primary transition hover:bg-primary/20"
                     >
-                      âœ‰ Message
+                       Message
                     </button>
                   ) : (
                     <p className="mono mt-2 text-[10px] uppercase tracking-widest text-muted-foreground">
@@ -125,3 +125,5 @@ function MembersPage() {
     </div>
   );
 }
+
+
