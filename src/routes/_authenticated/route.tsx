@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect, Link, useNavigate } from "@tanstack/react-router";
+﻿import { createFileRoute, Outlet, redirect, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -87,19 +87,19 @@ function AuthedShell() {
   }
 
   const links = [
-    { to: "/dashboard", label: "Dashboard", icon: "▤" },
-    { to: "/projects", label: "Projects", icon: "◈" },
-    { to: "/announcements", label: "News", icon: "◉" },
-    { to: "/events", label: "Events", icon: "▦" },
-    { to: "/forum", label: "Forum", icon: "◫" },
-    { to: "/gallery", label: "Gallery", icon: "▣" },
-    { to: "/resources", label: "Library", icon: "▤" },
-    { to: "/members", label: "Members", icon: "☰" },
-    { to: "/messages", label: "Messages", icon: "✉" },
-    { to: "/bookings/room", label: "Club Room", icon: "◱" },
-    { to: "/bookings/printer", label: "3D Printer", icon: "◆" },
-    { to: "/submit", label: "Submit", icon: "↥" },
-    { to: "/settings", label: "Settings", icon: "◎" },
+    { to: "/dashboard", label: "Dashboard", icon: "â–¤" },
+    { to: "/projects", label: "Projects", icon: "â—ˆ" },
+    { to: "/announcements", label: "News", icon: "â—‰" },
+    { to: "/events", label: "Events", icon: "â–¦" },
+    { to: "/forum", label: "Forum", icon: "â—«" },
+    { to: "/gallery", label: "Gallery", icon: "â–£" },
+    { to: "/resources", label: "Library", icon: "â–¤" },
+    { to: "/members", label: "Members", icon: "â˜°" },
+    { to: "/messages", label: "Messages", icon: "âœ‰" },
+    { to: "/bookings/room", label: "Club Room", icon: "â—±" },
+    { to: "/bookings/printer", label: "3D Printer", icon: "â—†" },
+    { to: "/submit", label: "Submit", icon: "â†¥" },
+    { to: "/settings", label: "Settings", icon: "â—Ž" },
   ] as const;
 
   const initials = (displayName ?? user.email ?? "?")
@@ -119,7 +119,7 @@ function AuthedShell() {
               aria-label="Open menu"
               className="mono flex h-9 w-9 items-center justify-center rounded-md border border-border text-lg text-foreground transition hover:border-primary/60 hover:text-primary"
             >
-              ≡
+              â‰¡
             </button>
             <Link to="/dashboard" className="flex items-center gap-2">
               <div className="hud-panel corner-brackets flex h-7 w-7 items-center justify-center">
@@ -137,7 +137,7 @@ function AuthedShell() {
               title="Messages"
               aria-label="Messages"
             >
-              ✉
+              âœ‰
               {unreadDm > 0 && (
                 <span className="mono absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-command px-1 text-[9px] font-bold text-command-foreground">
                   {unreadDm > 9 ? "9+" : unreadDm}
@@ -150,7 +150,7 @@ function AuthedShell() {
               title="Notifications"
               aria-label="Notifications"
             >
-              🔔
+              ðŸ””
               {unread > 0 && (
                 <span className="mono absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-primary-foreground">
                   {unread > 9 ? "9+" : unread}
@@ -201,7 +201,7 @@ function AuthedShell() {
             className="mono h-8 w-8 rounded-md border border-border text-foreground hover:text-primary"
             aria-label="Close menu"
           >
-            ✕
+            âœ•
           </button>
         </div>
         <nav className="flex flex-col gap-1 p-3">
@@ -221,7 +221,7 @@ function AuthedShell() {
               className="spotlight mono mt-2 flex items-center gap-3 rounded-md border border-command/40 bg-command/10 px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-command transition hover:bg-command/20"
               activeProps={{ className: "bg-command/20" }}
             >
-              <span className="w-4 text-center">✦</span>
+              <span className="w-4 text-center">âœ¦</span>
               Command Center
             </Link>
           )}
@@ -300,3 +300,4 @@ function AdminBadgeLink() {
     </Link>
   );
 }
+
