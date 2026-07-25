@@ -12,12 +12,16 @@ export default function Inventory() {
   const [reqQty, setReqQty] = useState(1);
   const [reqReason, setReqReason] = useState('');
   const [userId, setUserId] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string>('Unknown Pilot');
 
   useEffect(() => { fetchInventoryAndAuth(); }, []);
 
-    const fetchInventoryAndAuth = async () => {
+  const fetchInventoryAndAuth = async () => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (user) setUserId(user.id);
+    if (user) { 
+        setUserId(user.id); 
+        setUserName(user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Unknown Pilot');
+    }
 
     const { data: iData, error: iError } = await supabase.from('inventory_items').select('*').order('name');
     if (iError) alert("MEMBER DB ERROR (Items): " + iError.message);
@@ -31,7 +35,6 @@ export default function Inventory() {
     setLoading(false);
   };
 
-
   const handleSubmitRequest = async (item: any) => {
     if (!userId) return alert("UNAUTHORIZED: Session expired or invalid. Please sign in again.");
     if (item && reqQty > item.available_quantity) return alert("INSUFFICIENT STOCK: Quantity requested exceeds available units.");
@@ -39,13 +42,15 @@ export default function Inventory() {
     const { error } = await supabase.from('inventory_requests').insert([{ 
         item_id: item ? item.id : null, 
         user_id: userId, 
+        requester_name: userName,
         quantity: reqQty, 
-        reason: reqReason 
+        reason: reqReason,
+        status: 'Pending'
     }]);
 
     if (error) {
       alert("DATABASE REJECTION: " + error.message);
-      return; // Halt execution so the form doesn't close on failure
+      return;
     }
 
     alert("SUCCESS: Requisition has been transmitted to Command.");
@@ -77,7 +82,6 @@ export default function Inventory() {
           <div className="lg:col-span-3">
              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               
-              {/* Custom Request Card */}
               <div className="bg-background border border-dashed border-primary/50 rounded-lg p-5 flex flex-col items-center justify-center gap-4 hover:bg-primary/5 transition-all text-center">
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-2">
                   <Plus className="w-5 h-5 text-primary" />
@@ -102,7 +106,6 @@ export default function Inventory() {
                 )}
               </div>
 
-              {/* Standard Inventory Grid */}
               {filteredItems.map((item) => (
                 <div key={item.id} className="bg-card border border-border rounded-lg p-5 flex flex-col gap-4 shadow-sm relative overflow-hidden group">
                   <div className="flex justify-between items-start">

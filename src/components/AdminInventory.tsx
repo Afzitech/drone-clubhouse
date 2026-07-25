@@ -13,7 +13,7 @@ export default function AdminInventory() {
 
   useEffect(() => { fetchData(); }, []);
   
-    const fetchData = async () => {
+  const fetchData = async () => {
     const { data: iData, error: iError } = await supabase.from('inventory_items').select('*').order('name');
     if (iError) alert("ADMIN DB ERROR (Items): " + iError.message);
     else if (iData) setItems(iData);
@@ -22,7 +22,6 @@ export default function AdminInventory() {
     if (rError) alert("ADMIN DB ERROR (Requests): " + rError.message);
     else if (rData) setRequests(rData);
   };
-
 
   const handleAddAsset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +54,6 @@ export default function AdminInventory() {
 
   return (
     <div className="flex flex-col gap-8 font-mono w-full animate-in fade-in">
-      {/* Top Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-card border border-border rounded-lg p-4 flex flex-col items-center shadow-sm">
           <span className="text-[10px] text-muted-foreground tracking-widest mb-1">TOTAL ASSETS</span>
@@ -75,7 +73,6 @@ export default function AdminInventory() {
         </button>
       </div>
 
-      {/* Deploy Form */}
       {showForm && (
          <form onSubmit={handleAddAsset} className="bg-card border border-primary/50 rounded-lg p-6 flex flex-col gap-4">
          <h3 className="text-sm font-bold text-primary tracking-widest uppercase flex items-center gap-2"><Package className="w-4 h-4"/> Initialize Component</h3>
@@ -103,7 +100,6 @@ export default function AdminInventory() {
        </form>
       )}
 
-      {/* Logistics Queue */}
       <div className="bg-card border border-border rounded-lg p-6 flex flex-col gap-4">
         <div className="flex justify-between items-center border-b border-border pb-2">
            <h3 className="text-sm font-bold text-primary tracking-widest uppercase flex items-center gap-2"><AlertCircle className="w-4 h-4"/> Logistics Queue</h3>
@@ -121,7 +117,7 @@ export default function AdminInventory() {
                   <span className="font-bold text-foreground">{req.inventory_items?.name || "CUSTOM REQUEST"}</span>
                   <span className={`text-[9px] uppercase tracking-widest px-1.5 py-0.5 rounded ${req.status === 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' : 'bg-cyan-500/10 text-cyan-500 border border-cyan-500/20'}`}>{req.status}</span>
                 </div>
-                <span className="text-xs text-muted-foreground mt-1 block">QTY: {req.quantity} | NOTES: {req.reason || 'N/A'}</span>
+                <span className="text-xs text-muted-foreground mt-1 block">PILOT: <span className="text-foreground font-bold">{req.requester_name || "UNKNOWN"}</span> | QTY: {req.quantity} | NOTES: {req.reason || 'N/A'}</span>
               </div>
               <div className="flex gap-2 mt-3 md:mt-0">
                 {req.status === 'Pending' ? (
@@ -138,10 +134,17 @@ export default function AdminInventory() {
           {viewState === 'active' && pendingRequests.length === 0 && activeDeployments.length === 0 && (
             <div className="text-muted-foreground text-xs p-4 text-center tracking-widest border border-dashed border-border rounded">QUEUE CLEAR.</div>
           )}
+          {viewState === 'history' && historicalRequests.map(req => (
+            <div key={req.id} className="flex flex-col md:flex-row justify-between items-center bg-background border border-border p-3 rounded opacity-70">
+              <div>
+                 <span className="font-bold text-muted-foreground">{req.inventory_items?.name || "CUSTOM REQUEST"}</span>
+                 <span className="text-xs text-muted-foreground mt-1 block">PILOT: {req.requester_name || "UNKNOWN"} | QTY: {req.quantity} | STATUS: {req.status}</span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Asset Management Matrix */}
       <div className="bg-card border border-border rounded-lg p-6 flex flex-col gap-4 overflow-hidden">
         <h3 className="text-sm font-bold text-primary tracking-widest uppercase flex items-center gap-2"><Package className="w-4 h-4"/> Asset Management Matrix</h3>
         <div className="overflow-x-auto">
