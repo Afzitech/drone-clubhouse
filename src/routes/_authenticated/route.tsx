@@ -98,6 +98,7 @@ function AuthedShell() {
     { to: "/messages", label: "Messages", icon: "âœ‰" },
     { to: "/bookings/room", label: "Club Room", icon: "â—±" },
     { to: "/bookings/printer", label: "3D Printer", icon: "â—†" },
+    { to: "/inventory", label: "Inventory", icon: "▧" },
     { to: "/submit", label: "Submit", icon: "â†¥" },
     { to: "/settings", label: "Settings", icon: "â—Ž" },
   ] as const;
@@ -300,4 +301,5 @@ function AdminBadgeLink() {
     </Link>
   );
 }
+
 
