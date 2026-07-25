@@ -1,11 +1,16 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Search, Filter, AlertCircle, Plus } from 'lucide-react';
+import { Search, AlertCircle, Send } from 'lucide-react';
 
 export default function Inventory() {
   const [items, setItems] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  
+  // Requisition Form State
+  const [requestingId, setRequestingId] = useState<string | null>(null);
+  const [reqQty, setReqQty] = useState(1);
+  const [reqReason, setReqReason] = useState('');
 
   useEffect(() => {
     fetchInventory();
@@ -13,38 +18,40 @@ export default function Inventory() {
 
   const fetchInventory = async () => {
     const { data, error } = await supabase.from('inventory_items').select('*').order('name');
-
-    console.log('INVENTORY RESPONSE:', data);
-    console.log('INVENTORY ERROR:', error);
-
     if (!error && data) setItems(data);
     setLoading(false);
   };
 
+  const handleSubmitRequest = async (item: any) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      alert("UNAUTHORIZED: Please sign in to request assets.");
+      return;
+    }
 
-  const requestItem = async (item:any) => {
-    const { data:{ user } } = await supabase.auth.getUser();
+    if (reqQty > item.available_quantity) {
+      alert("INSUFFICIENT STOCK: Requested quantity exceeds available supply.");
+      return;
+    }
 
-    if (!user) return;
+    const { error } = await supabase.from('inventory_requests').insert([{
+      item_id: item.id,
+      user_id: user.id,
+      quantity: reqQty,
+      reason: reqReason
+    }]);
 
-    const { error } = await supabase
-      .from('inventory_requests')
-      .insert({
-        item_id: item.id,
-        member_id: user.id,
-        quantity: 1,
-        reason: "Member inventory request",
-        requested_date: new Date().toISOString(),
-        status: "Pending"
-      });
-
-    if (error) {
-      console.error("REQUEST ERROR:", error);
-      alert("Request failed");
+    if (!error) {
+      alert(`[LOGGED] Request for ${item.name} sent to Command.`);
+      setRequestingId(null);
+      setReqQty(1);
+      setReqReason('');
     } else {
-      alert("Request submitted");
+      alert("TRANSMISSION FAILED: Could not send request.");
     }
   };
+
   const filteredItems = items.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
@@ -80,11 +87,13 @@ export default function Inventory() {
                 </span>
                 {item.available_quantity < item.minimum_stock && <AlertCircle className="w-4 h-4 text-destructive" />}
               </div>
+              
               <div>
                 <h3 className="text-lg font-bold text-card-foreground">{item.name}</h3>
                 <p className="text-xs text-muted-foreground mt-1">LOC: {item.storage_location || 'UNASSIGNED'}</p>
               </div>
-              <div className="flex justify-between items-center mt-auto pt-4 border-t border-border">
+
+              <div className="flex justify-between items-center pt-4 border-t border-border">
                 <div className="flex flex-col">
                   <span className="text-[10px] text-muted-foreground tracking-widest">AVAILABLE</span>
                   <span className={`text-xl font-bold ${item.available_quantity > 0 ? 'text-primary' : 'text-destructive'}`}>
@@ -93,12 +102,45 @@ export default function Inventory() {
                 </div>
               </div>
 
-              <button
-                onClick={() => requestItem(item)}
-                className="mt-3 w-full border border-primary text-primary py-2 rounded-md text-xs tracking-widest hover:bg-primary/10 transition"
-              >
-                REQUEST ITEM
-              </button>
+              {/* Dynamic Request UI */}
+              <div className="mt-auto pt-2">
+                {requestingId === item.id ? (
+                  <div className="flex flex-col gap-2 bg-muted/30 p-3 rounded border border-primary/20">
+                    <input 
+                      type="number" 
+                      min="1" 
+                      max={item.available_quantity}
+                      value={reqQty} 
+                      onChange={e => setReqQty(parseInt(e.target.value) || 1)} 
+                      className="bg-background border border-border focus:border-primary p-1.5 text-xs rounded outline-none"
+                      placeholder="QTY"
+                    />
+                    <input 
+                      type="text" 
+                      value={reqReason} 
+                      onChange={e => setReqReason(e.target.value)} 
+                      className="bg-background border border-border focus:border-primary p-1.5 text-xs rounded outline-none"
+                      placeholder="REASON"
+                    />
+                    <div className="flex gap-2 mt-1">
+                      <button onClick={() => setRequestingId(null)} className="flex-1 px-2 py-1.5 border border-border text-muted-foreground hover:bg-muted rounded text-[10px] tracking-widest uppercase">Cancel</button>
+                      <button onClick={() => handleSubmitRequest(item)} className="flex-1 px-2 py-1.5 bg-primary text-primary-foreground rounded hover:opacity-90 flex items-center justify-center gap-1 text-[10px] tracking-widest uppercase"><Send className="w-3 h-3"/> Submit</button>
+                    </div>
+                  </div>
+                ) : (
+                  <button 
+                    disabled={item.available_quantity === 0}
+                    onClick={() => {
+                      setRequestingId(item.id);
+                      setReqQty(1);
+                      setReqReason('');
+                    }}
+                    className="w-full bg-primary/10 text-primary border border-primary/30 py-2 rounded text-xs uppercase tracking-widest hover:bg-primary/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {item.available_quantity > 0 ? 'Request Asset' : 'Stock Depleted'}
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -106,6 +148,3 @@ export default function Inventory() {
     </div>
   );
 }
-
-
-
