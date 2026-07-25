@@ -12,16 +12,12 @@ export default function Inventory() {
   const [reqQty, setReqQty] = useState(1);
   const [reqReason, setReqReason] = useState('');
   const [userId, setUserId] = useState<string | null>(null);
-  const [userName, setUserName] = useState<string>('Unknown Pilot');
 
   useEffect(() => { fetchInventoryAndAuth(); }, []);
 
   const fetchInventoryAndAuth = async () => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (user) { 
-        setUserId(user.id); 
-        setUserName(user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Unknown Pilot');
-    }
+    if (user) setUserId(user.id);
 
     const { data: iData, error: iError } = await supabase.from('inventory_items').select('*').order('name');
     if (iError) alert("MEMBER DB ERROR (Items): " + iError.message);
@@ -36,13 +32,19 @@ export default function Inventory() {
   };
 
   const handleSubmitRequest = async (item: any) => {
-    if (!userId) return alert("UNAUTHORIZED: Session expired or invalid. Please sign in again.");
+    // 1. Fetch user directly on click to completely bypass stale React state closures
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return alert("UNAUTHORIZED: Session expired or invalid. Please sign in again.");
+
     if (item && reqQty > item.available_quantity) return alert("INSUFFICIENT STOCK: Quantity requested exceeds available units.");
+
+    // 2. Extract name dynamically
+    const activePilotName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Unknown Pilot';
 
     const { error } = await supabase.from('inventory_requests').insert([{ 
         item_id: item ? item.id : null, 
-        user_id: userId, 
-        requester_name: userName,
+        user_id: user.id, 
+        requester_name: activePilotName,
         quantity: reqQty, 
         reason: reqReason,
         status: 'Pending'
@@ -53,7 +55,7 @@ export default function Inventory() {
       return;
     }
 
-    alert("SUCCESS: Requisition has been transmitted to Command.");
+    alert(`SUCCESS: Requisition logged for Pilot: ${activePilotName}`);
     setRequestingId(null); 
     setReqQty(1); 
     setReqReason('');
