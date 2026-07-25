@@ -48,6 +48,15 @@ export default function AdminInventory() {
     fetchData();
   };
 
+  // ADMIN ONLY DELETION LOGIC
+  const handleDeleteRequest = async (id: string) => {
+    if(confirm('Permanently purge this record from history?')) {
+      const { error } = await supabase.from('inventory_requests').delete().eq('id', id);
+      if (error) alert("DELETE ERROR: " + error.message);
+      else fetchData();
+    }
+  };
+
   const pendingRequests = requests.filter(r => r.status === 'Pending');
   const activeDeployments = requests.filter(r => r.status === 'Approved');
   const historicalRequests = requests.filter(r => r.status === 'Rejected' || r.status === 'Returned');
@@ -134,11 +143,18 @@ export default function AdminInventory() {
           {viewState === 'active' && pendingRequests.length === 0 && activeDeployments.length === 0 && (
             <div className="text-muted-foreground text-xs p-4 text-center tracking-widest border border-dashed border-border rounded">QUEUE CLEAR.</div>
           )}
+          
           {viewState === 'history' && historicalRequests.map(req => (
-            <div key={req.id} className="flex flex-col md:flex-row justify-between items-center bg-background border border-border p-3 rounded opacity-70">
+            <div key={req.id} className="flex flex-col md:flex-row justify-between items-center bg-background border border-border p-3 rounded opacity-70 group hover:opacity-100 transition-all">
               <div>
-                 <span className="font-bold text-muted-foreground">{req.inventory_items?.name || "CUSTOM REQUEST"}</span>
+                 <span className="font-bold text-muted-foreground group-hover:text-foreground transition-colors">{req.inventory_items?.name || "CUSTOM REQUEST"}</span>
                  <span className="text-xs text-muted-foreground mt-1 block">PILOT: {req.requester_name || "UNKNOWN"} | QTY: {req.quantity} | STATUS: {req.status}</span>
+              </div>
+              <div className="mt-3 md:mt-0">
+                {/* ADMIN ONLY TRASH BUTTON */}
+                <button onClick={() => handleDeleteRequest(req.id)} className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors" title="Purge Record from History">
+                  <Trash2 className="w-4 h-4 inline" />
+                </button>
               </div>
             </div>
           ))}
