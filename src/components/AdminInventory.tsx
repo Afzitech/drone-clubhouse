@@ -60,6 +60,22 @@ export default function AdminInventory() {
   const pendingRequests = requests.filter(r => r.status === 'Pending');
   const activeDeployments = requests.filter(r => r.status === 'Approved');
   const historicalRequests = requests.filter(r => r.status === 'Rejected' || r.status === 'Returned');
+  const [editingItem, setEditingItem] = useState<any>(null);
+  const [editForm, setEditForm] = useState({ name: '', category: '', storage_location: '' });
+
+  const openEdit = (item: any) => {
+    setEditingItem(item);
+    setEditForm({ name: item.name, category: item.category, storage_location: item.storage_location || '' });
+  };
+
+  const saveEdit = async () => {
+    const { error } = await supabase.from('inventory_items').update(editForm).eq('id', editingItem.id);
+    if (error) alert("UPDATE ERROR: " + error.message);
+    else {
+      setEditingItem(null);
+      window.location.reload(); // Hard refresh to ensure matrix syncs perfectly
+    }
+  };
 
   return (
     <div className="flex flex-col gap-8 font-mono w-full animate-in fade-in">
@@ -189,6 +205,9 @@ export default function AdminInventory() {
                     </div>
                   </td>
                   <td className="py-3 text-right">
+                    <button onClick={() => openEdit(item)} className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded transition-colors mr-1" title="Edit Asset">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 inline"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                    </button>
                     <button onClick={() => handleDelete(item.id)} className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors" title="Delete Asset"><Trash2 className="w-4 h-4 inline" /></button>
                   </td>
                 </tr>
@@ -197,6 +216,37 @@ export default function AdminInventory() {
           </table>
         </div>
       </div>
+    
+      {editingItem && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-card border border-primary/50 p-6 rounded-lg w-full max-w-md flex flex-col gap-4 font-mono shadow-[0_0_20px_rgba(0,255,255,0.1)]">
+            <h3 className="text-primary font-bold tracking-widest uppercase border-b border-border pb-2">Edit Asset Data</h3>
+            <div className="flex flex-col gap-3">
+              <label className="text-xs text-muted-foreground uppercase">Component Name</label>
+              <input type="text" value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} className="bg-background border border-border focus:border-primary p-2 text-sm rounded outline-none w-full" />
+              
+              <label className="text-xs text-muted-foreground uppercase mt-2">Category</label>
+              <select value={editForm.category} onChange={e => setEditForm({...editForm, category: e.target.value})} className="bg-background border border-border focus:border-primary p-2 text-sm rounded outline-none w-full">
+                <option value="Flight Controllers">Flight Controllers</option>
+                <option value="Motors & ESCs">Motors & ESCs</option>
+                <option value="Power Systems">Power Systems</option>
+                <option value="Frames & Hardware">Frames & Hardware</option>
+                <option value="Sensors & Radios">Sensors & Radios</option>
+                <option value="Miscellaneous">Miscellaneous</option>
+              </select>
+
+              <label className="text-xs text-muted-foreground uppercase mt-2">Storage Location</label>
+              <input type="text" value={editForm.storage_location} onChange={e => setEditForm({...editForm, storage_location: e.target.value})} className="bg-background border border-border focus:border-primary p-2 text-sm rounded outline-none w-full" placeholder="e.g. BIN A4, SHELF 2" />
+            </div>
+            <div className="flex gap-2 mt-4">
+              <button onClick={() => setEditingItem(null)} className="flex-1 py-2 border border-border text-muted-foreground hover:bg-muted rounded text-xs uppercase tracking-widest transition-all">Cancel</button>
+              <button onClick={saveEdit} className="flex-1 py-2 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 rounded text-xs uppercase tracking-widest transition-all">Save Matrix</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
+// Forced Deploy Trigger: 1785227182532
