@@ -286,9 +286,9 @@ function DrawerLink({
 
 // Our pristine glowing badge!
 function AdminBadge() {
-  const [counts, setCounts] = useState({ sub: 0, book: 0, proc: 0 });
+  const [counts, setCounts] = React.useState({ sub: 0, book: 0, proc: 0 });
 
-  useEffect(() => {
+  React.useEffect(() => {
     let alive = true;
     async function fetchPending() {
       const [sub, book, proc] = await Promise.all([
@@ -297,7 +297,7 @@ function AdminBadge() {
         supabase.from("procurement_requests").select("id", { count: "exact", head: true }).eq("status", "Pending")
       ]);
       if (alive) {
-        setCounts({ sub: sub.count || 0, book: book.count || 0, proc: proc.count || 0 });
+        setCounts({ sub: sub?.count || 0, book: book?.count || 0, proc: proc?.count || 0 });
       }
     }
     fetchPending();
@@ -328,4 +328,5 @@ function AdminBadge() {
     </Link>
   );
 }
-// Forced Deploy Trigger: 1785228344921
+
+// Forced Deploy Trigger: 1785237166923
