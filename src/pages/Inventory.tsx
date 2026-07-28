@@ -105,6 +105,7 @@ setComponentName('');
                 </div>
                 {requestingId === 'custom' ? (
                     <div className="flex flex-col gap-2 w-full mt-2">
+                      <input type="text" value={componentName} onChange={e => setComponentName(e.target.value)} className="bg-card border border-border focus:border-primary p-1.5 text-xs rounded outline-none" placeholder="COMPONENT NAME" />
                       <input type="number" min="1" value={reqQty} onChange={e => setReqQty(parseInt(e.target.value) || 1)} className="bg-card border border-border focus:border-primary p-1.5 text-xs rounded outline-none" placeholder="QTY" />
                       <input type="text" value={reqReason} onChange={e => setReqReason(e.target.value)} className="bg-card border border-border focus:border-primary p-1.5 text-xs rounded outline-none" placeholder="DESCRIBE REQUIRED COMPONENT" />
                       <div className="flex gap-2 mt-1">
@@ -184,3 +185,5 @@ setComponentName(''); }} className="w-full bg-background border border-border py
 
 
 
+
+// Forced Deploy Trigger: 1785219880215
