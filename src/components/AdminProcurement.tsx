@@ -12,7 +12,7 @@ export default function AdminProcurement() {
     const { data, error } = await supabase
       .from('procurement_requests')
       .select('*')
-      .is('item_id', null)
+      
       .order('created_at', { ascending: false });
       
     if (error) alert("PROCUREMENT DB ERROR: " + error.message);
@@ -147,3 +147,4 @@ export default function AdminProcurement() {
   );
 }
 // Forced Deploy Trigger: 1785220233807
+// Forced Deploy Trigger: 1785220349807
