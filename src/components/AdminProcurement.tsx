@@ -61,7 +61,7 @@ export default function AdminProcurement() {
         return;
     }
 
-    const { error: updateError } = await supabase.from('procurement_requests').update({ status: 'Received' }).eq('id', req.id);
+    const { error: updateError } = await supabase.from('procurement_requests').update({ status: 'Returned' }).eq('id', req.id);
     if (updateError) alert("STATUS UPDATE ERROR: " + updateError.message);
     else fetchProcurements();
   };
@@ -179,3 +179,4 @@ export default function AdminProcurement() {
   );
 }
 // Forced Deploy Trigger: 1785226577091
+// Forced Deploy Trigger: 1785226720682
