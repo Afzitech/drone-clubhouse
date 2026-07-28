@@ -1,3 +1,5 @@
+import React from 'react';
+import { supabase } from '@/integrations/supabase/client';
 ﻿import { createFileRoute, Outlet, redirect, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -152,18 +154,7 @@ function AuthedShell() {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Admin Action Alert Badge */}
-            <Link
-              to="/admin"
-              className="relative flex items-center gap-2 rounded border border-destructive/30 bg-destructive/10 px-3 py-1.5 mono text-[10px] font-bold uppercase tracking-widest text-destructive transition-all hover:bg-destructive/20 hover:border-destructive/50"
-              title="Admin Command Center"
-            >
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive opacity-75"></span>
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-destructive"></span>
-              </span>
-              <span className="hidden sm:inline">Admin Queue</span>
-            </Link>
+            <AdminBadge />
 
             <Link
               to="/messages"
@@ -343,3 +334,4 @@ function AdminBadgeLink() {
 
 
 // Forced Deploy Trigger: 1785227561507
+// Forced Deploy Trigger: 1785227708911
