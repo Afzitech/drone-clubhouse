@@ -9,7 +9,6 @@ export default function AdminProcurement() {
   useEffect(() => { fetchProcurements(); }, []);
 
   const fetchProcurements = async () => {
-    // Fetch ONLY custom requests (item_id is null)
     const { data, error } = await supabase
       .from('inventory_requests')
       .select('*')
@@ -27,6 +26,34 @@ export default function AdminProcurement() {
     else fetchProcurements();
   };
 
+  const handleMarkReceived = async (req: any) => {
+    // 1. Prompt Admin to formalize the item name so the matrix stays clean
+    const formalizedName = prompt("ASSET INJECTION PROTOCOL\n\nEnter the official catalog name for this component to inject it into the Main Inventory Matrix:", req.reason);
+    
+    if (!formalizedName) return; // Abort if admin cancels
+
+    // 2. Automatically generate the permanent item in the main inventory
+    const { error: insertError } = await supabase.from('inventory_items').insert([{
+        name: formalizedName,
+        category: 'Custom Request', 
+        total_quantity: req.quantity,
+        available_quantity: req.quantity,
+        minimum_stock: 1,
+        status: 'Active'
+    }]);
+    
+    if (insertError) {
+        alert("INVENTORY INJECTION FAILED: " + insertError.message);
+        return;
+    }
+
+    // 3. Mark the procurement ticket as completed
+    const { error: updateError } = await supabase.from('inventory_requests').update({ status: 'Received' }).eq('id', req.id);
+    
+    if (updateError) alert("STATUS UPDATE ERROR: " + updateError.message);
+    else fetchProcurements();
+  };
+
   const handleDelete = async (id: string) => {
     if(confirm('Permanently purge this custom procurement record?')) {
       const { error } = await supabase.from('inventory_requests').delete().eq('id', id);
@@ -37,7 +64,7 @@ export default function AdminProcurement() {
 
   const pending = requests.filter(r => r.status === 'Pending');
   const ordered = requests.filter(r => r.status === 'Approved');
-  const history = requests.filter(r => r.status === 'Rejected' || r.status === 'Returned');
+  const history = requests.filter(r => r.status === 'Rejected' || r.status === 'Returned' || r.status === 'Received');
 
   if (loading) return <div className="text-primary animate-pulse tracking-widest font-mono">SYNCING PROCUREMENT MATRIX...</div>;
 
@@ -80,14 +107,14 @@ export default function AdminProcurement() {
         ) : (
           <div className="flex flex-col gap-3">
             {ordered.map(req => (
-              <div key={req.id} className="flex flex-col md:flex-row justify-between items-center bg-background border border-border p-4 rounded border-l-2 border-l-primary">
+              <div key={req.id} className="flex flex-col md:flex-row justify-between items-center bg-background border border-border p-4 rounded border-l-2 border-l-primary shadow-[0_0_15px_rgba(0,255,255,0.05)]">
                 <div>
                   <span className="font-bold text-foreground block mb-1">CUSTOM ASSET REQUEST</span>
                   <span className="text-xs text-muted-foreground block">PILOT: {req.requester_name || "UNKNOWN"} | QTY: {req.quantity}</span>
                   <span className="text-[10px] text-muted-foreground uppercase mt-2 block border-l-2 border-primary/50 pl-2">{req.reason}</span>
                 </div>
                 <div className="mt-4 md:mt-0">
-                  <button onClick={() => handleStatusUpdate(req.id, 'Returned')} className="bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded text-xs hover:bg-primary/20 flex items-center gap-1 uppercase tracking-widest"><CheckCircle2 className="w-3 h-3"/> Mark Received</button>
+                  <button onClick={() => handleMarkReceived(req)} className="bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded text-xs hover:bg-primary/20 flex items-center gap-1 uppercase tracking-widest transition-all"><CheckCircle2 className="w-3 h-3"/> Mark Received</button>
                 </div>
               </div>
             ))}
@@ -108,7 +135,7 @@ export default function AdminProcurement() {
               <div key={req.id} className="flex flex-col md:flex-row justify-between items-center bg-background border border-border p-3 rounded opacity-70 group hover:opacity-100 transition-all">
                 <div>
                   <span className="font-bold text-muted-foreground group-hover:text-foreground transition-colors block mb-1">CUSTOM ASSET REQUEST</span>
-                  <span className="text-xs text-muted-foreground block">PILOT: {req.requester_name || "UNKNOWN"} | QTY: {req.quantity} | STATUS: <span className={req.status === 'Returned' ? 'text-primary' : 'text-destructive'}>{req.status === 'Returned' ? 'RECEIVED' : 'REJECTED'}</span></span>
+                  <span className="text-xs text-muted-foreground block">PILOT: {req.requester_name || "UNKNOWN"} | QTY: {req.quantity} | STATUS: <span className={req.status === 'Received' || req.status === 'Returned' ? 'text-primary' : 'text-destructive'}>{req.status === 'Returned' ? 'RECEIVED' : req.status.toUpperCase()}</span></span>
                 </div>
                 <div className="mt-3 md:mt-0">
                   <button onClick={() => handleDelete(req.id)} className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors" title="Purge Record">
