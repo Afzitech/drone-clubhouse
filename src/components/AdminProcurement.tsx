@@ -49,7 +49,7 @@ export default function AdminProcurement() {
 
     const { error: insertError } = await supabase.from('inventory_items').insert([{
         name: formalizedName,
-        category: 'Custom Request', 
+        category: 'Miscellaneous', 
         total_quantity: req.quantity,
         available_quantity: req.quantity,
         minimum_stock: 1,
@@ -178,3 +178,4 @@ export default function AdminProcurement() {
     </div>
   );
 }
+// Forced Deploy Trigger: 1785226577091
