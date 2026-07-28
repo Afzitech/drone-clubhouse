@@ -286,17 +286,46 @@ function DrawerLink({
 
 // Our pristine glowing badge!
 function AdminBadge() {
+  const [counts, setCounts] = useState({ sub: 0, book: 0, proc: 0 });
+
+  useEffect(() => {
+    let alive = true;
+    async function fetchPending() {
+      const [sub, book, proc] = await Promise.all([
+        supabase.from("project_submissions").select("id", { count: "exact", head: true }).eq("status", "pending"),
+        supabase.from("resource_bookings").select("id", { count: "exact", head: true }).eq("status", "pending"),
+        supabase.from("procurement_requests").select("id", { count: "exact", head: true }).eq("status", "Pending")
+      ]);
+      if (alive) {
+        setCounts({ sub: sub.count || 0, book: book.count || 0, proc: proc.count || 0 });
+      }
+    }
+    fetchPending();
+    const iv = setInterval(fetchPending, 15000);
+    return () => { alive = false; clearInterval(iv); };
+  }, []);
+
+  const totalPending = counts.sub + counts.book + counts.proc;
+  const hasPending = totalPending > 0;
+
   return (
     <Link
       to="/admin"
-      className="relative flex items-center gap-2 rounded border border-destructive/30 bg-destructive/10 px-3 py-1.5 mono text-[10px] font-bold uppercase tracking-widest text-destructive transition-all hover:bg-destructive/20 hover:border-destructive/50"
+      className={`relative flex items-center gap-2 rounded border px-3 py-1.5 mono text-[10px] font-bold uppercase tracking-widest transition-all ${
+        hasPending
+          ? "border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20 hover:border-destructive/50"
+          : "border-muted/30 bg-muted/10 text-muted-foreground hover:bg-muted/20 hover:text-foreground"
+      }`}
       title="Admin Command Center"
     >
-      <span className="relative flex h-2.5 w-2.5">
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive opacity-75"></span>
-        <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-destructive"></span>
-      </span>
-      <span className="hidden sm:inline">Admin Queue</span>
+      {hasPending && (
+        <span className="relative flex h-2.5 w-2.5">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive opacity-75"></span>
+          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-destructive"></span>
+        </span>
+      )}
+      <span className="hidden sm:inline">Admin Queue {hasPending ? `(${totalPending})` : ""}</span>
     </Link>
   );
 }
+// Forced Deploy Trigger: 1785228344921
