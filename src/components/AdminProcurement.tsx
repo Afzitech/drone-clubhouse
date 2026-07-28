@@ -5,8 +5,18 @@ import { X, AlertCircle, ShoppingCart, Archive, Trash2, CheckCircle2 } from 'luc
 export default function AdminProcurement() {
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [profiles, setProfiles] = useState<Record<string, string>>({});
 
-  useEffect(() => { fetchProcurements(); }, []);
+  useEffect(() => { fetchProcurements(); fetchProfiles(); }, []);
+
+  const fetchProfiles = async () => {
+    const { data } = await supabase.from('profiles').select('*');
+    if (data) {
+      const pMap = {};
+      data.forEach(p => pMap[p.id] = p.full_name || p.name || p.username || 'UNKNOWN PILOT');
+      setProfiles(pMap);
+    }
+  };
 
   const fetchProcurements = async () => {
     const { data, error } = await supabase
@@ -79,7 +89,7 @@ export default function AdminProcurement() {
               <div key={req.id} className="flex flex-col md:flex-row justify-between items-center bg-background border border-border p-4 rounded">
                 <div>
                   <span className="font-bold text-foreground block mb-1">CUSTOM ASSET REQUEST</span>
-                  <span className="text-xs text-muted-foreground block">PILOT: <span className="text-foreground font-bold">{req.requester_name || "UNKNOWN"}</span> | QTY: {req.quantity}</span>
+                  <span className="text-xs text-muted-foreground block">PILOT: <span className="text-foreground font-bold">{profiles[req.user_id] || req.requester_name || "UNKNOWN"}</span> | QTY: {req.quantity}</span>
                   <span className="text-[10px] text-muted-foreground uppercase mt-2 block border-l-2 border-primary/50 pl-2">{req.reason || 'NO DESCRIPTION PROVIDED'}</span>
                 </div>
                 <div className="flex gap-2 mt-4 md:mt-0">
@@ -105,7 +115,7 @@ export default function AdminProcurement() {
               <div key={req.id} className="flex flex-col md:flex-row justify-between items-center bg-background border border-border p-4 rounded border-l-2 border-l-primary shadow-[0_0_15px_rgba(0,255,255,0.05)]">
                 <div>
                   <span className="font-bold text-foreground block mb-1">CUSTOM ASSET REQUEST</span>
-                  <span className="text-xs text-muted-foreground block">PILOT: {req.requester_name || "UNKNOWN"} | QTY: {req.quantity}</span>
+                  <span className="text-xs text-muted-foreground block">PILOT: {profiles[req.user_id] || req.requester_name || "UNKNOWN"} | QTY: {req.quantity}</span>
                   <span className="text-[10px] text-muted-foreground uppercase mt-2 block border-l-2 border-primary/50 pl-2">{req.reason}</span>
                 </div>
                 <div className="mt-4 md:mt-0">
@@ -130,7 +140,7 @@ export default function AdminProcurement() {
               <div key={req.id} className="flex flex-col md:flex-row justify-between items-center bg-background border border-border p-3 rounded opacity-70 group hover:opacity-100 transition-all">
                 <div>
                   <span className="font-bold text-muted-foreground group-hover:text-foreground transition-colors block mb-1">CUSTOM ASSET REQUEST</span>
-                  <span className="text-xs text-muted-foreground block">PILOT: {req.requester_name || "UNKNOWN"} | QTY: {req.quantity} | STATUS: <span className={req.status === 'Received' || req.status === 'Returned' ? 'text-primary' : 'text-destructive'}>{req.status === 'Returned' ? 'RECEIVED' : req.status.toUpperCase()}</span></span>
+                  <span className="text-xs text-muted-foreground block">PILOT: {profiles[req.user_id] || req.requester_name || "UNKNOWN"} | QTY: {req.quantity} | STATUS: <span className={req.status === 'Received' || req.status === 'Returned' ? 'text-primary' : 'text-destructive'}>{req.status === 'Returned' ? 'RECEIVED' : req.status.toUpperCase()}</span></span>
                 </div>
                 <div className="mt-3 md:mt-0">
                   <button onClick={() => handleDelete(req.id)} className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors" title="Purge Record">
@@ -148,3 +158,4 @@ export default function AdminProcurement() {
 }
 // Forced Deploy Trigger: 1785220233807
 // Forced Deploy Trigger: 1785220349807
+// Forced Deploy Trigger: 1785220586402
