@@ -18,7 +18,7 @@ export default function AdminInventory() {
     if (iError) alert("ADMIN DB ERROR (Items): " + iError.message);
     else if (iData) setItems(iData);
 
-    const { data: rData, error: rError } = await supabase.from('inventory_requests').select('*, inventory_items(name)').order('created_at', { ascending: false });
+    const { data: rData, error: rError } = await supabase.from('inventory_requests').select('*, inventory_items(name)').not('item_id', 'is', null).order('created_at', { ascending: false });
     if (rError) alert("ADMIN DB ERROR (Requests): " + rError.message);
     else if (rData) setRequests(rData);
   };
