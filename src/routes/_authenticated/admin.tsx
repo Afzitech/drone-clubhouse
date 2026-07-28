@@ -1,3 +1,5 @@
+import React from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import AdminInventory from '@/components/AdminInventory';
 import AdminProcurement from '@/components/AdminProcurement';
 import { createFileRoute, redirect } from "@tanstack/react-router";
@@ -48,6 +50,31 @@ function AdminPage() {
   const { user } = Route.useRouteContext();
   const [tab, setTab] = useState<"queue" | "members" | "create" | "landing" | "bookings" | "inventory" | "procurement">("queue");
 
+  const [counts, setCounts] = React.useState({ queue: 0, bookings: 0, procurement: 0 });
+  
+  React.useEffect(() => {
+    let alive = true;
+    async function fetchPending() {
+      const [sub, up, book, proc] = await Promise.all([
+        supabase.from("project_submissions").select("id", { count: "exact", head: true }).eq("status", "pending"),
+        supabase.from("project_updates").select("id", { count: "exact", head: true }).eq("status", "pending"),
+        supabase.from("resource_bookings").select("id", { count: "exact", head: true }).eq("status", "pending"),
+        supabase.from("procurement_requests").select("id", { count: "exact", head: true }).eq("status", "Pending")
+      ]);
+      if (alive) {
+        setCounts({ 
+          queue: (sub?.count || 0) + (up?.count || 0), 
+          bookings: book?.count || 0, 
+          procurement: proc?.count || 0 
+        });
+      }
+    }
+    fetchPending();
+    const iv = setInterval(fetchPending, 15000);
+    return () => { alive = false; clearInterval(iv); };
+  }, []);
+
+
   return (
     <div className="space-y-6">
       <div>
@@ -78,8 +105,11 @@ function AdminPage() {
                 : "border-border text-muted-foreground hover:text-foreground"
             }`}
           >
-            {label}
-          </button>
+              {label}
+              {id === 'queue' && counts.queue > 0 && <span className="ml-1.5 rounded bg-destructive text-destructive-foreground px-1.5 py-0.5 text-[9px] font-bold">{counts.queue}</span>}
+              {id === 'bookings' && counts.bookings > 0 && <span className="ml-1.5 rounded bg-destructive text-destructive-foreground px-1.5 py-0.5 text-[9px] font-bold">{counts.bookings}</span>}
+              {id === 'procurement' && counts.procurement > 0 && <span className="ml-1.5 rounded bg-destructive text-destructive-foreground px-1.5 py-0.5 text-[9px] font-bold">{counts.procurement}</span>}
+            </button>
         ))}
       </div>
 
@@ -894,3 +924,4 @@ function BookingsQueue() {
   );
 }
 // Forced Deploy Trigger: eccc0fce-799e-4fb7-b2bd-c41ffff4f765
+// Forced Deploy Trigger: 1785236748138
