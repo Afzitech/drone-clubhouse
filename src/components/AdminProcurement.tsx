@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Check, X, AlertCircle, ShoppingCart, Archive, Trash2, CheckCircle2 } from 'lucide-react';
+import { X, AlertCircle, ShoppingCart, Archive, Trash2, CheckCircle2 } from 'lucide-react';
 
 export default function AdminProcurement() {
   const [requests, setRequests] = useState<any[]>([]);
@@ -27,12 +27,9 @@ export default function AdminProcurement() {
   };
 
   const handleMarkReceived = async (req: any) => {
-    // 1. Prompt Admin to formalize the item name so the matrix stays clean
     const formalizedName = prompt("ASSET INJECTION PROTOCOL\n\nEnter the official catalog name for this component to inject it into the Main Inventory Matrix:", req.reason);
-    
-    if (!formalizedName) return; // Abort if admin cancels
+    if (!formalizedName) return;
 
-    // 2. Automatically generate the permanent item in the main inventory
     const { error: insertError } = await supabase.from('inventory_items').insert([{
         name: formalizedName,
         category: 'Custom Request', 
@@ -47,9 +44,7 @@ export default function AdminProcurement() {
         return;
     }
 
-    // 3. Mark the procurement ticket as completed
     const { error: updateError } = await supabase.from('inventory_requests').update({ status: 'Received' }).eq('id', req.id);
-    
     if (updateError) alert("STATUS UPDATE ERROR: " + updateError.message);
     else fetchProcurements();
   };
