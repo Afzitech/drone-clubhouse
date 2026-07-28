@@ -1,7 +1,5 @@
-import React from 'react';
-import { supabase } from '@/integrations/supabase/client';
-﻿import { createFileRoute, Outlet, redirect, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { createFileRoute, Outlet, redirect, Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import {
@@ -105,21 +103,21 @@ function AuthedShell() {
   }
 
   const links = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/projects", label: "Projects", icon: FolderKanban },
-  { to: "/announcements", label: "News", icon: Newspaper },
-  { to: "/events", label: "Events", icon: CalendarDays },
-  { to: "/forum", label: "Forum", icon: MessageSquare },
-  { to: "/gallery", label: "Gallery", icon: Images },
-  { to: "/resources", label: "Library", icon: BookOpen },
-  { to: "/members", label: "Members", icon: Users },
-  { to: "/messages", label: "Messages", icon: Mail },
-  { to: "/bookings/room", label: "Club Room", icon: DoorOpen },
-  { to: "/bookings/printer", label: "3D Printer", icon: Printer },
-  { to: "/inventory", label: "Inventory", icon: Box },
-  { to: "/submit", label: "Submit", icon: Send },
-  { to: "/settings", label: "Settings", icon: Settings },
-] as const;
+    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { to: "/projects", label: "Projects", icon: FolderKanban },
+    { to: "/announcements", label: "News", icon: Newspaper },
+    { to: "/events", label: "Events", icon: CalendarDays },
+    { to: "/forum", label: "Forum", icon: MessageSquare },
+    { to: "/gallery", label: "Gallery", icon: Images },
+    { to: "/resources", label: "Library", icon: BookOpen },
+    { to: "/members", label: "Members", icon: Users },
+    { to: "/messages", label: "Messages", icon: Mail },
+    { to: "/bookings/room", label: "Club Room", icon: DoorOpen },
+    { to: "/bookings/printer", label: "3D Printer", icon: Printer },
+    { to: "/inventory", label: "Inventory", icon: Box },
+    { to: "/submit", label: "Submit", icon: Send },
+    { to: "/settings", label: "Settings", icon: Settings },
+  ] as const;
 
   const initials = (displayName ?? user.email ?? "?")
     .split(/\s+|@/)
@@ -154,7 +152,8 @@ function AuthedShell() {
           </div>
 
           <div className="flex items-center gap-2">
-            <AdminBadge />
+            {/* Renders ONLY if the user is an admin */}
+            {isAdmin && <AdminBadge />}
 
             <Link
               to="/messages"
@@ -188,7 +187,9 @@ function AuthedShell() {
                   {initials}
                 </div>
               )}
-            </Link>            <button
+            </Link>
+            
+            <button
               onClick={signOut}
               className="mono rounded-md border border-border px-3 py-1.5 text-[10px] uppercase tracking-widest text-muted-foreground transition hover:text-foreground"
             >
@@ -283,55 +284,19 @@ function DrawerLink({
   );
 }
 
-function AdminBadgeLink() {
-  const [pending, setPending] = useState(0);
-  useEffect(() => {
-    let alive = true;
-    async function load() {
-      const [{ count: s }, { count: u }, { count: b }] = await Promise.all([
-        supabase.from("project_submissions").select("id", { count: "exact", head: true }).eq("status", "pending"),
-        supabase.from("project_updates").select("id", { count: "exact", head: true }).eq("status", "pending"),
-        supabase.from("resource_bookings").select("id", { count: "exact", head: true }).eq("status", "pending"),
-      ]);
-      if (alive) setPending((s ?? 0) + (u ?? 0) + (b ?? 0));
-    }
-    load();
-    const iv = setInterval(load, 30_000);
-    return () => {
-      alive = false;
-      clearInterval(iv);
-    };
-  }, []);
+// Our pristine glowing badge!
+function AdminBadge() {
   return (
     <Link
       to="/admin"
-      className="relative mono rounded-md border border-command/40 bg-command/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-command transition hover:bg-command/20"
+      className="relative flex items-center gap-2 rounded border border-destructive/30 bg-destructive/10 px-3 py-1.5 mono text-[10px] font-bold uppercase tracking-widest text-destructive transition-all hover:bg-destructive/20 hover:border-destructive/50"
+      title="Admin Command Center"
     >
-      Command
-      {pending > 0 && (
-        <span className="mono absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[9px] font-bold text-destructive-foreground">
-          {pending > 9 ? "9+" : pending}
-        </span>
-      )}
+      <span className="relative flex h-2.5 w-2.5">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive opacity-75"></span>
+        <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-destructive"></span>
+      </span>
+      <span className="hidden sm:inline">Admin Queue</span>
     </Link>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Forced Deploy Trigger: 1785227561507
-// Forced Deploy Trigger: 1785227708911
