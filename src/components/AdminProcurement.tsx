@@ -10,7 +10,7 @@ export default function AdminProcurement() {
 
   const fetchProcurements = async () => {
     const { data, error } = await supabase
-      .from('inventory_requests')
+      .from('procurement_requests')
       .select('*')
       .is('item_id', null)
       .order('created_at', { ascending: false });
@@ -21,7 +21,7 @@ export default function AdminProcurement() {
   };
 
   const handleStatusUpdate = async (id: string, newStatus: string) => {
-    const { error } = await supabase.from('inventory_requests').update({ status: newStatus }).eq('id', id);
+    const { error } = await supabase.from('procurement_requests').update({ status: newStatus }).eq('id', id);
     if (error) alert("UPDATE ERROR: " + error.message);
     else fetchProcurements();
   };
@@ -44,14 +44,14 @@ export default function AdminProcurement() {
         return;
     }
 
-    const { error: updateError } = await supabase.from('inventory_requests').update({ status: 'Received' }).eq('id', req.id);
+    const { error: updateError } = await supabase.from('procurement_requests').update({ status: 'Received' }).eq('id', req.id);
     if (updateError) alert("STATUS UPDATE ERROR: " + updateError.message);
     else fetchProcurements();
   };
 
   const handleDelete = async (id: string) => {
     if(confirm('Permanently purge this custom procurement record?')) {
-      const { error } = await supabase.from('inventory_requests').delete().eq('id', id);
+      const { error } = await supabase.from('procurement_requests').delete().eq('id', id);
       if (error) alert("DELETE ERROR: " + error.message);
       else fetchProcurements();
     }
@@ -146,3 +146,4 @@ export default function AdminProcurement() {
     </div>
   );
 }
+// Forced Deploy Trigger: 1785220233807
