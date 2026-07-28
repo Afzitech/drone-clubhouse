@@ -95,7 +95,7 @@ export default function AdminProcurement() {
                 <div>
                   <span className="font-bold text-foreground block mb-1">CUSTOM ASSET REQUEST</span>
                   <span className="text-xs text-muted-foreground block">
-                    PILOT: <span className="text-foreground font-bold">{profiles[req.user_id] || req.requester_name || "UNKNOWN"}</span> | QTY: {req.quantity}
+                    PILOT: <span className="text-foreground font-bold">{profiles[req.member_id] || req.requester_name || "UNKNOWN"}</span> | QTY: {req.quantity}
                   </span>
                   <span className="text-[10px] text-muted-foreground uppercase mt-2 block border-l-2 border-primary/50 pl-2">
                     {req.reason || req.component_name || 'NO DESCRIPTION PROVIDED'}
@@ -125,7 +125,7 @@ export default function AdminProcurement() {
                 <div>
                   <span className="font-bold text-foreground block mb-1">CUSTOM ASSET REQUEST</span>
                   <span className="text-xs text-muted-foreground block">
-                    PILOT: {profiles[req.user_id] || req.requester_name || "UNKNOWN"} | QTY: {req.quantity}
+                    PILOT: {profiles[req.member_id] || req.requester_name || "UNKNOWN"} | QTY: {req.quantity}
                   </span>
                   <span className="text-[10px] text-muted-foreground uppercase mt-2 block border-l-2 border-primary/50 pl-2">
                     {req.reason || req.component_name || 'NO DESCRIPTION PROVIDED'}
@@ -154,7 +154,7 @@ export default function AdminProcurement() {
                 <div>
                   <span className="font-bold text-muted-foreground group-hover:text-foreground transition-colors block mb-1">CUSTOM ASSET REQUEST</span>
                   <span className="text-xs text-muted-foreground block">
-                    PILOT: {profiles[req.user_id] || req.requester_name || "UNKNOWN"} | QTY: {req.quantity} | STATUS: <span className={req.status === 'Received' || req.status === 'Returned' ? 'text-primary' : 'text-destructive'}>{req.status === 'Returned' ? 'RECEIVED' : req.status.toUpperCase()}</span>
+                    PILOT: {profiles[req.member_id] || req.requester_name || "UNKNOWN"} | QTY: {req.quantity} | STATUS: <span className={req.status === 'Received' || req.status === 'Returned' ? 'text-primary' : 'text-destructive'}>{req.status === 'Returned' ? 'RECEIVED' : req.status.toUpperCase()}</span>
                   </span>
                 </div>
                 <div className="mt-3 md:mt-0">
@@ -171,3 +171,4 @@ export default function AdminProcurement() {
     </div>
   );
 }
+// Forced Deploy Trigger: 1785225472351
