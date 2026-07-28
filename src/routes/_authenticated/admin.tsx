@@ -46,9 +46,7 @@ type Profile = { id: string; display_name: string | null };
 
 function AdminPage() {
   const { user } = Route.useRouteContext();
-  const [tab, setTab] = useState<"queue" | "members" | "create" | "landing" | "bookings">(
-    "queue",
-  );
+  const [tab, setTab] = useState<"queue" | "members" | "create" | "landing" | "bookings" | "inventory" | "procurement">("queue");
 
   return (
     <div className="space-y-6">
@@ -65,12 +63,15 @@ function AdminPage() {
             ["queue", "Submissions queue"],
             ["members", "Members"],
             ["create", "Create member"],
-            ["landing", "Landing page"], ["bookings", "Bookings queue"], ["inventory", "Inventory"], ["procurement", "Procurement"],
+            ["landing", "Landing page"], 
+            ["bookings", "Bookings queue"], 
+            ["inventory", "Inventory"], 
+            ["procurement", "Procurement"],
           ] as const
         ).map(([id, label]) => (
           <button
             key={id}
-            onClick={() => setTab(id)}
+            onClick={() => setTab(id as any)}
             className={`mono rounded-md border px-3 py-1.5 text-[10px] uppercase tracking-widest transition ${
               tab === id
                 ? "border-command/60 bg-command/20 text-command"
@@ -88,7 +89,15 @@ function AdminPage() {
         <MembersList currentUserId={user.id} />
       ) : tab === "create" ? (
         <CreateMember />
-      ) : tab === "landing" ? ( <LandingEditor /> ) : tab === "inventory" ? ( <AdminInventory /> ) : ( <BookingsQueue /> )}
+      ) : tab === "landing" ? ( 
+        <LandingEditor /> 
+      ) : tab === "inventory" ? ( 
+        <AdminInventory /> 
+      ) : tab === "procurement" ? (
+        <AdminProcurement />
+      ) : ( 
+        <BookingsQueue /> 
+      )}
     </div>
   );
 }
@@ -129,7 +138,6 @@ function SubmissionsQueue({ adminId }: { adminId: string }) {
 
   async function approve(s: Submission) {
     setBusy(s.id);
-    // 1) Update submission status
     const { error: upErr } = await supabase
       .from("project_submissions")
       .update({
@@ -143,7 +151,6 @@ function SubmissionsQueue({ adminId }: { adminId: string }) {
       setBusy(null);
       return alert(upErr.message);
     }
-    // 2) Create project row
     const { error: insErr } = await supabase.from("projects").insert({
       title: s.title,
       description: s.description ?? s.summary,
@@ -658,7 +665,6 @@ function BookingsQueue() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<Record<string, any>>({});
   
-  // State to track which item is being actioned and the note text
   const [actionState, setActionState] = useState<{ id: string; status: "approved" | "rejected" } | null>(null);
   const [adminNote, setAdminNote] = useState("");
 
@@ -717,18 +723,15 @@ function BookingsQueue() {
   const pending = bookings.filter((b) => b.status === "pending");
   const upcoming = bookings.filter((b) => b.status === "approved" && new Date(b.end_at) > now);
   
-  // Base history
   const history = bookings.filter((b) => 
     b.status === "rejected" || b.status === "cancelled" || (b.status === "approved" && new Date(b.end_at) <= now)
   );
 
-  // Split history
   const roomHistory = history.filter((b) => b.kind === "club_room");
   const printerHistory = history.filter((b) => b.kind === "printer_3d");
 
   return (
     <div className="space-y-8">
-      {/* 1. PENDING QUEUE */}
       <div className="space-y-4 rounded-md border border-command/30 bg-command/5 p-5">
         <div className="flex items-center justify-between">
           <h2 className="mono text-xs uppercase tracking-widest text-command font-bold">
@@ -786,7 +789,6 @@ function BookingsQueue() {
         )}
       </div>
 
-      {/* 2. UPCOMING APPROVED */}
       <div className="space-y-4 rounded-md border border-primary/30 bg-primary/5 p-5">
         <div className="flex items-center justify-between">
           <h2 className="mono text-xs uppercase tracking-widest text-primary font-bold">
@@ -821,7 +823,6 @@ function BookingsQueue() {
         )}
       </div>
 
-      {/* 3. CLUB ROOM HISTORY */}
       <div className="space-y-4 rounded-md border border-border bg-muted/10 p-5">
         <div className="flex items-center justify-between">
           <h2 className="mono text-xs uppercase tracking-widest text-muted-foreground font-bold">
@@ -856,7 +857,6 @@ function BookingsQueue() {
         )}
       </div>
 
-      {/* 4. 3D PRINTER HISTORY */}
       <div className="space-y-4 rounded-md border border-border bg-muted/10 p-5">
         <div className="flex items-center justify-between">
           <h2 className="mono text-xs uppercase tracking-widest text-muted-foreground font-bold">
@@ -890,18 +890,7 @@ function BookingsQueue() {
           </ul>
         )}
       </div>
-    
-<div className="mt-12 pt-8 border-t border-cyan-900/50">
-<h2 className="text-xl font-bold text-cyan-400 mb-6 uppercase tracking-widest">Logistics Command</h2>
-<AdminInventory />
-</div>
-</div>
+    </div>
   );
 }
-
-
-
-
-
-
-
+// Forced Deploy Trigger: eccc0fce-799e-4fb7-b2bd-c41ffff4f765
