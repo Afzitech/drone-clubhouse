@@ -18,7 +18,7 @@ export default function AdminProcurement() {
     if (data) {
       const pMap: Record<string, string> = {};
       data.forEach(p => {
-        pMap[p.id] = p.full_name || p.name || p.username || 'NO-NAME-SET';
+        pMap[p.id] = p.display_name || p.full_name || p.name || p.username || 'NO-NAME-SET';
       });
       setProfiles(pMap);
     }
@@ -117,3 +117,4 @@ export default function AdminProcurement() {
     </div>
   );
 }
+// Forced Deploy Trigger: 1785225950909
