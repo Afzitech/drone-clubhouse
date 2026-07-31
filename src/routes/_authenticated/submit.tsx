@@ -67,13 +67,12 @@ function SubmitPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="mono text-[10px] uppercase tracking-widest text-primary">
-          / Flight deck · Submission bay /
-        </p>
-        <h1 className="mt-2 text-3xl font-bold text-foreground">Submit Project</h1>
-        <p className="mono mt-1 text-xs text-muted-foreground">
-          Submissions require command approval before entering the active board.
+      <div className="border-b border-border pb-6 mb-6">
+        <h1 className="text-3xl font-bold tracking-widest text-primary uppercase mono">
+          / ASSET SUBMISSION
+        </h1>
+        <p className="text-muted-foreground mt-2 text-xs tracking-widest uppercase mono">
+          LOG NEW BUILDS, UPGRADES & MODIFICATIONS
         </p>
       </div>
 
@@ -205,3 +204,5 @@ export function StatusPill({ status }: { status: string }) {
     </span>
   );
 }
+
+// HUD Header Synchronized: 1785488483955

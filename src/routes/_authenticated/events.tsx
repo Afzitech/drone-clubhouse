@@ -105,11 +105,13 @@ function EventsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="mono text-[10px] uppercase tracking-widest text-primary">
-          / Ops · Event calendar /
+      <div className="border-b border-border pb-6 mb-6">
+        <h1 className="text-3xl font-bold tracking-widest text-primary uppercase mono">
+          / FLIGHT OPERATIONS
+        </h1>
+        <p className="text-muted-foreground mt-2 text-xs tracking-widest uppercase mono">
+          UPCOMING MEETINGS, TESTS & DEPLOYMENTS
         </p>
-        <h1 className="mt-2 text-3xl font-bold text-foreground">Events</h1>
       </div>
 
       {canPost && (
@@ -251,3 +253,5 @@ function EventList({
     </section>
   );
 }
+
+// HUD Header Synchronized: 1785488483931

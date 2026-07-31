@@ -44,11 +44,13 @@ function MembersPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="mono text-[10px] uppercase tracking-widest text-primary">
-          / Roster  /  Squadron /
+      <div className="border-b border-border pb-6 mb-6">
+        <h1 className="text-3xl font-bold tracking-widest text-primary uppercase mono">
+          / SQUADRON ROSTER
+        </h1>
+        <p className="text-muted-foreground mt-2 text-xs tracking-widest uppercase mono">
+          ACTIVE PILOTS & PERSONNEL MATRIX
         </p>
-        <h1 className="mt-2 text-3xl font-bold text-foreground">Members</h1>
       </div>
       {loading ? (
         <p className="mono text-xs text-muted-foreground">Loading...</p>
@@ -127,3 +129,5 @@ function MembersPage() {
 }
 
 
+
+// HUD Header Synchronized: 1785488483943

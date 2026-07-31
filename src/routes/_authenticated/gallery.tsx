@@ -110,13 +110,12 @@ function GalleryPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="mono text-[10px] uppercase tracking-widest text-primary">
-          / Hangar  /  Showcase gallery /
-        </p>
-        <h1 className="mt-2 text-3xl font-bold text-foreground">Gallery</h1>
-        <p className="mono mt-1 text-[11px] text-muted-foreground">
-          Admins choose which images appear on the public landing page.
+      <div className="border-b border-border pb-6 mb-6">
+        <h1 className="text-3xl font-bold tracking-widest text-primary uppercase mono">
+          / RECON GALLERY
+        </h1>
+        <p className="text-muted-foreground mt-2 text-xs tracking-widest uppercase mono">
+          FLIGHT FOOTAGE, BUILD ARCHIVES & TELEMETRY
         </p>
       </div>
 
@@ -221,3 +220,5 @@ function GalleryPage() {
 }
 
 
+
+// HUD Header Synchronized: 1785488483937

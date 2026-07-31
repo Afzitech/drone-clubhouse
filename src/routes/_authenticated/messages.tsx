@@ -152,11 +152,13 @@ function MessagesPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <p className="mono text-[10px] uppercase tracking-widest text-primary">
-          / Comms · Direct messages /
+      <div className="border-b border-border pb-6 mb-6">
+        <h1 className="text-3xl font-bold tracking-widest text-primary uppercase mono">
+          / COMMS RELAY
+        </h1>
+        <p className="text-muted-foreground mt-2 text-xs tracking-widest uppercase mono">
+          ENCRYPTED DIRECT PILOT MESSAGING
         </p>
-        <h1 className="mt-2 text-3xl font-bold text-foreground">Messages</h1>
       </div>
       <div className="grid gap-4 md:grid-cols-[280px_1fr]">
         <aside className="hud-panel corner-brackets p-2 h-[70vh] overflow-y-auto">
@@ -288,3 +290,5 @@ function MessagesPage() {
     </div>
   );
 }
+
+// HUD Header Synchronized: 1785488483946

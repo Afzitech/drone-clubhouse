@@ -80,11 +80,13 @@ function ResourcesPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="mono text-[10px] uppercase tracking-widest text-primary">
-          / Library · Technical resources /
+      <div className="border-b border-border pb-6 mb-6">
+        <h1 className="text-3xl font-bold tracking-widest text-primary uppercase mono">
+          / TECHNICAL LIBRARY
+        </h1>
+        <p className="text-muted-foreground mt-2 text-xs tracking-widest uppercase mono">
+          MANUALS, PINOUTS, SCHEMATICS & FIRMWARE
         </p>
-        <h1 className="mt-2 text-3xl font-bold text-foreground">Resources</h1>
       </div>
 
       {canManage && (
@@ -206,3 +208,5 @@ function ResourcesPage() {
     </div>
   );
 }
+
+// HUD Header Synchronized: 1785488483939

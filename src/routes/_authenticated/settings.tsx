@@ -14,12 +14,13 @@ function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="mono text-[10px] uppercase tracking-widest text-primary">
-          / Pilot settings /
+      <div className="border-b border-border pb-6 mb-6">
+        <h1 className="text-3xl font-bold tracking-widest text-primary uppercase mono">
+          / COCKPIT SETTINGS
+        </h1>
+        <p className="text-muted-foreground mt-2 text-xs tracking-widest uppercase mono">
+          PILOT PREFERENCES & SYSTEM CONFIGURATION
         </p>
-        <h1 className="mt-2 text-3xl font-bold text-foreground">My account</h1>
-        <p className="mono mt-1 text-xs text-muted-foreground">{user.email}</p>
       </div>
       <div className="flex flex-wrap gap-2">
         {(
@@ -326,3 +327,5 @@ function SecurityForm() {
     </form>
   );
 }
+
+// HUD Header Synchronized: 1785488483957

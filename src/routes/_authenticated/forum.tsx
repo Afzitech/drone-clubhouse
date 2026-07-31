@@ -153,11 +153,13 @@ function ForumPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="mono text-[10px] uppercase tracking-widest text-primary">
-          / Flight deck · Squadron comms /
+      <div className="border-b border-border pb-6 mb-6">
+        <h1 className="text-3xl font-bold tracking-widest text-primary uppercase mono">
+          / SQUADRON FORUM
+        </h1>
+        <p className="text-muted-foreground mt-2 text-xs tracking-widest uppercase mono">
+          TACTICAL DISCUSSIONS & TECHNICAL SUPPORT
         </p>
-        <h1 className="mt-2 text-3xl font-bold text-foreground">Forum</h1>
       </div>
 
       {!selected ? (
@@ -306,3 +308,5 @@ function ForumPage() {
     </div>
   );
 }
+
+// HUD Header Synchronized: 1785488483935
