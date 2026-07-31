@@ -27,7 +27,7 @@
     <string name="generatorApp" translatable="false">bubblewrap-cli</string>
     <string name="hostName" translatable="false">imuaeroforge.vercel.app</string>
     <string name="launchUrl" translatable="false">https://imuaeroforge.vercel.app/</string>
-    <string name="launcherName" translatable="false">AF</string>
+    <string name="launcherName" translatable="false">AeroForge</string>
     <string name="orientation" translatable="false">portrait</string>
     <string name="providerAuthority" translatable="false">com.aeroforge.app.fileprovider</string>
     <string name="webManifestUrl" translatable="false">https://imuaeroforge.vercel.app/manifest.webmanifest</string>

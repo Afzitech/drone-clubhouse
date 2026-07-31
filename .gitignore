@@ -32,3 +32,14 @@ dist-ssr
 *.sw?
 
 .env
+# Bubblewrap / Android
+.gradle/
+build/
+*.apk
+*.aab
+
+# Java
+*.class
+
+# Temporary files
+Thumbs.db
