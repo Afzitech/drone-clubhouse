@@ -295,26 +295,48 @@ function DrawerLink({
 
 // Our pristine glowing badge!
 function AdminBadge() {
-  const [counts, setCounts] = React.useState({ sub: 0, book: 0, proc: 0 });
+  const [counts, setCounts] = React.useState({ sub: 0, up: 0, book: 0, proc: 0, inv: 0 });
 
   React.useEffect(() => {
     let alive = true;
     async function fetchPending() {
-      const [sub, book, proc] = await Promise.all([
+      const [sub, up, book, proc, inv] = await Promise.all([
         supabase.from("project_submissions").select("id", { count: "exact", head: true }).eq("status", "pending"),
+        supabase.from("project_updates").select("id", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("resource_bookings").select("id", { count: "exact", head: true }).eq("status", "pending"),
-        supabase.from("procurement_requests").select("id", { count: "exact", head: true }).eq("status", "Pending")
+        supabase.from("procurement_requests").select("id", { count: "exact", head: true }).eq("status", "Pending"),
+        supabase.from("inventory_requests").select("id", { count: "exact", head: true }).eq("status", "Pending")
       ]);
       if (alive) {
-        setCounts({ sub: sub?.count || 0, book: book?.count || 0, proc: proc?.count || 0 });
+        setCounts({ 
+          sub: sub?.count || 0, 
+          up: up?.count || 0,
+          book: book?.count || 0, 
+          proc: proc?.count || 0,
+          inv: inv?.count || 0
+        });
       }
     }
     fetchPending();
     const iv = setInterval(fetchPending, 15000);
-    return () => { alive = false; clearInterval(iv); };
+
+    const rtChannel = supabase
+      .channel("nav-admin-badge-instant")
+      .on("postgres_changes", { event: "*", schema: "public", table: "project_submissions" }, fetchPending)
+      .on("postgres_changes", { event: "*", schema: "public", table: "project_updates" }, fetchPending)
+      .on("postgres_changes", { event: "*", schema: "public", table: "resource_bookings" }, fetchPending)
+      .on("postgres_changes", { event: "*", schema: "public", table: "procurement_requests" }, fetchPending)
+      .on("postgres_changes", { event: "*", schema: "public", table: "inventory_requests" }, fetchPending)
+      .subscribe();
+
+    return () => { 
+      alive = false; 
+      clearInterval(iv); 
+      supabase.removeChannel(rtChannel);
+    };
   }, []);
 
-  const totalPending = counts.sub + counts.book + counts.proc;
+  const totalPending = counts.sub + counts.up + counts.book + counts.proc + counts.inv;
   const hasPending = totalPending > 0;
 
   return (
