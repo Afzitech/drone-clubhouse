@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.aeroforge.app",
+      "sha256_cert_fingerprints": [
+        "58:43:2A:B5:D8:EF:B1:76:3B:31:5A:9B:08:36:5E:29:DB:BC:73:D9:57:29:55:16:39:98:8A:01:10:DF:D7:02"
+      ]
+    }
+  }
+]
