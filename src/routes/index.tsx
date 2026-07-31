@@ -67,7 +67,7 @@ function Landing() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <a href="#top" className="flex items-center gap-2">
             <div className="hud-panel corner-brackets flex h-8 w-8 items-center justify-center">
-              <span className="mono text-xs font-bold text-primary">AF</span>
+              <img src="/icon-192.png" alt="AeroForge" className="h-6 w-6 object-contain" />
             </div>
             <span className="mono text-sm font-semibold uppercase tracking-widest text-foreground">
               Aeroforge
@@ -270,3 +270,4 @@ function FlightPathDivider() {
     </div>
   );
 }
+
