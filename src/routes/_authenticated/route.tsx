@@ -84,7 +84,7 @@ function AuthedShell() {
     const iv = setInterval(loadCounts, 30_000);
     const nCh = supabase
       .channel(`notif:${user.id}`)
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` }, loadCounts)
+      .on("postgres_changes", { event: "*", schema: "public", table: "notifications", filter: `recipient_id=eq.${user.id}` }, loadCounts)
       .subscribe();
     const dCh = supabase
       .channel(`dm:${user.id}`)
