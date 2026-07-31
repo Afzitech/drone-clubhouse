@@ -25,7 +25,7 @@ const [componentName, setComponentName] = useState('');
     else if (iData) setItems(iData);
 
     if (user) {
-      const { data: rData, error: rError } = await supabase.from('inventory_requests').select('*, inventory_items(name)').eq('user_id', user.id).order('created_at', { ascending: false });
+      const { data: rData, error: rError } = await supabase.from('inventory_requests').select('*, inventory_items(name)').eq('member_id', user.id).order('created_at', { ascending: false });
       if (rError) alert("MEMBER DB ERROR (Requests): " + rError.message);
       else if (rData) setMyRequests(rData);
     }
@@ -45,8 +45,7 @@ const activePilotName = user.user_metadata?.full_name || user.user_metadata?.nam
     const { error } = item
       ? await supabase.from('inventory_requests').insert([{
           item_id: item.id,
-          user_id: user.id,
-          requester_name: activePilotName,
+          member_id: user.id,
           quantity: reqQty,
           reason: reqReason,
           status: 'Pending'
