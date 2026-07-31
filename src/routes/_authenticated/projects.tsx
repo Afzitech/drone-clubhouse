@@ -95,11 +95,13 @@ function ProjectsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="mono text-[10px] uppercase tracking-widest text-primary">
-          / Flight deck  /  Active projects /
+      <div className="border-b border-border pb-6">
+        <h1 className="text-3xl font-bold tracking-widest text-primary uppercase mono">
+          / ACTIVE PROJECTS
+        </h1>
+        <p className="text-muted-foreground mt-2 text-xs tracking-widest uppercase mono">
+          AEROFORGE SQUADRON R&D FLIGHT DECK
         </p>
-        <h1 className="mt-2 text-3xl font-bold text-foreground">Projects</h1>
       </div>
 
       {loading ? (
@@ -410,3 +412,5 @@ function ProjectUpdatesPanel({
 }
 
 
+
+// HUD Header Synchronized: 1785488313403
