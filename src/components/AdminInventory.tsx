@@ -73,7 +73,7 @@ export default function AdminInventory() {
     if (error) alert("UPDATE ERROR: " + error.message);
     else {
       setEditingItem(null);
-      window.location.reload(); // Hard refresh to ensure matrix syncs perfectly
+      fetchData();
     }
   };
 
