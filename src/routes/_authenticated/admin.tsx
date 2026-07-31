@@ -51,28 +51,44 @@ function AdminPage() {
   const { user } = Route.useRouteContext();
   const [tab, setTab] = useState<"queue" | "members" | "create" | "landing" | "bookings" | "inventory" | "procurement">("queue");
 
-  const [counts, setCounts] = React.useState({ queue: 0, bookings: 0, procurement: 0 });
+  const [counts, setCounts] = React.useState({ queue: 0, bookings: 0, procurement: 0, inventory: 0 });
   
-  React.useEffect(() => {
+    React.useEffect(() => {
     let alive = true;
     async function fetchPending() {
-      const [sub, up, book, proc] = await Promise.all([
+      const [sub, up, book, proc, inv] = await Promise.all([
         supabase.from("project_submissions").select("id", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("project_updates").select("id", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("resource_bookings").select("id", { count: "exact", head: true }).eq("status", "pending"),
-        supabase.from("procurement_requests").select("id", { count: "exact", head: true }).eq("status", "Pending")
+        supabase.from("procurement_requests").select("id", { count: "exact", head: true }).eq("status", "Pending"),
+        supabase.from("inventory_requests").select("id", { count: "exact", head: true }).eq("status", "Pending")
       ]);
       if (alive) {
         setCounts({ 
           queue: (sub?.count || 0) + (up?.count || 0), 
           bookings: book?.count || 0, 
-          procurement: proc?.count || 0 
+          procurement: proc?.count || 0,
+          inventory: inv?.count || 0
         });
       }
     }
     fetchPending();
     const iv = setInterval(fetchPending, 15000);
-    return () => { alive = false; clearInterval(iv); };
+
+    const rtChannel = supabase
+      .channel("admin-command-center-counts")
+      .on("postgres_changes", { event: "*", schema: "public", table: "project_submissions" }, fetchPending)
+      .on("postgres_changes", { event: "*", schema: "public", table: "project_updates" }, fetchPending)
+      .on("postgres_changes", { event: "*", schema: "public", table: "resource_bookings" }, fetchPending)
+      .on("postgres_changes", { event: "*", schema: "public", table: "procurement_requests" }, fetchPending)
+      .on("postgres_changes", { event: "*", schema: "public", table: "inventory_requests" }, fetchPending)
+      .subscribe();
+
+    return () => { 
+      alive = false; 
+      clearInterval(iv); 
+      supabase.removeChannel(rtChannel);
+    };
   }, []);
 
 
@@ -110,6 +126,7 @@ function AdminPage() {
               {id === 'queue' && counts.queue > 0 && <span className="ml-1.5 rounded bg-destructive text-destructive-foreground px-1.5 py-0.5 text-[9px] font-bold">{counts.queue}</span>}
               {id === 'bookings' && counts.bookings > 0 && <span className="ml-1.5 rounded bg-destructive text-destructive-foreground px-1.5 py-0.5 text-[9px] font-bold">{counts.bookings}</span>}
               {id === 'procurement' && counts.procurement > 0 && <span className="ml-1.5 rounded bg-destructive text-destructive-foreground px-1.5 py-0.5 text-[9px] font-bold">{counts.procurement}</span>}
+              {id === 'inventory' && counts.inventory > 0 && <span className="ml-1.5 rounded bg-destructive text-destructive-foreground px-1.5 py-0.5 text-[9px] font-bold">{counts.inventory}</span>}
             </button>
         ))}
       </div>
