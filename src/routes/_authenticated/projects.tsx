@@ -1,4 +1,4 @@
-﻿import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
@@ -39,8 +39,8 @@ function ProjectsPage() {
   const [isLead, setIsLead] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
 
-  useEffect(() => {
-    (async () => {
+    useEffect(() => {
+    const fetchProjects = async () => {
       const [{ data }, { data: roles }] = await Promise.all([
         supabase
           .from("projects")
@@ -48,27 +48,37 @@ function ProjectsPage() {
           .order("created_at", { ascending: false }),
         supabase.from("user_roles").select("role").eq("user_id", user.id),
       ]);
-      const list = (data ?? []) as Project[];
+
+      const list = (data ?? []) as unknown as Project[];
       setProjects(list);
-      const leadIds = Array.from(
-        new Set(list.map((p) => p.lead_user_id).filter((x): x is string => !!x)),
-      );
-      if (leadIds.length) {
-        const { data: profiles } = await supabase
+
+      const leadIds = Array.from(new Set(list.map((p) => p.lead_user_id))).filter(Boolean) as string[];
+      if (leadIds.length > 0) {
+        const { data: profs } = await supabase
           .from("profiles")
           .select("id,display_name")
           .in("id", leadIds);
         const map: Record<string, string> = {};
-        (profiles ?? []).forEach((p) => {
-          if (p.display_name) map[p.id] = p.display_name;
-        });
+        for (const p of profs ?? []) map[p.id] = p.display_name ?? "Member";
         setLeadNames(map);
       }
+
       const rolesList = (roles ?? []).map((r) => r.role);
       setIsAdmin(rolesList.includes("admin"));
       setIsLead(rolesList.includes("lead"));
       setLoading(false);
-    })();
+    };
+
+    fetchProjects();
+
+    const rtChannel = supabase
+      .channel("member-projects-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "projects" }, () => fetchProjects())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(rtChannel);
+    };
   }, [user.id]);
 
   async function updateStatus(id: string, status: Project["status"]) {
@@ -221,8 +231,16 @@ function ProjectUpdatesPanel({
     }
   }
 
-  useEffect(() => {
+    useEffect(() => {
     load();
+    const rtChannel = supabase
+      .channel(`project-updates-${project.id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "project_updates" }, () => load())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(rtChannel);
+    };
   }, [project.id]);
 
   async function submit(e: React.FormEvent) {
