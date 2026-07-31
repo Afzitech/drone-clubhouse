@@ -737,8 +737,16 @@ function BookingsQueue() {
     }
   }
 
-  useEffect(() => {
+    useEffect(() => {
     loadBookings();
+    const rtChannel = supabase
+      .channel("admin-bookings-queue-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "resource_bookings" }, loadBookings)
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(rtChannel);
+    };
   }, []);
 
   async function confirmAction() {
