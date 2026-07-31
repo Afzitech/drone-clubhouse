@@ -140,8 +140,8 @@ function AuthedShell() {
             </button>
 
             <Link to="/dashboard" className="flex items-center gap-2">
-              <div className="hud-panel corner-brackets flex h-7 w-7 items-center justify-center">
-                <img src="/favicon.ico" alt="Aeroforge" className="h-5 w-5 object-contain brightness-[0.2] dark:brightness-100 dark:drop-shadow-[0_0_8px_rgba(51,248,255,0.5)]" />
+              <div className="hud-panel corner-brackets flex h-7 w-7 items-center justify-center rounded bg-slate-950 dark:bg-transparent">
+                <img src="/favicon.ico" alt="Aeroforge" className="h-5 w-5 object-contain dark:drop-shadow-[0_0_8px_rgba(51,248,255,0.5)]" />
               </div>
               <span className="mono text-xs font-semibold uppercase tracking-widest text-foreground">
                 Aeroforge
