@@ -25,7 +25,7 @@ export default function AdminInventory() {
 
   const handleAddAsset = async (e: React.FormEvent) => {
     e.preventDefault();
-    await supabase.from('inventory_items').insert([{ ...newItem, available_quantity: newItem.total_quantity, status: 'Active' }]);
+    await supabase.from('inventory_items').insert([{ ...newItem, available_quantity: newItem.total_quantity, status: 'Active' } as any]);
     setShowForm(false);
     fetchData();
   };
@@ -44,7 +44,7 @@ export default function AdminInventory() {
   };
 
   const handleRequest = async (id: string, newStatus: string) => {
-    await supabase.from('inventory_requests').update({ status: newStatus }).eq('id', id);
+    await supabase.from('inventory_requests').update({ status: newStatus as any }).eq('id', id);
     fetchData();
   };
 
@@ -69,7 +69,7 @@ export default function AdminInventory() {
   };
 
   const saveEdit = async () => {
-    const { error } = await supabase.from('inventory_items').update(editForm).eq('id', editingItem.id);
+    const { error } = await supabase.from('inventory_items').update(editForm as any).eq('id', editingItem.id);
     if (error) alert("UPDATE ERROR: " + error.message);
     else {
       setEditingItem(null);

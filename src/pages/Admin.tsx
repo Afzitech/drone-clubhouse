@@ -18,7 +18,7 @@ import {
   updateLandingContent,
   type LandingContent,
 } from "@/lib/site-content.functions";
-import { StatusPill } from "./submit";
+import { StatusPill } from "../routes/_authenticated/submit";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   beforeLoad: async ({ context }) => {

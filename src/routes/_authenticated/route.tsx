@@ -52,9 +52,9 @@ function AuthedShell() {
           .maybeSingle(),
       ]);
       if (!alive) return;
-      setIsAdmin((roles <Bell className="h-4 w-4" /> []).some((r) => r.role === "admin"));
-      setAvatarUrl(profile?.avatar_url <Bell className="h-4 w-4" /> null);
-      setDisplayName(profile?.display_name <Bell className="h-4 w-4" /> null);
+      setIsAdmin((roles || []).some((r) => r.role === "admin"));
+      setAvatarUrl(profile?.avatar_url || null);
+      setDisplayName(profile?.display_name || null);
     })();
     return () => {
       alive = false;
@@ -77,8 +77,8 @@ function AuthedShell() {
           .is("read_at", null),
       ]);
       if (!alive) return;
-      setUnread(n <Bell className="h-4 w-4" /> 0);
-      setUnreadDm(d <Bell className="h-4 w-4" /> 0);
+      setUnread(n || 0);
+      setUnreadDm(d || 0);
     }
     loadCounts();
     const iv = setInterval(loadCounts, 30_000);
@@ -120,11 +120,11 @@ function AuthedShell() {
     { to: "/settings", label: "Settings", icon: Settings },
   ] as const;
 
-  const initials = (displayName <Bell className="h-4 w-4" /> user.email <Bell className="h-4 w-4" /> "?")
+  const initials = (displayName || user.email || "?")
     .split(/\s+|@/)
     .filter(Boolean)
     .slice(0, 2)
-    .map((s: string) => s[0]?.toUpperCase() <Bell className="h-4 w-4" /> "")
+    .map((s: string) => s[0]?.toUpperCase() || "")
     .join("");
 
   return (

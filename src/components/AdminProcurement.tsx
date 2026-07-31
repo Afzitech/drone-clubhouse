@@ -17,7 +17,7 @@ export default function AdminProcurement() {
     if (data) {
       const pMap: Record<string, string> = {};
       data.forEach(p => {
-        pMap[p.id] = p.display_name || p.full_name || p.name || p.username || 'UNKNOWN PILOT';
+        pMap[p.id] = (p as any).display_name || (p as any).full_name || (p as any).name || (p as any).username || 'UNKNOWN PILOT';
       });
       setProfiles(pMap);
     }
@@ -35,7 +35,7 @@ export default function AdminProcurement() {
   };
 
   const handleStatusUpdate = async (id: string, newStatus: string) => {
-    const { error } = await supabase.from('procurement_requests').update({ status: newStatus }).eq('id', id);
+    const { error } = await supabase.from('procurement_requests').update({ status: newStatus as any }).eq('id', id);
     if (error) {
        alert("UPDATE BLOCKED: " + error.message + "\n\nCheck your Supabase RLS policies for UPDATE operations.");
     } else {
