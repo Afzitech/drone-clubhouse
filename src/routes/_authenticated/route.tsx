@@ -141,9 +141,7 @@ function AuthedShell() {
 
             <Link to="/dashboard" className="flex items-center gap-2">
               <div className="hud-panel corner-brackets flex h-7 w-7 items-center justify-center">
-                <span className="mono text-[10px] font-bold text-primary">
-                  AF
-                </span>
+                <img src="/favicon.ico" alt="Aeroforge" className="h-5 w-5 object-contain" />
               </div>
               <span className="mono text-xs font-semibold uppercase tracking-widest text-foreground">
                 Aeroforge
