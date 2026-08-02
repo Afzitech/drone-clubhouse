@@ -14,7 +14,40 @@ export default function Inventory() {
 const [componentName, setComponentName] = useState('');
   const [userId, setUserId] = useState<string | null>(null);
 
-  useEffect(() => { fetchInventoryAndAuth(); }, []);
+    useEffect(() => {
+    fetchInventoryAndAuth();
+    const rtChannel = supabase
+      .channel("member-inventory-live")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "inventory_items" },
+        (payload) => {
+          console.log("Realtime inventory_items update:", payload);
+          fetchInventoryAndAuth();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "inventory_requests" },
+        (payload) => {
+          console.log("Realtime inventory_requests update:", payload);
+          fetchInventoryAndAuth();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "procurement_requests" },
+        (payload) => {
+          console.log("Realtime procurement_requests update:", payload);
+          fetchInventoryAndAuth();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(rtChannel);
+    };
+  }, []);
 
   const fetchInventoryAndAuth = async () => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();

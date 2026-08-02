@@ -37,7 +37,7 @@ function ResourcesPage() {
     setItems((data ?? []) as Resource[]);
   }
 
-  useEffect(() => {
+    useEffect(() => {
     (async () => {
       const { data: roles } = await supabase
         .from("user_roles")
@@ -48,6 +48,15 @@ function ResourcesPage() {
       setIsAdmin(list.includes("admin"));
       load();
     })();
+
+    const rtChannel = supabase
+      .channel("member-resources-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "resources" }, () => load())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(rtChannel);
+    };
   }, [user.id]);
 
   async function submit(e: React.FormEvent) {
