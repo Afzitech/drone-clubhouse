@@ -1,3 +1,4 @@
+import { registerAndSubscribePush } from "@/lib/push";
 import React, { useEffect, useState } from "react";
 import { createFileRoute, Outlet, redirect, Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
@@ -80,7 +81,12 @@ function AuthedShell() {
       setUnread(n || 0);
       setUnreadDm(d || 0);
     }
-                loadCounts();
+                    loadCounts();
+    // Silently register and sync Android/Browser push subscription on load
+    registerAndSubscribePush(
+      "BLxBA67xF2UYJKuP52O6xDQgPlMqqoUEwMlQ-YjDNGlTCnCvQrW-yS0pKJUL0jPqJeNYgqCHbHJRFf-SVGPjLOo",
+      user.id
+    );
     window.addEventListener("notif-update", loadCounts);
     const iv = setInterval(loadCounts, 30_000);
     const nCh = supabase
