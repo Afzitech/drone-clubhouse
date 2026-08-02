@@ -5,13 +5,37 @@ import { Check, X, AlertCircle, Plus, Save, Trash2, Package, Minus, RotateCcw } 
 export default function AdminInventory() {
   const [items, setItems] = useState<any[]>([]);
   const [requests, setRequests] = useState<any[]>([]);
+  const [profiles, setProfiles] = useState<Record<string, string>>({});
   const [showForm, setShowForm] = useState(false);
   const [viewState, setViewState] = useState<'active' | 'history'>('active');
   const [newItem, setNewItem] = useState({ name: '', category: 'Flight Controllers', description: '', storage_location: '', minimum_stock: 2, total_quantity: 1 });
 
   const categories = ['Flight Controllers', 'ESCs', 'Motors', 'Frames', 'Propellers', 'Batteries', 'GPS', 'Receivers', 'Cameras', 'Sensors', 'Radio Equipment', 'Tools', 'Electronics', 'Miscellaneous', 'Custom Request'];
 
-  useEffect(() => { fetchData(); }, []);
+    useEffect(() => {
+    fetchData();
+    fetchProfiles();
+    const rtChannel = supabase
+      .channel("admin-inventory-live-queue")
+      .on("postgres_changes", { event: "*", schema: "public", table: "inventory_items" }, () => fetchData())
+      .on("postgres_changes", { event: "*", schema: "public", table: "inventory_requests" }, () => fetchData())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(rtChannel);
+    };
+  }, []);
+
+  const fetchProfiles = async () => {
+    const { data } = await supabase.from("profiles").select("*");
+    if (data) {
+      const pMap: Record<string, string> = {};
+      data.forEach((p: any) => {
+        pMap[p.id] = p.display_name || p.full_name || p.name || p.username || "UNKNOWN PILOT";
+      });
+      setProfiles(pMap);
+    }
+  };
   
   const fetchData = async () => {
     const { data: iData, error: iError } = await supabase.from('inventory_items').select('*').order('name');
@@ -142,7 +166,7 @@ export default function AdminInventory() {
                   <span className="font-bold text-foreground">{req.inventory_items?.name || "CUSTOM REQUEST"}</span>
                   <span className={`text-[9px] uppercase tracking-widest px-1.5 py-0.5 rounded ${req.status === 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' : 'bg-cyan-500/10 text-cyan-500 border border-cyan-500/20'}`}>{req.status}</span>
                 </div>
-                <span className="text-xs text-muted-foreground mt-1 block">PILOT: <span className="text-foreground font-bold">{req.requester_name || "UNKNOWN"}</span> | QTY: {req.quantity} | NOTES: {req.reason || 'N/A'}</span>
+                <span className="text-xs text-muted-foreground mt-1 block">PILOT: <span className="text-foreground font-bold">{(profiles[req.user_id] || profiles[req.member_id] || profiles[req.requester_id] || req.requester_name || "UNKNOWN PILOT")}</span> | QTY: {req.quantity} | NOTES: {req.reason || 'N/A'}</span>
               </div>
               <div className="flex gap-2 mt-3 md:mt-0">
                 {req.status === 'Pending' ? (
@@ -164,7 +188,7 @@ export default function AdminInventory() {
             <div key={req.id} className="flex flex-col md:flex-row justify-between items-center bg-background border border-border p-3 rounded opacity-70 group hover:opacity-100 transition-all">
               <div>
                  <span className="font-bold text-muted-foreground group-hover:text-foreground transition-colors">{req.inventory_items?.name || "CUSTOM REQUEST"}</span>
-                 <span className="text-xs text-muted-foreground mt-1 block">PILOT: {req.requester_name || "UNKNOWN"} | QTY: {req.quantity} | STATUS: {req.status}</span>
+                 <span className="text-xs text-muted-foreground mt-1 block">PILOT: {(profiles[req.user_id] || profiles[req.member_id] || profiles[req.requester_id] || req.requester_name || "UNKNOWN PILOT")} | QTY: {req.quantity} | STATUS: {req.status}</span>
               </div>
               <div className="mt-3 md:mt-0">
                 {/* ADMIN ONLY TRASH BUTTON */}
