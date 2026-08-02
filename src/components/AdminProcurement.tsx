@@ -7,9 +7,17 @@ export default function AdminProcurement() {
   const [profiles, setProfiles] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { 
-    fetchProcurements(); 
+    useEffect(() => {
+    fetchProcurements();
     fetchProfiles();
+    const rtChannel = supabase
+      .channel("admin-procurement-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "procurement_requests" }, () => fetchProcurements())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(rtChannel);
+    };
   }, []);
 
   const fetchProfiles = async () => {
