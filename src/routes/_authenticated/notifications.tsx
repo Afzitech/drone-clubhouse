@@ -34,11 +34,20 @@ function NotificationsPage() {
     load();
   }, []);
 
-  async function markAllRead() {
+    async function markAllRead() {
     await supabase
       .from("notifications")
       .update({ read_at: new Date().toISOString() })
       .eq("user_id", user.id)
+      .is("read_at", null);
+    load();
+  }
+
+  async function markOneRead(id: string) {
+    await supabase
+      .from("notifications")
+      .update({ read_at: new Date().toISOString() })
+      .eq("id", id)
       .is("read_at", null);
     load();
   }
@@ -85,9 +94,10 @@ function NotificationsPage() {
       ) : (
         <ul className="space-y-2">
           {items.map((n) => (
-            <li
+                        <li
               key={n.id}
-              className={`hud-panel corner-brackets p-4 ${!n.read_at ? "border-primary/50" : "opacity-75"}`}
+              onClick={() => !n.read_at && markOneRead(n.id)}
+              className={`hud-panel corner-brackets p-4 transition-all ${!n.read_at ? "border-primary/50 cursor-pointer" : "opacity-75"}`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
