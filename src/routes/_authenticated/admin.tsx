@@ -170,18 +170,31 @@ function SubmissionsQueue({ adminId }: { adminId: string }) {
     setItems(list);
     const ids = Array.from(new Set(list.map((s) => s.submitter_id)));
     if (ids.length) {
-      const { data: p } = await supabase
+            const { data: p } = await supabase
         .from("profiles")
-        .select("id,display_name")
+        .select("*")
         .in("id", ids);
       const map: Record<string, Profile> = {};
-      (p ?? []).forEach((row) => (map[row.id] = row));
+      (p ?? []).forEach((row: any) => {
+        map[row.id] = {
+          id: row.id,
+          display_name: row.display_name || row.full_name || row.name || row.username || "UNKNOWN PILOT",
+        };
+      });
       setProfiles(map);
     }
   }
 
-  useEffect(() => {
+    useEffect(() => {
     load();
+    const rtChannel = supabase
+      .channel("admin-submissions-queue-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "project_submissions" }, () => load())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(rtChannel);
+    };
   }, [filter]);
 
   async function approve(s: Submission) {

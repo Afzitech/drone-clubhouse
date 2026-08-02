@@ -34,8 +34,23 @@ function SubmitPage() {
     if (!error && data) setItems(data as Submission[]);
   }
 
-  useEffect(() => {
+    useEffect(() => {
     load();
+    const rtChannel = supabase
+      .channel(`member-submissions-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "project_submissions" },
+        (payload) => {
+          console.log("Realtime project_submissions update:", payload);
+          load();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(rtChannel);
+    };
   }, [user.id]);
 
   async function onSubmit(e: React.FormEvent) {
