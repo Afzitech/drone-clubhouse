@@ -80,7 +80,7 @@ function AuthedShell() {
       setUnread(n || 0);
       setUnreadDm(d || 0);
     }
-        loadCounts();
+                loadCounts();
     window.addEventListener("notif-update", loadCounts);
     const iv = setInterval(loadCounts, 30_000);
     const nCh = supabase
@@ -93,8 +93,8 @@ function AuthedShell() {
       .subscribe();
         return () => {
       alive = false;
-      clearInterval(iv);
       window.removeEventListener("notif-update", loadCounts);
+      clearInterval(iv);
       supabase.removeChannel(nCh);
       supabase.removeChannel(dCh);
     };
@@ -333,8 +333,7 @@ function AdminBadge() {
 
         return () => {
       alive = false;
-      clearInterval(iv);
-      window.removeEventListener("notif-update", loadCounts); 
+      clearInterval(iv); 
       supabase.removeChannel(rtChannel);
     };
   }, []);
