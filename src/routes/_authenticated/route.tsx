@@ -80,7 +80,8 @@ function AuthedShell() {
       setUnread(n || 0);
       setUnreadDm(d || 0);
     }
-    loadCounts();
+        loadCounts();
+    window.addEventListener("notif-update", loadCounts);
     const iv = setInterval(loadCounts, 30_000);
     const nCh = supabase
       .channel(`notif:${user.id}`)
@@ -90,9 +91,10 @@ function AuthedShell() {
       .channel(`dm:${user.id}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "direct_messages", filter: `recipient_id=eq.${user.id}` }, loadCounts)
       .subscribe();
-    return () => {
+        return () => {
       alive = false;
       clearInterval(iv);
+      window.removeEventListener("notif-update", loadCounts);
       supabase.removeChannel(nCh);
       supabase.removeChannel(dCh);
     };
@@ -329,9 +331,10 @@ function AdminBadge() {
       .on("postgres_changes", { event: "*", schema: "public", table: "inventory_requests" }, fetchPending)
       .subscribe();
 
-    return () => { 
-      alive = false; 
-      clearInterval(iv); 
+        return () => {
+      alive = false;
+      clearInterval(iv);
+      window.removeEventListener("notif-update", loadCounts); 
       supabase.removeChannel(rtChannel);
     };
   }, []);

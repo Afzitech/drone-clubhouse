@@ -34,11 +34,25 @@ function NotificationsPage() {
     load();
   }, []);
 
-    async function markAllRead() {
+      async function markAllRead() {
     await supabase
       .from("notifications")
       .update({ read_at: new Date().toISOString() })
       .eq("user_id", user.id)
+      .is("read_at", null);
+    window.dispatchEvent(new Event("notif-update"));
+    load();
+  }
+
+  async function markOneRead(id: string) {
+    setItems((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read_at: new Date().toISOString() } : n))
+    );
+    window.dispatchEvent(new Event("notif-update"));
+    await supabase
+      .from("notifications")
+      .update({ read_at: new Date().toISOString() })
+      .eq("id", id)
       .is("read_at", null);
     load();
   }
