@@ -75,9 +75,24 @@ export function BookingsPage({
     }
   }
 
-  useEffect(() => {
+      useEffect(() => {
     load();
-  }, [kind]);
+    const rtChannel = supabase
+      .channel(`member-bookings-${kind}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "resource_bookings" },
+        (payload) => {
+          console.log("Realtime booking update received:", payload);
+          load();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(rtChannel);
+    };
+  }, [kind, userId]);
 
   async function request(e: React.FormEvent) {
     e.preventDefault();
