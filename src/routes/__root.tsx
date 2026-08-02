@@ -76,13 +76,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Aeroforge — Members Only" },
+      { title: "Aeroforge" },
       {
         name: "description",
         content:
           "Private flight ops portal for our drone club — project status, submissions, and member forum.",
       },
-      { property: "og:title", content: "Aeroforge — Members Only" },
+      { property: "og:title", content: "Aeroforge" },
       {
         property: "og:description",
         content:
