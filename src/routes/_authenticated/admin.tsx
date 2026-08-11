@@ -61,7 +61,8 @@ function AdminPage() {
         supabase.from("project_updates").select("id", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("resource_bookings").select("id", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("procurement_requests").select("id", { count: "exact", head: true }).eq("status", "Pending"),
-        supabase.from("inventory_requests").select("id", { count: "exact", head: true }).eq("status", "Pending")
+        supabase.from("inventory_requests").select("id", { count: "exact", head: true }).eq("status", "Pending"),
+        supabase.from("club_enrollments").select("id", { count: "exact", head: true }).eq("status", "pending")
       ]);
       if (alive) {
         setCounts({ 
@@ -966,3 +967,4 @@ function BookingsQueue() {
 // Forced Deploy Trigger: eccc0fce-799e-4fb7-b2bd-c41ffff4f765
 // Forced Deploy Trigger: 1785236748138
 // Forced Deploy Trigger: 1785237166918
+

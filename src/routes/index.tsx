@@ -249,6 +249,11 @@ function Landing() {
       </section>
 
       {/* Footer */}
+            {/* Squadron Enrollment Section */}
+      <section id="enroll" className="py-24 px-4 flex justify-center relative z-10 border-t border-border/40 bg-surface/20">
+        <EnrollmentForm />
+      </section>
+
       <footer className="relative z-10 border-t border-border/50 px-6 py-8 text-center">
         <p className="mono text-[10px] uppercase tracking-widest text-muted-foreground">
           Aeroforge - - Members only - Access granted by admins
@@ -271,26 +276,10 @@ function FlightPathDivider() {
     
       
     
-      {/* Squadron Enrollment Section */}
-      
-    
-      {/* Squadron Enrollment Section */}
-      
-    
-      {/* Squadron Enrollment Section */}
-      
-    
-      {/* Squadron Enrollment Section */}
-      <section id="enroll" className="py-24 px-4 flex justify-center relative z-10 border-t border-border/40 bg-surface/20">
-      </section>
-    
-      {/* Squadron Enrollment Section */}
-      <section id="enroll" className="py-24 px-4 flex justify-center relative z-10 border-t border-border/40 bg-surface/20">
-        <EnrollmentForm />
-      </section>
-    </div>
+      </div>
   );
 }
+
 
 
 
