@@ -66,15 +66,15 @@ function AppearanceForm() {
           Pick your instrument panel
         </h2>
         <p className="mono mt-1 text-[11px] text-muted-foreground">
-          Daylight â€” brushed titanium with cobalt neon. Night HUD â€” deep hangar
+          Daylight - brushed titanium with cobalt neon. Night HUD - deep hangar
           navy with cyan glow.
         </p>
       </div>
       <div className="grid grid-cols-2 gap-3">
         {(
           [
-            { id: "light", label: "Daylight", hint: "Titanium Â· cobalt" },
-            { id: "dark", label: "Night HUD", hint: "Navy Â· cyan glow" },
+            { id: "light", label: "Daylight", hint: "Titanium - cobalt" },
+            { id: "dark", label: "Night HUD", hint: "Navy - cyan glow" },
           ] as const
         ).map((opt) => (
           <button
