@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+﻿import { supabase } from '@/integrations/supabase/client';
 import React from 'react';
 
 import AdminInventory from '@/components/AdminInventory';
@@ -102,6 +102,7 @@ function AdminPage() {
       </div>
 
       <div className="flex flex-wrap gap-2">
+        <a href="/enrollments" className="spotlight mono rounded-md border border-border px-3 py-1.5 text-[10px] uppercase tracking-widest text-muted-foreground transition hover:text-foreground">RECRUITS</a>
         {(
           [
             ["queue", "Submissions queue"],
