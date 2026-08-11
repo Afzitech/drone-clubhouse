@@ -205,7 +205,7 @@ function ProfileForm({ userId }: { userId: string }) {
         )}
         <div className="space-y-2">
           <label className="mono inline-block cursor-pointer rounded border border-primary/40 bg-primary/10 px-3 py-1.5 text-[10px] uppercase tracking-widest text-primary hover:bg-primary/20">
-            {uploading ? "Uploadingâ€¦" : "Change avatar"}
+            {uploading ? "Uploading..." : "Change avatar"}
             <input
               type="file"
               accept="image/*"
@@ -247,7 +247,7 @@ function ProfileForm({ userId }: { userId: string }) {
         disabled={busy || displayName.trim() === initial}
         className="mono rounded-md border border-primary/40 bg-primary/10 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-primary transition hover:bg-primary/20 disabled:opacity-40"
       >
-        {busy ? "Savingâ€¦" : "Save changes"}
+        {busy ? "Saving..." : "Save changes"}
       </button>
     </form>
   );
@@ -322,7 +322,7 @@ function SecurityForm() {
         disabled={busy}
         className="mono rounded-md border border-command/40 bg-command/10 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-command transition hover:bg-command/20 disabled:opacity-40"
       >
-        {busy ? "Updatingâ€¦" : "Update password"}
+        {busy ? "Updating..." : "Update password"}
       </button>
     </form>
   );
