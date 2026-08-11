@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 import { notifyUsers } from "@/lib/notifications.functions";
-import { useServerFn } from "@tanstack/start";
+import { useServerFn } from "@tanstack/react-start";
 
 export function EnrollmentForm() {
   const notify = useServerFn(notifyUsers);
