@@ -1,4 +1,4 @@
-﻿import { registerAndSubscribePush } from "@/lib/push";
+import { registerAndSubscribePush } from "@/lib/push";
 import React, { useEffect, useState } from "react";
 import { createFileRoute, Outlet, redirect, Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
@@ -145,7 +145,7 @@ function AuthedShell() {
               aria-label="Open menu"
               className="mono flex h-9 w-9 items-center justify-center rounded-md border border-border text-lg text-foreground transition hover:border-primary/60 hover:text-primary"
             >
-              â˜°
+              ☰
             </button>
 
             <Link to="/dashboard" className="flex items-center gap-2">
@@ -235,7 +235,7 @@ function AuthedShell() {
             className="mono h-8 w-8 rounded-md border border-border text-foreground hover:text-primary"
             aria-label="Close menu"
           >
-            âœ•
+            ✕
           </button>
         </div>
         <nav className="flex flex-col gap-1 p-3">
