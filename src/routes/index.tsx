@@ -18,17 +18,17 @@ const galleryQuery = queryOptions({
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Aeroforge â€” Drone Club" },
+      { title: "Aeroforge - Drone Club" },
       {
         name: "description",
         content:
-          "Aeroforge is a private drone & robotics club â€” collaborate on builds, track flight ops, and push the sky.",
+          "Aeroforge is a private drone & robotics club - collaborate on builds, track flight ops, and push the sky.",
       },
-      { property: "og:title", content: "Aeroforge â€” Drone Club" },
+      { property: "og:title", content: "Aeroforge - Drone Club" },
       {
         property: "og:description",
         content:
-          "Aeroforge is a private drone & robotics club â€” collaborate on builds, track flight ops, and push the sky.",
+          "Aeroforge is a private drone & robotics club - collaborate on builds, track flight ops, and push the sky.",
       },
     ],
   }),
@@ -132,7 +132,7 @@ function Landing() {
           </a>
         </div>
         <div className="mono absolute bottom-8 text-[10px] uppercase tracking-widest text-muted-foreground">
-          scroll · about · mission 
+          scroll - about - mission 
         </div>
       </section>
 
@@ -144,7 +144,7 @@ function Landing() {
         className="relative z-10 mx-auto max-w-4xl px-6 py-24"
       >
         <p className="mono text-[10px] uppercase tracking-[0.4em] text-primary">
-          / Section 01 Â· Overview /
+          / Section 01 - Overview /
         </p>
         <h2 className="mt-3 text-3xl font-bold text-foreground sm:text-4xl">
           {content.about_title}
@@ -180,7 +180,7 @@ function Landing() {
         className="relative z-10 mx-auto max-w-4xl px-6 py-24"
       >
         <p className="mono text-[10px] uppercase tracking-[0.4em] text-primary">
-          / Section 02 Â· Mission /
+          / Section 02 - Mission /
         </p>
         <h2 className="mt-3 text-3xl font-bold text-foreground sm:text-4xl">
           {content.mission_title}
@@ -200,13 +200,13 @@ function Landing() {
         className="relative z-10 mx-auto max-w-6xl px-6 py-24"
       >
         <p className="mono text-[10px] uppercase tracking-[0.4em] text-primary">
-          / Section 03 Â· Hangar /
+          / Section 03 - Hangar /
         </p>
         <h2 className="mt-3 text-3xl font-bold text-foreground sm:text-4xl">
           Featured builds
         </h2>
         <p className="mt-3 max-w-xl text-sm text-muted-foreground">
-          Members' work â€” the public showcase gallery.
+          Members' work - the public showcase gallery.
         </p>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
           {gallery.length === 0
@@ -216,7 +216,7 @@ function Landing() {
                   className="hud-panel corner-brackets aspect-video flex items-center justify-center"
                 >
                   <span className="mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                    slot 0{i} Â· empty
+                    slot 0{i} - empty
                   </span>
                 </div>
               ))
@@ -251,7 +251,7 @@ function Landing() {
       {/* Footer */}
       <footer className="relative z-10 border-t border-border/50 px-6 py-8 text-center">
         <p className="mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          Aeroforge Â© Â· Members only Â· Access granted by admins
+          Aeroforge - - Members only - Access granted by admins
         </p>
       </footer>
     </div>
@@ -269,12 +269,16 @@ function FlightPathDivider() {
         <div className="mono text-[9px] uppercase tracking-widest">wpt</div>
       </div>
     
-      <section className="flex justify-center py-24 relative z-10">
+      
+    
+      {/* Squadron Enrollment Section */}
+      <section id="enroll" className="py-20 px-4 flex justify-center relative z-10 border-t border-border/40 bg-surface/20">
         <EnrollmentForm />
       </section>
     </div>
   );
 }
+
 
 
 
