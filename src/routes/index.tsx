@@ -122,7 +122,7 @@ function Landing() {
             className="mono hud-glow inline-flex items-center gap-2 rounded-md bg-primary px-8 py-3 text-xs font-bold uppercase tracking-widest text-primary-foreground transition hover:opacity-90"
           >
             {signedIn ? "Enter flight deck" : "Sign in"}
-            <span aria-hidden>â†’</span>
+            <span aria-hidden></span>
           </Link>
           <a
             href="#about"
@@ -132,7 +132,7 @@ function Landing() {
           </a>
         </div>
         <div className="mono absolute bottom-8 text-[10px] uppercase tracking-widest text-muted-foreground">
-          scroll Â· about Â· mission â†“
+          scroll · about · mission 
         </div>
       </section>
 
