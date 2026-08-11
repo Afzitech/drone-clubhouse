@@ -51,12 +51,12 @@ function AdminPage() {
   const { user } = Route.useRouteContext();
   const [tab, setTab] = useState<"queue" | "members" | "create" | "landing" | "bookings" | "inventory" | "procurement">("queue");
 
-  const [counts, setCounts] = React.useState({ queue: 0, bookings: 0, procurement: 0, inventory: 0 });
+  const [counts, setCounts] = React.useState({ queue: 0, bookings: 0, procurement: 0, inventory: 0, recruits: 0 });
   
     React.useEffect(() => {
     let alive = true;
     async function fetchPending() {
-      const [sub, up, book, proc, inv] = await Promise.all([
+      const [sub, up, book, proc, inv, enroll] = await Promise.all([
         supabase.from("project_submissions").select("id", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("project_updates").select("id", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("resource_bookings").select("id", { count: "exact", head: true }).eq("status", "pending"),
@@ -69,7 +69,7 @@ function AdminPage() {
           queue: (sub?.count || 0) + (up?.count || 0), 
           bookings: book?.count || 0, 
           procurement: proc?.count || 0,
-          inventory: inv?.count || 0
+          inventory: inv?.count || 0, recruits: enroll?.count || 0
         });
       }
     }
@@ -103,7 +103,7 @@ function AdminPage() {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <a href="/enrollments" className="spotlight mono rounded-md border border-border px-3 py-1.5 text-[10px] uppercase tracking-widest text-muted-foreground transition hover:text-foreground flex items-center gap-2">RECRUITS {recruitCount > 0 && <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">{recruitCount}</span>}</a>
+        <a href="/enrollments" className="spotlight mono rounded-md border border-border px-3 py-1.5 text-[10px] uppercase tracking-widest text-muted-foreground transition hover:text-foreground flex items-center gap-2">RECRUITS {counts.recruits > 0 && <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">{counts.recruits}</span>}</a>
         {(
           [
             ["queue", "Submissions queue"],
@@ -967,6 +967,7 @@ function BookingsQueue() {
 // Forced Deploy Trigger: eccc0fce-799e-4fb7-b2bd-c41ffff4f765
 // Forced Deploy Trigger: 1785236748138
 // Forced Deploy Trigger: 1785237166918
+
 
 
 
