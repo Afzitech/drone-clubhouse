@@ -1,3 +1,4 @@
+﻿import { EnrollmentForm } from "@/components/EnrollmentForm";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -17,17 +18,17 @@ const galleryQuery = queryOptions({
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Aeroforge — Drone Club" },
+      { title: "Aeroforge â€” Drone Club" },
       {
         name: "description",
         content:
-          "Aeroforge is a private drone & robotics club — collaborate on builds, track flight ops, and push the sky.",
+          "Aeroforge is a private drone & robotics club â€” collaborate on builds, track flight ops, and push the sky.",
       },
-      { property: "og:title", content: "Aeroforge — Drone Club" },
+      { property: "og:title", content: "Aeroforge â€” Drone Club" },
       {
         property: "og:description",
         content:
-          "Aeroforge is a private drone & robotics club — collaborate on builds, track flight ops, and push the sky.",
+          "Aeroforge is a private drone & robotics club â€” collaborate on builds, track flight ops, and push the sky.",
       },
     ],
   }),
@@ -121,7 +122,7 @@ function Landing() {
             className="mono hud-glow inline-flex items-center gap-2 rounded-md bg-primary px-8 py-3 text-xs font-bold uppercase tracking-widest text-primary-foreground transition hover:opacity-90"
           >
             {signedIn ? "Enter flight deck" : "Sign in"}
-            <span aria-hidden>→</span>
+            <span aria-hidden>â†’</span>
           </Link>
           <a
             href="#about"
@@ -131,7 +132,7 @@ function Landing() {
           </a>
         </div>
         <div className="mono absolute bottom-8 text-[10px] uppercase tracking-widest text-muted-foreground">
-          scroll · about · mission ↓
+          scroll Â· about Â· mission â†“
         </div>
       </section>
 
@@ -143,7 +144,7 @@ function Landing() {
         className="relative z-10 mx-auto max-w-4xl px-6 py-24"
       >
         <p className="mono text-[10px] uppercase tracking-[0.4em] text-primary">
-          / Section 01 · Overview /
+          / Section 01 Â· Overview /
         </p>
         <h2 className="mt-3 text-3xl font-bold text-foreground sm:text-4xl">
           {content.about_title}
@@ -179,7 +180,7 @@ function Landing() {
         className="relative z-10 mx-auto max-w-4xl px-6 py-24"
       >
         <p className="mono text-[10px] uppercase tracking-[0.4em] text-primary">
-          / Section 02 · Mission /
+          / Section 02 Â· Mission /
         </p>
         <h2 className="mt-3 text-3xl font-bold text-foreground sm:text-4xl">
           {content.mission_title}
@@ -199,13 +200,13 @@ function Landing() {
         className="relative z-10 mx-auto max-w-6xl px-6 py-24"
       >
         <p className="mono text-[10px] uppercase tracking-[0.4em] text-primary">
-          / Section 03 · Hangar /
+          / Section 03 Â· Hangar /
         </p>
         <h2 className="mt-3 text-3xl font-bold text-foreground sm:text-4xl">
           Featured builds
         </h2>
         <p className="mt-3 max-w-xl text-sm text-muted-foreground">
-          Members' work — the public showcase gallery.
+          Members' work â€” the public showcase gallery.
         </p>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
           {gallery.length === 0
@@ -215,7 +216,7 @@ function Landing() {
                   className="hud-panel corner-brackets aspect-video flex items-center justify-center"
                 >
                   <span className="mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                    slot 0{i} · empty
+                    slot 0{i} Â· empty
                   </span>
                 </div>
               ))
@@ -250,7 +251,7 @@ function Landing() {
       {/* Footer */}
       <footer className="relative z-10 border-t border-border/50 px-6 py-8 text-center">
         <p className="mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          Aeroforge © · Members only · Access granted by admins
+          Aeroforge Â© Â· Members only Â· Access granted by admins
         </p>
       </footer>
     </div>
@@ -267,8 +268,13 @@ function FlightPathDivider() {
         <div className="h-px flex-1 border-t border-dashed border-primary/40" />
         <div className="mono text-[9px] uppercase tracking-widest">wpt</div>
       </div>
+    
+      <section className="flex justify-center py-24 relative z-10">
+        <EnrollmentForm />
+      </section>
     </div>
   );
 }
+
 
 
