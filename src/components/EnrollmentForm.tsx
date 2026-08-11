@@ -1,7 +1,11 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+import { notifyUsers } from "@/lib/notifications.functions";
+import { useServerFn } from "@tanstack/start";
+
 export function EnrollmentForm() {
+  const notify = useServerFn(notifyUsers);
   const [formData, setFormData] = useState({
     full_name: '', email: '', phone_number: '', roll_number: '', department: '', past_experience: ''
   });
@@ -19,6 +23,25 @@ export function EnrollmentForm() {
     setErrorMessage('');
 
     const { error } = await supabase.from('club_enrollments').insert([formData]);
+
+    if (!error) {
+      try {
+        const { data: admins } = await supabase.from('user_roles').select('user_id').eq('role', 'admin');
+        if (admins && admins.length > 0) {
+          await notify({
+            data: {
+              userIds: admins.map(a => a.user_id),
+              type: "new-recruit",
+              title: "New Recruit Alert",
+              body: "A new applicant has submitted their squadron enrollment form.",
+              link: "/admin",
+            },
+          });
+        }
+      } catch (err) {
+        console.error("notify admins failed", err);
+      }
+    }
 
     if (error) {
       setStatus('error');
