@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { supabase } from "@/integrations/supabase/client"; // Update this path if your Supabase client is elsewhere!
+﻿import { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 export function EnrollmentForm() {
   const [formData, setFormData] = useState({
-    full_name: '', email: '', roll_number: '', department: '', past_experience: ''
+    full_name: '', email: '', phone_number: '', roll_number: '', department: '', past_experience: ''
   });
   
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
@@ -18,17 +18,14 @@ export function EnrollmentForm() {
     setStatus('submitting');
     setErrorMessage('');
 
-    const { error } = await supabase
-      .from('club_enrollments')
-      .insert([formData]);
+    const { error } = await supabase.from('club_enrollments').insert([formData]);
 
     if (error) {
-      console.error('Enrollment error:', error);
       setStatus('error');
       setErrorMessage(error.message);
     } else {
       setStatus('success');
-      setFormData({ full_name: '', email: '', roll_number: '', department: '', past_experience: '' });
+      setFormData({ full_name: '', email: '', phone_number: '', roll_number: '', department: '', past_experience: '' });
     }
   };
 
@@ -39,10 +36,7 @@ export function EnrollmentForm() {
         <p className="mono text-xs text-muted-foreground tracking-widest uppercase">
           Your application has been logged into the terminal. An admin will review your profile shortly.
         </p>
-        <button 
-          onClick={() => setStatus('idle')}
-          className="mt-4 mono rounded-md border border-primary/40 bg-primary/10 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-primary transition hover:bg-primary/20"
-        >
+        <button onClick={() => setStatus('idle')} className="mt-4 mono rounded-md border border-primary/40 bg-primary/10 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-primary transition hover:bg-primary/20">
           Acknowledge
         </button>
       </div>
@@ -62,10 +56,16 @@ export function EnrollmentForm() {
           <input type="text" name="full_name" required value={formData.full_name} onChange={handleChange} className="hud-input mt-1 block w-full" placeholder="Enter legal name" />
         </label>
 
-        <label className="block">
-          <span className="mono text-[10px] uppercase tracking-widest text-muted-foreground">Email Address</span>
-          <input type="email" name="email" required value={formData.email} onChange={handleChange} className="hud-input mt-1 block w-full" placeholder="Transmission contact" />
-        </label>
+        <div className="grid grid-cols-2 gap-4">
+          <label className="block">
+            <span className="mono text-[10px] uppercase tracking-widest text-muted-foreground">Email Address</span>
+            <input type="email" name="email" required value={formData.email} onChange={handleChange} className="hud-input mt-1 block w-full" placeholder="Transmission contact" />
+          </label>
+          <label className="block">
+            <span className="mono text-[10px] uppercase tracking-widest text-muted-foreground">Phone Number</span>
+            <input type="tel" name="phone_number" required value={formData.phone_number} onChange={handleChange} className="hud-input mt-1 block w-full" placeholder="+91..." />
+          </label>
+        </div>
 
         <div className="grid grid-cols-2 gap-4">
           <label className="block">
