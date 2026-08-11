@@ -1,20 +1,31 @@
-﻿import { createFileRoute } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+﻿import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute('/_authenticated/enrollments')({
+export const Route = createFileRoute("/_authenticated/enrollments")({
   component: EnrollmentsAdmin,
 });
 
 function EnrollmentsAdmin() {
   const [recruits, setRecruits] = useState<any[]>([]);
 
+  const fetchRecruits = async () => {
+    const { data } = await supabase.from("club_enrollments").select("*").order("created_at", { ascending: false });
+    if (data) setRecruits(data);
+  };
+
   useEffect(() => {
-    const fetchRecruits = async () => {
-      const { data } = await supabase.from('club_enrollments').select('*').order('created_at', { ascending: false });
-      if (data) setRecruits(data);
-    };
     fetchRecruits();
+
+    // Listen to real-time database changes
+    const channel = supabase
+      .channel("realtime-recruits")
+      .on("postgres_changes", { event: "*", schema: "public", table: "club_enrollments" }, () => {
+        fetchRecruits();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   return (
@@ -22,7 +33,7 @@ function EnrollmentsAdmin() {
       <div className="border-b border-border pb-6 mb-6">
         <h1 className="text-3xl font-bold tracking-widest text-primary uppercase mono">/ SQUADRON RECRUITS</h1>
         <p className="text-muted-foreground mt-2 text-xs tracking-widest uppercase mono">
-          Review and manage incoming terminal applications
+          Review and manage incoming terminal applications (LIVE)
         </p>
       </div>
       

@@ -282,6 +282,10 @@ function FlightPathDivider() {
     
       {/* Squadron Enrollment Section */}
       <section id="enroll" className="py-24 px-4 flex justify-center relative z-10 border-t border-border/40 bg-surface/20">
+      </section>
+    
+      {/* Squadron Enrollment Section */}
+      <section id="enroll" className="py-24 px-4 flex justify-center relative z-10 border-t border-border/40 bg-surface/20">
         <EnrollmentForm />
       </section>
     </div>
