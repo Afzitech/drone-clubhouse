@@ -103,7 +103,7 @@ function AdminPage() {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <a href="/enrollments" className="spotlight mono rounded-md border border-border px-3 py-1.5 text-[10px] uppercase tracking-widest text-muted-foreground transition hover:text-foreground">RECRUITS</a>
+        <a href="/enrollments" className="spotlight mono rounded-md border border-border px-3 py-1.5 text-[10px] uppercase tracking-widest text-muted-foreground transition hover:text-foreground flex items-center gap-2">RECRUITS {recruitCount > 0 && <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">{recruitCount}</span>}</a>
         {(
           [
             ["queue", "Submissions queue"],
@@ -967,5 +967,6 @@ function BookingsQueue() {
 // Forced Deploy Trigger: eccc0fce-799e-4fb7-b2bd-c41ffff4f765
 // Forced Deploy Trigger: 1785236748138
 // Forced Deploy Trigger: 1785237166918
+
 
 
