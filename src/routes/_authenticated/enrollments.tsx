@@ -1,4 +1,4 @@
-﻿import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -72,6 +72,10 @@ function EnrollmentsAdmin() {
                       <span className="px-2 py-1 bg-primary/10 text-primary border border-primary/20 rounded uppercase text-[10px] tracking-widest">
                         {r.status}
                       </span>
+                      <div className="mt-2 flex gap-2">
+                        <button onClick={async () => { await supabase.from('club_enrollments').update({status: 'approved'}).eq('id', r.id); window.location.reload(); }} className="px-2 py-1 bg-green-500/10 text-green-500 border border-green-500/20 rounded uppercase text-[9px] tracking-widest hover:bg-green-500/20 transition-colors cursor-pointer">Approve</button>
+                        <button onClick={async () => { await supabase.from('club_enrollments').update({status: 'rejected'}).eq('id', r.id); window.location.reload(); }} className="px-2 py-1 bg-red-500/10 text-red-500 border border-red-500/20 rounded uppercase text-[9px] tracking-widest hover:bg-red-500/20 transition-colors cursor-pointer">Dismiss</button>
+                      </div>
                     </td>
                   </tr>
                 ))
