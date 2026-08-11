@@ -255,7 +255,7 @@ function AuthedShell() {
               className="spotlight mono mt-2 flex items-center gap-3 rounded-md border border-command/40 bg-command/10 px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-command transition hover:bg-command/20"
               activeProps={{ className: "bg-command/20" }}
             >
-              <span className="w-4 text-center">âš¡</span>
+              <span className="w-4 text-center">⚡</span>
               Command Center
             </Link>
           )}
