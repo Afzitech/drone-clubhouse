@@ -83,3 +83,26 @@ export const notifyAllMembers = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true, count: rows.length };
   });
+
+/** Guest Bypass: Notify Admins without Auth */
+export const notifyAdminsGuest = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => z.object({ title: z.string(), body: z.string(), link: z.string().optional() }).parse(input))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    
+    // Server-side lookup (ignores RLS, completely secure)
+    const { data: admins } = await supabaseAdmin.from("user_roles").select("user_id").eq("role", "admin");
+    if (!admins || admins.length === 0) return { ok: false };
+    
+    const rows = admins.map((a) => ({
+      user_id: a.user_id,
+      type: "new-recruit",
+      title: data.title,
+      body: data.body,
+      link: data.link ?? null,
+    }));
+    
+    const { error } = await supabaseAdmin.from("notifications").insert(rows);
+    if (error) throw new Error(error.message);
+    return { ok: true, count: rows.length };
+  });
