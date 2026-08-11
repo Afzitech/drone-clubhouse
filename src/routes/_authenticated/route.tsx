@@ -1,4 +1,4 @@
-import { registerAndSubscribePush } from "@/lib/push";
+﻿import { registerAndSubscribePush } from "@/lib/push";
 import React, { useEffect, useState } from "react";
 import { createFileRoute, Outlet, redirect, Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
@@ -145,7 +145,7 @@ function AuthedShell() {
               aria-label="Open menu"
               className="mono flex h-9 w-9 items-center justify-center rounded-md border border-border text-lg text-foreground transition hover:border-primary/60 hover:text-primary"
             >
-              ☰
+              â˜°
             </button>
 
             <Link to="/dashboard" className="flex items-center gap-2">
@@ -235,7 +235,7 @@ function AuthedShell() {
             className="mono h-8 w-8 rounded-md border border-border text-foreground hover:text-primary"
             aria-label="Close menu"
           >
-            ✕
+            âœ•
           </button>
         </div>
         <nav className="flex flex-col gap-1 p-3">
@@ -255,7 +255,7 @@ function AuthedShell() {
               className="spotlight mono mt-2 flex items-center gap-3 rounded-md border border-command/40 bg-command/10 px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-command transition hover:bg-command/20"
               activeProps={{ className: "bg-command/20" }}
             >
-              <span className="w-4 text-center">⚡</span>
+              <span className="w-4 text-center">âš¡</span>
               Command Center
             </Link>
           )}
@@ -303,17 +303,17 @@ function DrawerLink({
 
 // Our pristine glowing badge!
 function AdminBadge() {
-  const [counts, setCounts] = React.useState({ sub: 0, up: 0, book: 0, proc: 0, inv: 0 });
+  const [counts, setCounts] = React.useState({ sub: 0, up: 0, book: 0, proc: 0, inv: 0, enroll: 0 });
 
   React.useEffect(() => {
     let alive = true;
     async function fetchPending() {
-      const [sub, up, book, proc, inv] = await Promise.all([
+      const [sub, up, book, proc, inv, enroll] = await Promise.all([
         supabase.from("project_submissions").select("id", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("project_updates").select("id", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("resource_bookings").select("id", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("procurement_requests").select("id", { count: "exact", head: true }).eq("status", "Pending"),
-        supabase.from("inventory_requests").select("id", { count: "exact", head: true }).eq("status", "Pending")
+        supabase.from("inventory_requests").select("id", { count: "exact", head: true }).eq("status", "Pending"), supabase.from("club_enrollments").select("id", { count: "exact", head: true }).eq("status", "pending")
       ]);
       if (alive) {
         setCounts({ 
@@ -321,7 +321,7 @@ function AdminBadge() {
           up: up?.count || 0,
           book: book?.count || 0, 
           proc: proc?.count || 0,
-          inv: inv?.count || 0
+          inv: inv?.count || 0, enroll: enroll?.count || 0
         });
       }
     }
@@ -344,7 +344,7 @@ function AdminBadge() {
     };
   }, []);
 
-  const totalPending = counts.sub + counts.up + counts.book + counts.proc + counts.inv;
+  const totalPending = counts.sub + counts.up + counts.book + counts.proc + counts.inv + counts.enroll;
   const hasPending = totalPending > 0;
 
   return (
@@ -369,6 +369,7 @@ function AdminBadge() {
 }
 
 // Forced Deploy Trigger: 1785237166923
+
 
 
 
