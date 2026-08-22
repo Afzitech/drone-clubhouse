@@ -90,6 +90,9 @@ function Landing() {
                 </a>
               ))}
             </nav>
+            <Link to="/apply" className="mono mr-6 text-[11px] font-bold uppercase tracking-widest text-primary/70 transition hover:text-primary hidden sm:inline-block">
+              Enroll
+            </Link>
             <Link
               to={signedIn ? "/dashboard" : "/auth"}
               className="mono rounded-md border border-primary/40 bg-primary/10 px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-primary transition hover:bg-primary/20"
@@ -247,12 +250,7 @@ function Landing() {
       </section>
 
       {/* Squadron Enrollment Section */}
-      <section id="enroll" className="py-24 px-4 flex flex-col items-center justify-center relative z-10 border-t border-border/40 bg-surface/20">
-        <h2 className="text-2xl font-bold mono uppercase tracking-widest text-primary mb-8">/ SQUADRON RECRUITMENT</h2>
-        <Link to="/apply" className="px-8 py-4 bg-command/10 border border-command/50 text-command mono uppercase tracking-widest hover:bg-command/20 transition-all rounded hud-panel corner-brackets">
-          ACCESS ENROLLMENT PORTAL
-        </Link>
-      </section>
+      
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-border/50 px-6 py-8 text-center">
