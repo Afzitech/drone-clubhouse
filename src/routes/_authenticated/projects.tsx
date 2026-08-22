@@ -197,9 +197,7 @@ function ProjectsPage() {
           ))}
         </ul>
       )}
-    </div>
-
-          {crewModalOpen && (
+      {crewModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
           <div className="hud-panel corner-brackets w-full max-w-md p-6">
             <div className="flex items-center justify-between border-b border-border/50 pb-3">
@@ -234,6 +232,7 @@ function ProjectsPage() {
         </div>
       )}
 
+    </div>
   );
 }
 
