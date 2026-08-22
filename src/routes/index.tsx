@@ -7,17 +7,6 @@ import { getLandingContent } from "@/lib/site-content.functions";
 import { getPublicGallery } from "@/lib/public-gallery.functions";
 
 
-const ManagedEnrollmentForm = () => {
-  const [isOpen, setIsOpen] = useState(true);
-  useEffect(() => {
-    supabase.from('site_settings').select('enrollments_open').eq('id', 1).single().then(({data}) => {
-      if (data) setIsOpen(data.enrollments_open);
-    });
-    const channel = supabase.channel('settings-listener')
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'site_settings' }, (payload) => {
-         setIsOpen(payload.new.enrollments_open);
-      }).subscribe();
-    return () => { supabase.removeChannel(channel); };
   }, []);
 
   if (!isOpen) {
@@ -274,8 +263,11 @@ function Landing() {
       </section>
 
       {/* Squadron Enrollment Section */}
-      <section id="enroll" className="py-24 px-4 flex justify-center relative z-10 border-t border-border/40 bg-surface/20">
-        <EnrollmentForm />
+      <section id="enroll" className="py-24 px-4 flex flex-col items-center justify-center relative z-10 border-t border-border/40 bg-surface/20">
+        <h2 className="text-2xl font-bold mono uppercase tracking-widest text-primary mb-8">/ SQUADRON RECRUITMENT</h2>
+        <Link to="/apply" className="px-8 py-4 bg-command/10 border border-command/50 text-command mono uppercase tracking-widest hover:bg-command/20 transition-all rounded hud-panel corner-brackets">
+          ACCESS ENROLLMENT PORTAL
+        </Link>
       </section>
 
       {/* Footer */}
