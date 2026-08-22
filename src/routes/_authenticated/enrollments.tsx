@@ -7,6 +7,19 @@ export const Route = createFileRoute("/_authenticated/enrollments")({
 });
 
 function EnrollmentsAdmin() {
+  const [enrollmentsOpen, setEnrollmentsOpen] = useState(true);
+  
+  useEffect(() => {
+    supabase.from('site_settings').select('enrollments_open').eq('id', 1).single().then(({data}) => {
+      if (data) setEnrollmentsOpen(data.enrollments_open);
+    });
+  }, []);
+
+  const toggleEnrollments = async () => {
+    const newState = !enrollmentsOpen;
+    setEnrollmentsOpen(newState);
+    await supabase.from('site_settings').update({ enrollments_open: newState }).eq('id', 1);
+  };
   const [recruits, setRecruits] = useState<any[]>([]);
 
   const fetchRecruits = async () => {
@@ -30,11 +43,23 @@ function EnrollmentsAdmin() {
 
   return (
     <div className="space-y-6">
-      <div className="border-b border-border pb-6 mb-6">
-        <h1 className="text-3xl font-bold tracking-widest text-primary uppercase mono">/ SQUADRON RECRUITS</h1>
-        <p className="text-muted-foreground mt-2 text-xs tracking-widest uppercase mono">
-          Review and manage incoming terminal applications (LIVE)
-        </p>
+      <div className="border-b border-border pb-6 mb-6 flex flex-col md:flex-row md:items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-widest text-primary uppercase mono">/ SQUADRON RECRUITS</h1>
+          <p className="text-muted-foreground mt-2 text-xs tracking-widest uppercase mono">
+            Review and manage incoming terminal applications (LIVE)
+          </p>
+        </div>
+        <button 
+          onClick={toggleEnrollments} 
+          className={`mono rounded border px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest transition ${
+            enrollmentsOpen 
+              ? 'border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/20' 
+              : 'border-command/40 bg-command/10 text-command hover:bg-command/20'
+          }`}
+        >
+          {enrollmentsOpen ? 'Lock Databanks (Close Enrollments)' : 'Open Databanks (Enable Enrollments)'}
+        </button>
       </div>
       
       <div className="hud-panel corner-brackets p-6">
