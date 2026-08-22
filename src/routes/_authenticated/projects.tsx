@@ -198,6 +198,42 @@ function ProjectsPage() {
         </ul>
       )}
     </div>
+
+          {crewModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
+          <div className="hud-panel corner-brackets w-full max-w-md p-6">
+            <div className="flex items-center justify-between border-b border-border/50 pb-3">
+              <h3 className="mono text-xs font-bold uppercase tracking-widest text-primary">/ Roster Assignment /</h3>
+              <button onClick={() => setCrewModalOpen(null)} className="text-muted-foreground hover:text-destructive transition-colors">âœ•</button>
+            </div>
+            <div className="mt-5 space-y-4">
+              <p className="mono text-[10px] text-muted-foreground uppercase tracking-widest">Select personnel from databanks:</p>
+              <select 
+                value={selectedRecruit}
+                onChange={(e) => setSelectedRecruit(e.target.value)}
+                className="mono w-full rounded border border-command/30 bg-background px-3 py-2 text-[11px] text-foreground focus:border-command focus:outline-none"
+              >
+                <option value="" disabled>Awaiting selection...</option>
+                {allProfiles.map(prof => (
+                  <option key={prof.id} value={prof.id}>{prof.display_name || "Unknown Member"}</option>
+                ))}
+              </select>
+              <button 
+                onClick={async () => {
+                  if (!selectedRecruit) return;
+                  await supabase.from('project_members').insert({ project_id: crewModalOpen, user_id: selectedRecruit });
+                  setCrewModalOpen(null);
+                  window.location.reload();
+                }}
+                className="mono w-full rounded bg-command/20 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-command hover:bg-command/30 transition-all"
+              >
+                Deploy to Project
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
   );
 }
 
@@ -438,40 +474,6 @@ function ProjectUpdatesPanel({
             </li>
           ))}
         </ul>
-      )}
-          {crewModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
-          <div className="hud-panel corner-brackets w-full max-w-md p-6">
-            <div className="flex items-center justify-between border-b border-border/50 pb-3">
-              <h3 className="mono text-xs font-bold uppercase tracking-widest text-primary">/ Roster Assignment /</h3>
-              <button onClick={() => setCrewModalOpen(null)} className="text-muted-foreground hover:text-destructive transition-colors">âœ•</button>
-            </div>
-            <div className="mt-5 space-y-4">
-              <p className="mono text-[10px] text-muted-foreground uppercase tracking-widest">Select personnel from databanks:</p>
-              <select 
-                value={selectedRecruit}
-                onChange={(e) => setSelectedRecruit(e.target.value)}
-                className="mono w-full rounded border border-command/30 bg-background px-3 py-2 text-[11px] text-foreground focus:border-command focus:outline-none"
-              >
-                <option value="" disabled>Awaiting selection...</option>
-                {allProfiles.map(prof => (
-                  <option key={prof.id} value={prof.id}>{prof.display_name || "Unknown Member"}</option>
-                ))}
-              </select>
-              <button 
-                onClick={async () => {
-                  if (!selectedRecruit) return;
-                  await supabase.from('project_members').insert({ project_id: crewModalOpen, user_id: selectedRecruit });
-                  setCrewModalOpen(null);
-                  window.location.reload();
-                }}
-                className="mono w-full rounded bg-command/20 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-command hover:bg-command/30 transition-all"
-              >
-                Deploy to Project
-              </button>
-            </div>
-          </div>
-        </div>
       )}
 </div>
   );
