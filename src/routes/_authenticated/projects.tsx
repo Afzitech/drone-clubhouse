@@ -57,7 +57,7 @@ function ProjectsPage() {
       const [{ data }, { data: roles }] = await Promise.all([
         supabase
           .from("projects")
-          .select("id,title,description,status,lead_user_id,created_at")
+          .select("id,title,description,status,lead_user_id,created_at,project_members(user_id)")
           .order("created_at", { ascending: false }),
         supabase.from("user_roles").select("role").eq("user_id", user.id),
       ]);
@@ -65,7 +65,12 @@ function ProjectsPage() {
       const list = (data ?? []) as unknown as Project[];
       setProjects(list);
 
-      const leadIds = Array.from(new Set(list.map((p) => p.lead_user_id))).filter(Boolean) as string[];
+      const allUserIds = new Set<string>();
+      list.forEach(p => {
+        if (p.lead_user_id) allUserIds.add(p.lead_user_id);
+        if (p.project_members) p.project_members.forEach(m => allUserIds.add(m.user_id));
+      });
+      const leadIds = Array.from(allUserIds).filter(Boolean) as string[];
       if (leadIds.length > 0) {
         const { data: profs } = await supabase
           .from("profiles")
@@ -202,7 +207,7 @@ function ProjectsPage() {
           <div className="hud-panel corner-brackets w-full max-w-md p-6">
             <div className="flex items-center justify-between border-b border-border/50 pb-3">
               <h3 className="mono text-xs font-bold uppercase tracking-widest text-primary">/ Roster Assignment /</h3>
-              <button onClick={() => setCrewModalOpen(null)} className="text-muted-foreground hover:text-destructive transition-colors">âœ•</button>
+              <button onClick={() => setCrewModalOpen(null)} className="text-muted-foreground hover:text-destructive transition-colors">X</button>
             </div>
             <div className="mt-5 space-y-4">
               <p className="mono text-[10px] text-muted-foreground uppercase tracking-widest">Select personnel from databanks:</p>
