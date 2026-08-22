@@ -160,6 +160,11 @@ function ProjectsPage() {
                   ... Lead  /  {leadNames[p.lead_user_id]}
                 </p>
               )}
+                {p.project_members && p.project_members.length > 0 && (
+                  <p className="mono mt-1 text-[10px] uppercase tracking-widest text-muted-foreground">
+                    ... Crew  /  {p.project_members.map(m => leadNames[m.user_id] || "Unknown").join(", ")}
+                  </p>
+                )}
               {isAdmin && (
                 <div className="mt-4 flex flex-wrap gap-2">
                   {(["planning", "in_progress", "testing", "completed", "archived"] as const).map(
