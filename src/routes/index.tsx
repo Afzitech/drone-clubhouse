@@ -6,22 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { getLandingContent } from "@/lib/site-content.functions";
 import { getPublicGallery } from "@/lib/public-gallery.functions";
 
-
-  }, []);
-
-  if (!isOpen) {
-    return (
-      <div className="text-center p-12 border border-destructive/30 bg-destructive/5 rounded-lg max-w-2xl mx-auto w-full hud-panel corner-brackets">
-        <h3 className="mono text-destructive uppercase tracking-widest text-lg font-bold">/ DATABANKS LOCKED /</h3>
-        <p className="text-muted-foreground mono mt-4 text-xs tracking-widest uppercase">Squadron enrollments are currently frozen.</p>
-        <p className="text-muted-foreground mono mt-1 text-[10px] tracking-widest uppercase">Awaiting Command override for next recruitment cycle.</p>
-      </div>
-    );
-  }
-  return <ManagedEnrollmentForm />;
-};
-
-
 const landingQuery = queryOptions({
   queryKey: ["landing-content"],
   queryFn: () => getLandingContent(),
